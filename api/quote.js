@@ -139,7 +139,7 @@ module.exports = async function handler(req, res) {
   lines.push(
     '',
     `Submitted: ${submittedAt} (Kamloops time)`,
-    'Source: urgentcleankamloops.ca homepage quote form',
+    'Source: www.urgentcleankamloops.ca homepage quote form',
   );
 
   const apiKey = process.env.RESEND_API_KEY;
