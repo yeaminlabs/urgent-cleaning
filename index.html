@@ -127,6 +127,33 @@ body {
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 
+/* ── SKIP LINK ───────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -80px;
+  left: 12px;
+  z-index: 2000;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 20px;
+  border-radius: var(--r);
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* Consistent brand-colored focus ring for every interactive element that
+   doesn't already define its own (inputs keep their existing box-shadow ring). */
+a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* ── NAV ─────────────────────────────────────────────────────── */
 #nav {
   position: sticky;
@@ -461,13 +488,29 @@ a { color: inherit; text-decoration: none; }
 
 /* ── WHY ─────────────────────────────────────────────────────── */
 .why { background: var(--surface); }
-.why-head {
+
+.why-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(32px, 5vw, 80px);
-  align-items: end;
-  margin-bottom: clamp(48px, 6vw, 72px);
+  grid-template-columns: 1.4fr 1fr;
+  grid-template-areas: "heading visual" "list visual";
+  column-gap: clamp(32px, 5vw, 64px);
+  row-gap: clamp(24px, 3vw, 32px);
+  align-items: start;
 }
+.why-head { grid-area: heading; margin-bottom: 0; }
+.why-list-wrap { grid-area: list; }
+.why-visual { grid-area: visual; align-self: stretch; }
+.why-photo {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  object-position: 72% 62%; /* keeps the cleaning supplies (bottom-right of source) in frame */
+  display: block;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
 .why-list { display: flex; flex-direction: column; }
 .why-row {
   display: grid;
@@ -481,8 +524,12 @@ a { color: inherit; text-decoration: none; }
 .why-row-label { font-size: 16px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
 .why-row-body { font-size: 15px; color: var(--ink-2); line-height: 1.65; }
 
+@media (max-width: 860px) {
+  .why-grid { grid-template-columns: 1fr; grid-template-areas: "heading" "visual" "list"; }
+  .why-visual { align-self: auto; }
+  .why-photo { height: auto; aspect-ratio: 4 / 3; min-height: 0; }
+}
 @media (max-width: 768px) {
-  .why-head { grid-template-columns: 1fr; }
   .why-row { grid-template-columns: 1fr; gap: 6px; }
 }
 
@@ -517,8 +564,10 @@ a { color: inherit; text-decoration: none; }
 }
 .svc-name { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
 .svc-desc { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
-.svc-cta { margin-top: auto; padding-top: 4px; font-size: 13px; font-weight: 700; color: var(--ember); }
+.svc-cta { margin-top: auto; padding-top: 4px; font-size: 13px; font-weight: 700; color: var(--ember); display: inline-flex; align-items: center; gap: 4px; }
+.svc-cta-arrow { display: inline-block; transition: transform 0.2s ease; }
 .svc:hover .svc-cta { color: var(--ember-lt); }
+.svc:hover .svc-cta-arrow { transform: translateX(3px); }
 
 @media (max-width: 1024px) and (min-width: 640px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 639px) { .services-grid { grid-template-columns: 1fr; } }
@@ -559,12 +608,31 @@ a { color: inherit; text-decoration: none; }
   gap: clamp(32px, 5vw, 64px);
   align-items: center;
 }
-.pm-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.pm-visual {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.pm-photo-wrap { aspect-ratio: 4 / 3; }
+.pm-photo { width: 100%; height: 100%; object-fit: cover; object-position: 35% 55%; display: block; }
+.pm-tags { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 20px; }
 .pm-tags .ctag { border-color: var(--ember); color: var(--ember); background: var(--ember-tint); }
 @media (max-width: 768px) { .pm-grid { grid-template-columns: 1fr; } }
 
 /* ── COVERAGE ────────────────────────────────────────────────── */
-.coverage { background: var(--surface); }
+.coverage { background: var(--surface); position: relative; overflow: hidden; }
+/* Abstract hill-ridge + river-curve motif — a nod to Kamloops' valley/confluence
+   setting without a literal or copyrighted map. Purely decorative. */
+.coverage-motif {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: clamp(140px, 22vw, 260px);
+  opacity: 0.05;
+  pointer-events: none;
+}
+.coverage .section-inner { position: relative; z-index: 1; }
 .coverage-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 28px 0 20px; }
 .ctag {
   background: var(--surface);
@@ -882,14 +950,47 @@ footer {
 
 /* ── PHOTO QUOTE ─────────────────────────────────────────────── */
 .pq { background: var(--surface); }
+
+/* Desktop: heading+CTA in the left column, illustration in the right column
+   (spanning both rows so it centers against the whole left stack), steps
+   run full-width underneath. Mobile order below matches the approved spec:
+   heading, supporting text, visual, steps, CTA. */
+.pq .section-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "heading visual"
+    "cta     visual"
+    "steps   steps";
+  column-gap: clamp(32px, 5vw, 64px);
+  row-gap: 22px;
+  align-items: center;
+}
+.pq-heading { grid-area: heading; }
+.pq-cta-row { grid-area: cta; align-self: start; display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.pq-cta-secondary { font-size: 14px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border-2); }
+.pq-cta-secondary:hover { color: var(--ember); border-color: var(--ember); }
+
+.pq-visual { grid-area: visual; position: relative; overflow: hidden; }
+.pq-visual-glow {
+  position: absolute;
+  inset: -14%;
+  background: radial-gradient(ellipse 55% 55% at 58% 45%, rgba(201,75,12,0.16), transparent 70%);
+  filter: blur(28px);
+  z-index: 0;
+  pointer-events: none;
+}
+.pq-illustration { position: relative; z-index: 1; width: 100%; height: auto; display: block; }
+
 .pq-grid {
+  grid-area: steps;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin: clamp(32px, 4vw, 48px) 0 28px;
+  margin-top: clamp(8px, 2vw, 16px);
 }
 .pq-step {
-  background: var(--surface);
+  background: var(--ground);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 22px 20px;
@@ -897,10 +998,20 @@ footer {
 .pq-n { font-size: 12px; font-weight: 800; color: var(--ember); letter-spacing: 0.04em; margin-bottom: 10px; }
 .pq-t { font-size: 15.5px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; margin-bottom: 6px; }
 .pq-d { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
-.pq-cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
-.pq-note { font-size: 13px; color: var(--ink-3); max-width: 420px; line-height: 1.5; }
-.pq-cta-secondary { font-size: 14px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border-2); }
-.pq-cta-secondary:hover { color: var(--ember); border-color: var(--ember); }
+
+@media (max-width: 860px) {
+  .pq .section-inner {
+    grid-template-columns: 1fr;
+    grid-template-areas: "heading" "visual" "steps" "cta";
+  }
+  .pq-visual { max-width: 440px; margin: 0 auto; }
+  .pq-cta-row { justify-content: center; }
+}
+@media (max-width: 640px) {
+  .pq-cta-row { flex-direction: column; align-items: stretch; }
+  .pq-cta-row .btn-primary { justify-content: center; }
+  .pq-cta-secondary { text-align: center; }
+}
 
 @media (max-width: 900px) and (min-width: 641px) { .pq-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) {
@@ -1216,6 +1327,8 @@ footer {
 </head>
 <body>
 
+<a href="#main" class="skip-link">Skip to main content</a>
+
 <!-- NAV -->
 <nav id="nav">
   <div class="nav-inner">
@@ -1248,6 +1361,7 @@ footer {
   </div>
 </nav>
 
+<main id="main">
 <!-- HERO -->
 <section class="hero">
   <!-- Background photo: save your cleaning team photo as hero-bg.jpg in this folder -->
@@ -1318,37 +1432,37 @@ footer {
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 17V8l7-5 7 5v9M8 17v-5h4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">House Cleaning</h3>
         <p class="svc-desc">Top-to-bottom cleaning for occupied homes — kitchens, bathrooms, floors, and every surface in between.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Move-Out Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="7" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M7 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Move-Out Cleaning</h3>
         <p class="svc-desc">Inspection-ready cleaning for vacant units between tenants — for landlords, property managers, and anyone moving out. Move-in cleaning is available too.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Same-Day / Short-Notice Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Same-Day / Short-Notice Cleaning</h3>
         <p class="svc-desc">Need someone today or tomorrow? We take on short-notice bookings when scheduling allows.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Deep Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Deep Cleaning</h3>
         <p class="svc-desc">Detailed cleaning for overdue homes — surfaces, grout, vents and commonly missed areas. Appliance and cabinet interiors can be added as needed.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Rental Turnover Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M4 6h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Rental Turnover Cleaning</h3>
         <p class="svc-desc">Preparing a unit between tenants on a short timeline — built for landlords and property managers juggling tight turnover windows.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Post-Renovation Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M6 5v11M14 5v11M4 16h12M8 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Post-Renovation Cleaning</h3>
         <p class="svc-desc">Construction dust, debris, and residue cleared from every surface and floor so the space is ready to use again.</p>
-        <span class="svc-cta">Request quote &rarr;</span>
+        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
   </div>
@@ -1357,10 +1471,27 @@ footer {
 <!-- PHOTO QUOTE -->
 <section class="section pq" id="photo-quote">
   <div class="section-inner">
-    <div class="reveal">
+    <div class="pq-heading reveal">
       <h2 class="section-title">Skip the site visit.<br>Get your quote faster.</h2>
       <p class="section-sub">For most standard cleaning jobs, we can work out pricing without scheduling a separate in-person estimate first — call us or send a quick request and we'll take it from there.</p>
     </div>
+
+    <div class="pq-visual reveal">
+      <div class="pq-visual-glow" aria-hidden="true"></div>
+      <img
+        src="./assets/images/urgent-clean-fast-quote-process.webp"
+        alt="Illustration showing Urgent Clean's quick quote and booking process"
+        width="1672" height="941"
+        loading="lazy" decoding="async"
+        class="pq-illustration"
+      >
+    </div>
+
+    <div class="pq-cta-row reveal">
+      <a href="#contact" class="btn-primary">Request a Quote</a>
+      <a href="tel:+12508792425" class="pq-cta-secondary">Or call (250) 879-2425 &rarr;</a>
+    </div>
+
     <div class="pq-grid">
       <div class="pq-step reveal">
         <div class="pq-n">01</div>
@@ -1382,10 +1513,6 @@ footer {
         <h3 class="pq-t">Book your cleaning</h3>
         <p class="pq-d">Choose from the appointment times we have available.</p>
       </div>
-    </div>
-    <div class="pq-cta-row reveal">
-      <a href="#contact" class="btn-primary">Request a Quote</a>
-      <a href="tel:+12508792425" class="pq-cta-secondary">Or call (250) 879-2425 &rarr;</a>
     </div>
   </div>
 </section>
@@ -1485,27 +1612,42 @@ footer {
 <!-- WHY -->
 <section class="section why" id="why">
   <div class="section-inner">
-    <div class="why-head reveal">
-      <h2 class="section-title">Cleaning for when timing matters</h2>
-      <p class="section-sub">Homeowner, tenant, realtor, or property manager — the situation is often the same: there's a deadline and the space needs to be ready. We work to make that happen.</p>
-      <p style="font-size:15px;color:var(--ink-2);line-height:1.75;margin-top:16px;">Urgent Clean Kamloops is built around fast quotes and short-notice availability. Whether a tenant just moved out, contractors just wrapped up a renovation, or a property inspection got booked with little warning, we work to get a cleaner on-site quickly — often the same day, scheduling permitting. Call or send a quick request and we usually respond within an hour. No contracts required.</p>
-    </div>
-    <div class="why-list">
-      <div class="why-row reveal">
-        <div class="why-row-label">Tenant move-outs</div>
-        <div class="why-row-body">Landlord handover on a tight timeline. We work to get the unit to rental-ready condition the same day when scheduling allows — so your next tenant can move in on time.</div>
+    <div class="why-grid">
+      <div class="why-head reveal">
+        <h2 class="section-title">Cleaning for when timing matters</h2>
+        <p class="section-sub">Homeowner, tenant, realtor, or property manager — the situation is often the same: there's a deadline and the space needs to be ready. We work to make that happen.</p>
+        <p style="font-size:15px;color:var(--ink-2);line-height:1.75;margin-top:16px;">Urgent Clean Kamloops is built around fast quotes and short-notice availability. Whether a tenant just moved out, contractors just wrapped up a renovation, or a property inspection got booked with little warning, we work to get a cleaner on-site quickly — often the same day, scheduling permitting. Call or send a quick request and we usually respond within an hour. No contracts required.</p>
       </div>
-      <div class="why-row reveal">
-        <div class="why-row-label">Last-minute showings</div>
-        <div class="why-row-body">Realtor called. Open house is tomorrow. We often have cleaners available same-evening or next-day to make the listing show-ready before buyers walk through the door.</div>
+
+      <div class="why-visual reveal">
+        <img
+          src="./assets/images/urgent-clean-timing-matters-home.webp"
+          alt="Clean living room and kitchen with professional cleaning supplies"
+          width="1448" height="1086"
+          loading="lazy" decoding="async"
+          class="why-photo"
+        >
       </div>
-      <div class="why-row reveal">
-        <div class="why-row-label">Post-renovation cleanup</div>
-        <div class="why-row-body">Contractors left dust on every surface. We do thorough post-construction clean-up so you can move back in — or back to renting — without delay.</div>
-      </div>
-      <div class="why-row reveal">
-        <div class="why-row-label">Company coming tonight</div>
-        <div class="why-row-body">Family visiting, guests arriving, or just need it done right. Call or text us and we'll do what we can to get someone there within hours.</div>
+
+      <div class="why-list-wrap">
+        <div class="why-list">
+          <div class="why-row reveal">
+            <div class="why-row-label">Tenant move-outs</div>
+            <div class="why-row-body">Landlord handover on a tight timeline. We work to get the unit to rental-ready condition the same day when scheduling allows — so your next tenant can move in on time.</div>
+          </div>
+          <div class="why-row reveal">
+            <div class="why-row-label">Last-minute showings</div>
+            <div class="why-row-body">Realtor called. Open house is tomorrow. We often have cleaners available same-evening or next-day to make the listing show-ready before buyers walk through the door.</div>
+          </div>
+          <div class="why-row reveal">
+            <div class="why-row-label">Post-renovation cleanup</div>
+            <div class="why-row-body">Contractors left dust on every surface. We do thorough post-construction clean-up so you can move back in — or back to renting — without delay.</div>
+          </div>
+          <div class="why-row reveal">
+            <div class="why-row-label">Company coming tonight</div>
+            <div class="why-row-body">Family visiting, guests arriving, or just need it done right. Call or text us and we'll do what we can to get someone there within hours.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1537,13 +1679,24 @@ footer {
         <p class="section-sub">Turnovers don't always happen on schedule. When a unit needs to be ready fast, call us or send a quick request — we'll work around your timeline, not the other way around.</p>
         <a href="#contact" class="btn-primary" style="margin-top:24px;">Ask about property cleaning</a>
       </div>
-      <div class="pm-tags reveal">
-        <div class="ctag">Move-Out Cleaning</div>
-        <div class="ctag">Rental Turnovers</div>
-        <div class="ctag">Short-Notice Availability</div>
-        <div class="ctag">Post-Renovation Cleanup</div>
-        <div class="ctag">Fast Quotes</div>
-        <div class="ctag">Available 24/7</div>
+      <div class="pm-visual reveal">
+        <div class="pm-photo-wrap">
+          <img
+            src="./assets/images/urgent-clean-property-manager-turnover.webp"
+            alt="Clean vacant rental unit prepared for a tenant turnover"
+            width="1448" height="1086"
+            loading="lazy" decoding="async"
+            class="pm-photo"
+          >
+        </div>
+        <div class="pm-tags">
+          <div class="ctag">Move-Out Cleaning</div>
+          <div class="ctag">Rental Turnovers</div>
+          <div class="ctag">Short-Notice Availability</div>
+          <div class="ctag">Post-Renovation Cleanup</div>
+          <div class="ctag">Fast Quotes</div>
+          <div class="ctag">Available 24/7</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1551,6 +1704,11 @@ footer {
 
 <!-- COVERAGE -->
 <section class="section coverage" id="coverage">
+  <svg class="coverage-motif" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    <polyline points="0,180 120,140 260,165 400,110 560,150 720,95 880,140 1040,105 1200,150" fill="none" stroke="var(--ember)" stroke-width="2"/>
+    <polyline points="0,230 150,200 320,225 500,180 680,215 860,175 1040,210 1200,190" fill="none" stroke="var(--ember)" stroke-width="2"/>
+    <path d="M -20,260 C 200,230 350,290 550,250 C 750,210 900,270 1220,240" fill="none" stroke="var(--ember)" stroke-width="3"/>
+  </svg>
   <div class="section-inner reveal">
     <h2 class="section-title">Where we serve</h2>
     <p class="section-sub">We cover Kamloops and surrounding communities. Not on this list? Call us.</p>
@@ -1814,6 +1972,7 @@ footer {
     </div>
   </div>
 </section>
+</main>
 
 <!-- FOOTER -->
 <footer>
