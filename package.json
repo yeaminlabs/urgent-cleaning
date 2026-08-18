@@ -1,0 +1,8 @@
+{
+  "name": "urgent-clean-kamloops",
+  "private": true,
+  "description": "Urgent Clean Kamloops — static homepage plus a single Vercel serverless function (api/quote.js) that emails the quote-request form via Resend.",
+  "engines": {
+    "node": ">=18.x"
+  }
+}

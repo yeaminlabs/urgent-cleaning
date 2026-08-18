@@ -3,3 +3,12 @@
 .impeccable/
 skills-lock.json
 .DS_Store
+
+# local backup archives (e.g. v1.zip) — not part of the deployed site
+*.zip
+
+# secrets — set these in Vercel's Environment Variables instead (see .env.example)
+.env
+.env.local
+.env.*.local
+node_modules/
