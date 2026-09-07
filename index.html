@@ -45,8 +45,8 @@
   "url": "https://www.urgentcleankamloops.ca/",
   "telephone": "+12508792425",
   "email": "urgentcleankamloops@gmail.com",
-  "logo": "https://www.urgentcleankamloops.ca/mainlogo.png",
-  "image": "https://www.urgentcleankamloops.ca/mainlogo.png",
+  "logo": "https://www.urgentcleankamloops.ca/assets/images/urgent-clean-main-logo.png",
+  "image": "https://www.urgentcleankamloops.ca/assets/images/urgent-clean-main-logo.png",
   "priceRange": "$$",
   "currenciesAccepted": "CAD",
   "paymentAccepted": "Cash, Credit Card, E-Transfer",
@@ -88,13 +88,13 @@
 }
 </script>
 
-<!-- Favicon: emoji placeholder kept for the 16px browser tab (mainlogo.png doesn't
-     crop to a legible mark at that size — it's a full lockup, not an icon). The
-     larger apple-touch-icon slot below can use the real logo since it has more
-     room. Sprint 2: commission a dedicated square icon (sparkle mark alone or a
-     "U" monogram) cropped from the brand, then replace both. -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧹</text></svg>">
-<link rel="apple-touch-icon" href="./mainlogo.png">
+<!-- Favicon: the UC symbol alone (no wordmark). This is the one approved icon
+     identity for every tiny placement — browser tabs, bookmarks, and the Google
+     Search result favicon — because the full UrgentClean lockup is unreadable at
+     16px. Absolute-root paths so the icon is unambiguous to crawlers. -->
+<link rel="icon" type="image/png" href="/assets/images/urgent-clean-favicon.png">
+<link rel="shortcut icon" type="image/png" href="/assets/images/urgent-clean-favicon.png">
+<link rel="apple-touch-icon" href="/assets/images/urgent-clean-favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -187,37 +187,26 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 }
 .nav-logo { display: flex; align-items: center; white-space: nowrap; }
 
-/* mainlogo.png is a 500x500 export with the actual mark (sparkle + wordmark +
-   tagline) sitting in a ~370x128px band, centered around px (243,224). The file
-   itself is never cropped — these numbers just tell the background-image where
-   to sit inside a small, correctly-proportioned box, so the surrounding white
-   padding (which matches the site's own background) disappears visually. */
-.brand-logo {
+/* Header/footer logos are real <img> elements drawn from the approved brand
+   exports (transparent, delivered at 600x200 and 720x240 — ~3.6x the largest
+   rendered width, so they stay crisp on high-DPI screens). No background-position
+   cropping — the assets are already composed, so they only need a display width;
+   height:auto keeps the natural 3:1 aspect ratio. Note the artwork occupies the
+   middle ~41% of the canvas height, so the rendered box is taller than the
+   visible mark; that padding is part of the approved lockup, not a bug. */
+.nav-logo-img {
   display: block;
-  background-image: url('./mainlogo.png');
-  background-repeat: no-repeat;
-  width: 122px;
-  height: 42px;
-  background-size: 164px 164px;
-  background-position: -19px -53px;
+  width: 165px;
+  height: auto;
   flex-shrink: 0;
 }
-/* mainlogo.png sits on a white canvas; the footer is dark, so the logo gets
-   a small white card rather than showing raw white padding on --ink. */
-.footer-logo-badge {
-  display: inline-flex;
-  align-items: center;
-  background: #fff;
-  border-radius: var(--r);
-  padding: 10px 16px;
-}
+/* The dark-background export needs no white card behind it — it is designed to
+   sit directly on the dark footer. */
+.footer-logo-link { display: inline-flex; align-items: center; }
 .footer-logo-img {
-  width: 98px;
-  height: 34px;
-  background-image: url('./mainlogo.png');
-  background-repeat: no-repeat;
-  background-size: 133px 133px;
-  background-position: -16px -43px;
+  display: block;
+  width: 200px;
+  height: auto;
 }
 .nav-phone {
   display: flex;
@@ -292,7 +281,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
   .nav-inner { height: 56px; }
   .nav-phone { font-size: 14px; padding: 5px 10px; }
   .nav-phone small { display: none; }
-  .brand-logo { width: 87px; height: 30px; background-size: 117px 117px; background-position: -13px -38px; }
+  .nav-logo-img { width: 120px; }
+  .footer-logo-img { width: 170px; }
 }
 
 /* ── HERO ─────────────────────────────────────────────────────── */
@@ -1341,7 +1331,12 @@ footer {
 <!-- NAV -->
 <nav id="nav">
   <div class="nav-inner">
-    <a href="#" class="nav-logo" aria-label="Urgent Clean — Kamloops house cleaning, back to top"><span class="brand-logo" aria-hidden="true"></span></a>
+    <a href="#" class="nav-logo" aria-label="Urgent Clean — Kamloops house cleaning, back to top"><img
+        src="/assets/images/urgent-clean-main-logo.png"
+        alt="Urgent Clean"
+        class="nav-logo-img"
+        width="600" height="200"
+        decoding="async"></a>
     <a href="tel:+12508792425" class="nav-phone">
       <small>Call now — available 24/7</small>
       (250) 879-2425
@@ -1987,8 +1982,13 @@ footer {
 <footer>
   <div class="footer-inner">
     <div class="footer-about">
-      <a href="#" class="footer-logo-badge" aria-label="Urgent Clean — Kamloops house cleaning, back to top">
-        <span class="footer-logo-img" aria-hidden="true"></span>
+      <a href="#" class="footer-logo-link" aria-label="Urgent Clean — Kamloops house cleaning, back to top">
+        <img
+          src="/assets/images/urgent-clean-kamloops-logo-dark.png"
+          alt="Urgent Clean"
+          class="footer-logo-img"
+          width="720" height="240"
+          loading="lazy" decoding="async">
       </a>
       <!-- NAP — must match Google Business Profile exactly -->
       <address style="font-style:normal;font-size:12px;color:rgba(255,255,255,0.40);line-height:1.7;">
