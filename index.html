@@ -14,15 +14,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Primary SEO -->
-<title>House Cleaning Kamloops | Same-Day & Move-Out Cleaning | Urgent Clean</title>
-<meta name="description" content="House cleaning in Kamloops with same-day and short-notice availability. Move-out, deep cleaning, and more. Call or send a quick request for a fast quote.">
+<!-- The homepage is the umbrella page for cleaning services in Kamloops. The
+     primary "house cleaning Kamloops" intent is owned by the dedicated page at
+     /house-cleaning-kamloops/ — keep this title broad so the two don't compete
+     for the same query. -->
+<title>Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean</title>
+<meta name="description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
 <link rel="canonical" href="https://www.urgentcleankamloops.ca/">
 
 <!-- Open Graph (Facebook, iMessage link previews) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.urgentcleankamloops.ca/">
-<meta property="og:title" content="House Cleaning Kamloops | Same-Day & Move-Out Cleaning">
-<meta property="og:description" content="House cleaning in Kamloops with same-day and short-notice availability. Move-out, deep cleaning, and more. Call or send a quick request for a fast quote.">
+<meta property="og:title" content="Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean">
+<meta property="og:description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
 <meta property="og:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
 <meta property="og:image:width" content="1856">
 <meta property="og:image:height" content="1080">
@@ -31,8 +35,8 @@
 
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="House Cleaning Kamloops | Same-Day & Move-Out Cleaning">
-<meta name="twitter:description" content="House cleaning in Kamloops with same-day and short-notice availability. Call or send a quick request for a fast quote.">
+<meta name="twitter:title" content="Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean">
+<meta name="twitter:description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
 <meta name="twitter:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
 
 <!-- Local business structured data (Google rich results) -->
@@ -40,6 +44,7 @@
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
+  "@id": "https://www.urgentcleankamloops.ca/#business",
   "name": "Urgent Clean Kamloops",
   "description": "Same-day and short-notice house cleaning in Kamloops, BC. Call or submit a quick request for a fast quote on most standard jobs — no in-person visit required. Specializing in move-out cleans, post-renovation cleanup, and rental turnovers.",
   "url": "https://www.urgentcleankamloops.ca/",
@@ -1430,13 +1435,16 @@ footer {
          the future dedicated service-page slugs (Sprint 3+): house-cleaning,
          move-out-cleaning, same-day-cleaning, deep-cleaning, rental-turnover-
          cleaning, post-renovation-cleaning. Swap the href for the real page URL
-         once it exists — the data-service preselection keeps working either way. -->
+         once it exists — the data-service preselection keeps working either way.
+         House Cleaning now points at its own page (/house-cleaning-kamloops/),
+         which preselects House Cleaning in its own copy of the form, so the
+         conversion path is preserved rather than replaced. -->
     <div class="services-grid">
-      <a href="#contact" class="svc reveal" data-service="House Cleaning">
+      <a href="/house-cleaning-kamloops/" class="svc reveal" data-service="House Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 17V8l7-5 7 5v9M8 17v-5h4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">House Cleaning</h3>
         <p class="svc-desc">Top-to-bottom cleaning for occupied homes — kitchens, bathrooms, floors, and every surface in between.</p>
-        <span class="svc-cta">Request quote <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
+        <span class="svc-cta">House cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="#contact" class="svc reveal" data-service="Move-Out Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="7" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M7 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
