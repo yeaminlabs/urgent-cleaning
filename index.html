@@ -1839,9 +1839,9 @@ footer {
         </div>
       </div>
       <!-- Submits to /api/quote (Vercel serverless function), which emails the
-           request to urgentcleankamloops@gmail.com via Resend. Required: phone,
-           email, service, description. Everything else is optional — the server
-           enforces the same required set, see api/quote.js. -->
+           request to urgentcleankamloops@gmail.com via Gmail SMTP (Nodemailer).
+           Required: phone, email, service, description. Everything else is
+           optional — the server enforces the same required set, see api/quote.js. -->
       <div class="contact-right">
       <form class="cform reveal" id="quote-form">
         <div class="form-row">

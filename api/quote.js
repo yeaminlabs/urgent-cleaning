@@ -1,17 +1,19 @@
-// Vercel serverless function (Node.js runtime, zero dependencies).
+// Vercel serverless function (Node.js runtime).
 // Receives the homepage quote-request form, validates and sanitizes it
-// server-side, and emails it to Urgent Clean via the Resend API.
+// server-side, and emails it to Urgent Clean via Gmail SMTP (Nodemailer).
 //
-// Required environment variable (Vercel Project Settings -> Environment Variables):
-//   RESEND_API_KEY   secret API key from resend.com
-// Optional:
-//   RESEND_FROM       verified sender once a domain is set up with Resend,
-//                      e.g. "Urgent Clean <quotes@urgentcleankamloops.ca>".
-//                      Defaults to Resend's shared onboarding sender, which
-//                      works without any domain verification.
+// Required environment variables (Vercel Project Settings -> Environment Variables):
+//   SMTP_USER   the Gmail address quote requests are sent from/to,
+//               urgentcleankamloops@gmail.com
+//   SMTP_PASS   a Google App Password for that account (NOT the normal
+//               Gmail login password) — generate one at
+//               https://myaccount.google.com/apppasswords
+// Both are required. Neither has a fallback value and neither is ever
+// committed to the repo — see .env.example.
+
+const nodemailer = require('nodemailer');
 
 const TO_EMAIL = 'urgentcleankamloops@gmail.com';
-const DEFAULT_FROM = 'Urgent Clean Website <onboarding@resend.dev>';
 
 const ALLOWED_SERVICES = new Set([
   'House Cleaning',
@@ -42,6 +44,23 @@ function isValidEmail(value) {
 function isValidPhone(value) {
   const digits = value.replace(/\D/g, '');
   return digits.length >= 7 && digits.length <= 15;
+}
+
+// Lazily built and reused across warm invocations of this function so we
+// don't reconnect to Gmail on every request.
+let cachedTransporter = null;
+
+function getTransporter() {
+  if (!cachedTransporter) {
+    cachedTransporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
+  return cachedTransporter;
 }
 
 module.exports = async function handler(req, res) {
@@ -106,7 +125,7 @@ module.exports = async function handler(req, res) {
       return;
     }
     const safeName = (sanitize(photo.name, 120).replace(/[^a-zA-Z0-9._-]/g, '_')) || 'photo.jpg';
-    attachments = [{ filename: safeName, content: base64 }];
+    attachments = [{ filename: safeName, content: Buffer.from(base64, 'base64'), contentType: mime }];
   }
 
   const submittedAt = new Date().toLocaleString('en-CA', {
@@ -142,40 +161,32 @@ module.exports = async function handler(req, res) {
     'Source: www.urgentcleankamloops.ca homepage quote form',
   );
 
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.error('RESEND_API_KEY is not set');
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+  if (!smtpUser || !smtpPass) {
+    if (!smtpUser) console.error('SMTP_USER is not configured');
+    if (!smtpPass) console.error('SMTP_PASS is not configured');
     res.status(500).json({ ok: false, error: 'email_not_configured' });
     return;
   }
 
   try {
-    const resendRes = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: process.env.RESEND_FROM || DEFAULT_FROM,
-        to: [TO_EMAIL],
-        reply_to: email,
-        subject: `New Urgent Clean Quote Request — ${service}`,
-        text: lines.join('\n'),
-        attachments,
-      }),
+    await getTransporter().sendMail({
+      from: `Urgent Clean Website <${smtpUser}>`,
+      to: TO_EMAIL,
+      replyTo: email,
+      subject: `New Urgent Clean Quote Request — ${service}`,
+      text: lines.join('\n'),
+      attachments,
     });
-
-    if (!resendRes.ok) {
-      const errText = await resendRes.text().catch(() => '');
-      console.error('Resend API error', resendRes.status, errText);
-      res.status(502).json({ ok: false, error: 'send_failed' });
-      return;
-    }
 
     res.status(200).json({ ok: true });
   } catch (err) {
-    console.error('Failed to send quote request email', err);
+    if (err && (err.code === 'EAUTH' || err.responseCode === 535)) {
+      console.error('SMTP authentication failed:', err.message);
+    } else {
+      console.error('SMTP send failed:', err && err.message);
+    }
     res.status(500).json({ ok: false, error: 'send_failed' });
   }
 };

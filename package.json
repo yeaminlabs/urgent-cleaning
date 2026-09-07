@@ -1,8 +1,11 @@
 {
   "name": "urgent-clean-kamloops",
   "private": true,
-  "description": "Urgent Clean Kamloops — static homepage plus a single Vercel serverless function (api/quote.js) that emails the quote-request form via Resend.",
+  "description": "Urgent Clean Kamloops — static homepage plus a single Vercel serverless function (api/quote.js) that emails the quote-request form via Gmail SMTP (Nodemailer).",
   "engines": {
     "node": ">=18.x"
+  },
+  "dependencies": {
+    "nodemailer": "^9.1.1"
   }
 }
