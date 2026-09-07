@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en-CA">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-774RV984ST"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-774RV984ST');
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -2003,6 +2012,57 @@ footer {
 <script>
 (function () {
   'use strict';
+
+  /* ── ANALYTICS (GA4) ──────────────────────────────────────────
+     Fire-and-forget wrapper around gtag. Never sends customer PII —
+     only fixed enum-ish values (service names from the dropdown's own
+     option list, locations, counts, booleans, already-computed prices).
+     Wrapped in try/catch and a typeof guard so a blocked/failed gtag.js
+     can never break a phone link, the form, or the estimator.
+     Reusable as-is on future pages: the tel:/service hooks below are
+     delegated, so they pick up matching elements wherever they appear. */
+  const DEBUG = /[?&]analytics_debug=1\b/.test(location.search);
+  function trackEvent(name, params) {
+    try {
+      if (DEBUG) console.log('[analytics]', name, params || {});
+      if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
+    } catch (err) { /* analytics must never break the page */ }
+  }
+
+  /* Where a tel: link lives, for call_click's click_location. Ordered
+     most-specific first so nested matches resolve correctly. */
+  function callLocation(el) {
+    if (el.closest('.m-call-bar'))      return 'mobile_sticky';
+    if (el.closest('#nav-drawer'))      return 'nav_drawer';
+    if (el.closest('#nav'))             return 'navigation';
+    if (el.closest('.hero'))            return 'hero';
+    if (el.closest('#photo-quote'))     return 'fast_quote_section';
+    if (el.closest('#quote'))           return 'estimator';
+    if (el.closest('#coverage'))        return 'coverage';
+    if (el.closest('#form-success'))    return 'form_success';
+    if (el.closest('#form-error'))      return 'form_error';
+    if (el.closest('#contact'))         return 'contact';
+    if (el.closest('footer'))           return 'footer';
+    return 'other';
+  }
+
+  /* One delegated listener = one event per click, and it automatically
+     covers any tel: link added later. Never calls preventDefault, so the
+     dialer still opens exactly as before. */
+  document.addEventListener('click', e => {
+    const tel = e.target.closest && e.target.closest('a[href^="tel:"]');
+    if (!tel) return;
+    trackEvent('call_click', { click_location: callLocation(tel) });
+  });
+
+  /* Set by the estimator when a valid range is produced; read (non-PII)
+     by quote_form_success. */
+  let estimatorUsed = false;
+  let lastEstimate = { low: null, high: null };
+  /* Analytics-only label map for the estimator's clean-type values. Mirrors
+     the handoff mapping below; kept here so no pricing code is touched. */
+  const COND_SERVICE = { standard: 'House Cleaning', moveout: 'Move-Out Cleaning', deep: 'Deep Cleaning', postreno: 'Post-Renovation Cleaning' };
+
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.10 });
@@ -2015,6 +2075,7 @@ footer {
     const MULT   = { standard: 1.0, moveout: 1.45, deep: 1.30, postreno: 1.65 };
     const MULT_L = { standard: 'Standard clean', moveout: 'Move-out surcharge', deep: 'Deep clean surcharge', postreno: 'Post-reno surcharge' };
     const state  = { beds: null, baths: null, cond: null, extras: new Set() };
+    let lastEstimateSig = null; // analytics dedup only
 
     function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
 
@@ -2069,6 +2130,22 @@ footer {
       document.getElementById('qcb-extras-val').textContent = '+' + fmt(extrasTotal);
       document.getElementById('qcb-total').textContent      = fmt(lo) + ' – ' + fmt(hi);
       bdEl.classList.add('visible');
+
+      /* Analytics only — reads the values already computed above, changes none
+         of them. Deduped by input+output signature so repeat recalcs of the
+         same combination don't re-fire, while a genuinely new selection does. */
+      estimatorUsed = true;
+      lastEstimate = { low: lo, high: hi };
+      const sig = [state.beds, baths, state.cond, [...state.extras].sort().join(','), lo, hi].join('|');
+      if (sig !== lastEstimateSig) {
+        lastEstimateSig = sig;
+        trackEvent('estimator_complete', {
+          service_name: COND_SERVICE[state.cond] || state.cond,
+          bedrooms_count: state.beds,
+          estimate_low: lo,
+          estimate_high: hi,
+        });
+      }
     }
 
     /* single-select groups */
@@ -2131,7 +2208,13 @@ footer {
   }
 
   document.querySelectorAll('[data-service]').forEach(el => {
-    el.addEventListener('click', () => preselectService(el.dataset.service));
+    el.addEventListener('click', () => {
+      preselectService(el.dataset.service); // existing behaviour, unchanged
+      trackEvent('service_click', {
+        service_name: el.dataset.service,
+        click_location: 'homepage_services',
+      });
+    });
   });
 
   (function () {
@@ -2267,6 +2350,22 @@ footer {
     const submitLbl = document.getElementById('form-submit-label');
     if (!form || !success || !errorBox || !submitBtn) return;
 
+    /* quote_form_start — first genuine interaction only, once per page load.
+       Note: preselectService() assigns .value programmatically, which fires no
+       input/change event, so arriving from a service card or the estimator
+       correctly does NOT count as the visitor starting the form. */
+    let startTracked = false;
+    function onFirstInteraction() {
+      if (startTracked) return;
+      startTracked = true;
+      const service = form.elements.service ? form.elements.service.value : '';
+      const params = { form_location: 'homepage' };
+      if (service) params.service_name = service; // fixed dropdown option, not free text
+      trackEvent('quote_form_start', params);
+    }
+    form.addEventListener('input', onFirstInteraction);
+    form.addEventListener('change', onFirstInteraction);
+
     form.addEventListener('submit', async e => {
       e.preventDefault();
       errorBox.hidden = true;
@@ -2289,18 +2388,51 @@ footer {
         photo: selectedPhoto,              // { name, type, dataUrl } or null
       };
 
+      /* Non-PII analytics snapshot: a fixed dropdown value, two booleans, and
+         numbers the estimator already computed. Deliberately excludes name,
+         phone, email, location, description, photo filename and the payload. */
+      const analytics = {
+        service_name: fd.get('service') || '',
+        form_location: 'homepage',
+        has_photo: Boolean(selectedPhoto),
+        used_estimator: Boolean(fd.get('estimatorContext')) || estimatorUsed,
+      };
+      if (analytics.used_estimator && lastEstimate.low !== null) {
+        analytics.estimate_low = lastEstimate.low;
+        analytics.estimate_high = lastEstimate.high;
+      }
+
+      let httpStatus = null;
+      let succeeded = false;
       try {
         const res = await fetch('/api/quote', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        httpStatus = res.status;
         if (!res.ok) throw new Error('request failed');
+
+        /* Fired only after the backend confirms success, and before the DOM
+           updates so the conversion is recorded even if rendering hiccups.
+           `succeeded` guarantees at most one event per submission. */
+        succeeded = true;
+        trackEvent('quote_form_success', analytics);
 
         form.hidden = true;
         success.hidden = false;
         success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } catch (err) {
+        if (!succeeded) {
+          trackEvent('quote_form_error', {
+            error_type: httpStatus === null ? 'network'
+                      : (httpStatus === 400 || httpStatus === 422) ? 'validation'
+                      : httpStatus >= 500 ? 'server'
+                      : 'unknown',
+            form_location: 'homepage',
+            service_name: analytics.service_name,
+          });
+        }
         errorBox.hidden = false;
         errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } finally {

@@ -44,6 +44,27 @@ How the site actually works:
 - The business is presented as **available 24/7** (matches the logo's "Professional Cleaning Services 24/7" line) — `openingHours` is `Mo-Su 00:00-23:59` in the LocalBusiness schema. Don't reintroduce daytime-only hours language (e.g. "7am–9pm", "7 days a week") anywhere on the site
 - Business is active and taking bookings; locally operating in Kamloops since 2025, though not originally under this professional branding — don't imply a longer track record than that
 
+## Analytics
+
+Google Analytics 4 is installed via the standard gtag.js snippet at the top of `<head>` in `index.html`. **Measurement ID: `G-774RV984ST`** (web stream: Urgent Clean Kamloops). No Google Tag Manager, no Google Ads tags, no Meta Pixel — GA4 only. Enhanced Measurement is enabled in the GA4 property itself, so `page_view`, `scroll`, `click`, `form_start` and `form_submit` arrive automatically and are not configured in code.
+
+Custom events, all fired through the `trackEvent()` helper in the main script (a typeof-guarded, try/catch-wrapped wrapper — if gtag.js is blocked or fails, the site keeps working exactly as normal):
+
+| Event | Fires when |
+|---|---|
+| `call_click` | Any `tel:` link is clicked (delegated listener; `click_location` identifies which CTA) |
+| `quote_form_start` | First genuine interaction with the quote form — once per page load |
+| `quote_form_success` | **Only after `/api/quote` returns a successful response** |
+| `quote_form_error` | A submission attempt fails (`error_type`: validation / server / network / unknown) |
+| `estimator_complete` | The estimator produces a valid range (deduped per unique calculation) |
+| `service_click` | One of the six homepage service cards is clicked |
+
+**`quote_form_success` is the real lead event.** It is the signal to use for Google Ads conversions later, together with `call_click`. Do not substitute GA4's automatic `form_submit` for it — that fires on submit regardless of whether the backend accepted the request. `quote_form_success` fires only after the API confirms success.
+
+**Never send customer PII to Google Analytics.** No name, phone, email, address, neighbourhood, description, photo, or filename may be passed to `gtag()` — and no raw form payloads or server responses. Only non-identifying structured values are allowed: `service_name` (a fixed dropdown option), `click_location`, `form_location`, `has_photo`, `used_estimator`, `bedrooms_count`, `estimate_low`, `estimate_high`, `error_type`.
+
+Local debugging: append `?analytics_debug=1` to the URL to log event names and parameters to the console. It is silent for normal visitors and never logs PII.
+
 ## Brand Commitments
 
 Name: Urgent Clean Kamloops. The name signals the core promise — urgency — and the geography. Preserve both.
