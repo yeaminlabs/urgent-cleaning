@@ -47,6 +47,7 @@
     if (el.closest('#nav'))          return 'navigation';
     if (el.closest('.svc-hero'))     return CALL_PREFIX + '_hero';
     if (el.closest('#same-day'))     return CALL_PREFIX + '_same_day';
+    if (el.closest('#how'))          return CALL_PREFIX + '_how_it_works';
     if (el.closest('#pricing'))      return 'estimator';
     if (el.closest('#form-success')) return 'form_success';
     if (el.closest('#form-error'))   return 'form_error';

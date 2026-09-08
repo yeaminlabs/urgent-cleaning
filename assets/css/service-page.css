@@ -654,12 +654,18 @@ footer {
   padding: 0;
 }
 .faq-item:last-child { border-bottom: 1px solid var(--border); }
-.faq-q {
+/* The .faq-q / .faq-a classes are optional on service pages: a bare
+   <summary>/<p> inside .faq-item gets the identical treatment. Without this an
+   unclassed <summary> falls back to the UA default and loses its padding, which
+   drops a one-line question to ~26px — well under a 44px mobile tap target. */
+.faq-q,
+.faq-item > summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
   padding: 20px 0;
+  min-height: 48px;
   font-size: 17px;
   font-weight: 700;
   color: var(--ink);
@@ -668,8 +674,10 @@ footer {
   list-style: none;
   user-select: none;
 }
-.faq-q::-webkit-details-marker { display: none; }
-.faq-q::after {
+.faq-q::-webkit-details-marker,
+.faq-item > summary::-webkit-details-marker { display: none; }
+.faq-q::after,
+.faq-item > summary::after {
   content: '+';
   font-size: 22px;
   font-weight: 400;
@@ -678,8 +686,10 @@ footer {
   transition: transform 0.2s ease;
   line-height: 1;
 }
-.faq-item[open] .faq-q::after { transform: rotate(45deg); }
-.faq-a {
+.faq-item[open] .faq-q::after,
+.faq-item[open] > summary::after { transform: rotate(45deg); }
+.faq-a,
+.faq-item > p {
   font-size: 15px;
   color: var(--ink-2);
   line-height: 1.75;
@@ -687,8 +697,10 @@ footer {
   max-width: 680px;
 }
 @media (max-width: 640px) {
-  .faq-q { font-size: 15px; padding: 16px 0; }
-  .faq-a { font-size: 14px; }
+  .faq-q,
+  .faq-item > summary { font-size: 15px; padding: 14px 0; }
+  .faq-a,
+  .faq-item > p { font-size: 14px; }
 }
 
 /* ── IMAGE UPLOAD ────────────────────────────────────────────── */
@@ -909,6 +921,12 @@ footer {
 }
 .work-item figcaption { font-size: 12.5px; color: var(--ink-3); margin-top: 8px; }
 
+/* ── THREE-UP CARD GRID ──────────────────────────────────────
+   Audience/use-case cards that need three across on desktop (the two-up .duo
+   and the max-two .rooms grids can't do it without leaving an orphan).
+   Shares .duo-card styling, so only the track count is new. */
+.trio { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
+
 /* ── TWO-UP COMPARISON / USE-CASE CARDS ──────────────────────── */
 .duo { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
 .duo-card {
@@ -1005,7 +1023,7 @@ footer {
    ========================================================================== */
 
 @media (min-width: 560px) {
-  .rooms, .work-grid, .duo, .steps, .rel-grid { grid-template-columns: 1fr 1fr; }
+  .rooms, .work-grid, .duo, .steps, .rel-grid, .trio { grid-template-columns: 1fr 1fr; }
 }
 
 @media (min-width: 900px) {
@@ -1013,7 +1031,7 @@ footer {
   .svc-hero { padding-top: 34px; }
   .sv-trust-inner { grid-template-columns: repeat(4, 1fr); }
   .rooms { grid-template-columns: repeat(2, 1fr); }
-  .steps, .rel-grid { grid-template-columns: repeat(3, 1fr); }
+  .steps, .rel-grid, .trio { grid-template-columns: repeat(3, 1fr); }
 
   /* Editorial gallery: the lead image spans two columns and both rows, so the
      grid reads as a composed layout rather than three equal thumbnails. */
