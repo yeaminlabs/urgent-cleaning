@@ -592,6 +592,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 
 @media (max-width: 1024px) and (min-width: 640px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 639px) { .services-grid { grid-template-columns: 1fr; } }
+/* Blog teaser row — the same card system as the service grid, but with two
+   published guides a three-up leaves an empty third column, so the desktop
+   breakpoint pairs them instead. Inherits the 2-col and 1-col rules above. */
+@media (min-width: 1025px) { .services-grid--duo { grid-template-columns: repeat(2, 1fr); } }
 
 /* ── PROCESS ─────────────────────────────────────────────────── */
 .process {
@@ -1857,6 +1861,39 @@ footer {
 }
 </script>
 
+<!-- BLOG / CLEANING GUIDES
+     Sits after the services block and immediately before the final conversion
+     CTA, so the money path (services -> photo quote -> estimator -> proof ->
+     FAQ) is untouched and blog discovery is offered once that has played out.
+     Reuses the .svc card system and .svc-all CTA verbatim — the only new CSS is
+     the --duo grid modifier, because two cards in the 3-up service grid would
+     leave an empty third column.
+     Cards carry data-article (NOT data-service) so the existing service_click
+     handler and its form preselection are unaffected. -->
+<section class="section" id="guides">
+  <div class="section-inner">
+    <div class="reveal">
+      <h2 class="section-title">Cleaning Tips &amp; Guides for Kamloops Homes</h2>
+      <p class="section-sub">Helpful cleaning tips, checklists and local advice to help Kamloops homeowners and property managers make better cleaning decisions.</p>
+    </div>
+    <div class="services-grid services-grid--duo">
+      <a href="/blog/house-cleaning-cost-kamloops/" class="svc reveal" data-article="house-cleaning-cost-kamloops">
+        <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 3v14M7 6.5h4.5a2 2 0 010 4H8a2 2 0 000 4h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3 class="svc-name">How Much Does House Cleaning Cost in Kamloops?</h3>
+        <p class="svc-desc">Learn what affects cleaning costs, what factors change pricing, and how to estimate your cleaning needs.</p>
+        <span class="svc-cta">Read the guide <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+      <a href="/blog/move-out-cleaning-checklist-kamloops/" class="svc reveal" data-article="move-out-cleaning-checklist-kamloops">
+        <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M6 4h8a1 1 0 011 1v11a1 1 0 01-1 1H6a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 9l1.5 1.5L13 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <h3 class="svc-name">Move-Out Cleaning Checklist for Kamloops Renters</h3>
+        <p class="svc-desc">A practical checklist covering the areas to review before moving day.</p>
+        <span class="svc-cta">Read the guide <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
+      </a>
+    </div>
+    <p class="svc-all reveal"><a href="/blog/">View All Cleaning Guides &rarr;</a></p>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="section contact" id="contact">
   <div class="section-inner">
@@ -2056,6 +2093,7 @@ footer {
       <a href="#property-managers">Property Managers</a>
       <a href="#coverage">Coverage</a>
       <a href="#quote">Price Estimator</a>
+      <a href="/blog/">Blog</a>
       <a href="/contact/">Contact</a>
     </nav>
     <div class="footer-copy">&copy; 2025&ndash;2026 Urgent Clean Kamloops. All rights reserved.</div>
@@ -2266,6 +2304,20 @@ footer {
       trackEvent('service_click', {
         service_name: el.dataset.service,
         click_location: 'homepage_services',
+      });
+    });
+  });
+
+  /* Blog teaser cards — a new event only, mirroring the [data-service] pattern
+     above. Sends the article slug (a fixed value from the markup) and a fixed
+     location string: no customer input, no PII, and no existing event, its
+     parameters, or the form preselection above is touched. Never calls
+     preventDefault, so the link navigates exactly as it would otherwise. */
+  document.querySelectorAll('[data-article]').forEach(el => {
+    el.addEventListener('click', () => {
+      trackEvent('blog_click', {
+        article: el.dataset.article,
+        click_location: 'homepage_blog_section',
       });
     });
   });
