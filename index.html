@@ -278,11 +278,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 #nav-drawer a:last-child { border-bottom: none; }
 #nav-drawer a.nav-drawer-cta { color: var(--ember); }
 
-/* Hamburger takes over at 920px, not 860px. Between ~865px and ~919px the
-   desktop nav (logo + phone CTA + 4 links + Request a Quote) was still shown
-   but no longer fit, pushing ~16-49px of horizontal overflow onto the page.
-   Keep this value in sync with the identical rule in service-page.css. */
-@media (max-width: 920px) {
+/* Hamburger takes over at 1040px. This value tracks how wide the desktop nav
+   actually is and has been raised twice as the nav grew:
+     860px  -> 920px  when the 4-link nav stopped fitting below ~920px
+     920px  -> 1040px when the About link made it a 5-link nav; measured, the
+                      full bar (logo + phone CTA + 5 links + Request a Quote)
+                      only clears its container from 1040px up. Below that it
+                      spilled and pushed up to 60px of page overflow.
+   If a nav item is ever added or removed, re-measure and update this value in
+   BOTH this file and the identical rule in service-page.css. */
+@media (max-width: 1040px) {
   .nav-right { display: none; }
   #menu-btn { display: flex; }
 }
@@ -1372,6 +1377,7 @@ footer {
     <div class="nav-right">
       <ul class="nav-links">
         <li><a href="/services/">Services</a></li>
+        <li><a href="/about/">About</a></li>
         <li><a href="#property-managers">Property Managers</a></li>
         <li><a href="#coverage">Coverage</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -1387,6 +1393,7 @@ footer {
     <a href="#contact" class="nav-drawer-cta">Request a Quote</a>
     <a href="#quote">Price estimate</a>
     <a href="/services/">Services</a>
+    <a href="/about/">About</a>
     <a href="#property-managers">Property Managers</a>
     <a href="#coverage">Coverage</a>
     <a href="sms:+12508792425">Text us a photo</a>
@@ -1438,10 +1445,10 @@ footer {
 <div class="trust">
   <div class="trust-inner">
     <div class="trust-item"><div class="trust-dot"></div>Same-day availability</div>
-    <div class="trust-item"><div class="trust-dot"></div>Fully insured</div>
+    <div class="trust-item"><div class="trust-dot"></div>Local Kamloops Service</div>
+    <div class="trust-item"><div class="trust-dot"></div>Fast Quote Process</div>
     <div class="trust-item"><div class="trust-dot"></div>No contract required</div>
-    <div class="trust-item"><div class="trust-dot"></div>Kamloops-based team</div>
-    <div class="trust-item"><div class="trust-dot"></div>All supplies included</div>
+    <div class="trust-item"><div class="trust-dot"></div>Supplies Included</div>
   </div>
 </div>
 
@@ -1653,6 +1660,7 @@ footer {
         <h2 class="section-title">Cleaning for when timing matters</h2>
         <p class="section-sub">Homeowner, tenant, realtor, or property manager — the situation is often the same: there's a deadline and the space needs to be ready. We work to make that happen.</p>
         <p style="font-size:15px;color:var(--ink-2);line-height:1.75;margin-top:16px;">Urgent Clean Kamloops is built around fast quotes and short-notice availability. Whether a tenant just moved out, contractors just wrapped up a renovation, or a property inspection got booked with little warning, we work to get a cleaner on-site quickly — often the same day, scheduling permitting. Call or send a quick request and we usually respond within an hour. No contracts required.</p>
+        <p style="margin-top:18px;"><a href="/about/" style="display:inline-block;font-size:15px;font-weight:700;color:var(--ember);text-decoration:underline;text-underline-offset:4px;padding:8px 0;">Learn More About Urgent Clean &rarr;</a></p>
       </div>
 
       <div class="why-visual reveal">
@@ -2040,13 +2048,15 @@ footer {
         <a href="/rental-turnover-cleaning-kamloops/">Rental Turnover Cleaning</a>
         <a href="/post-renovation-cleaning-kamloops/">Post-Renovation Cleaning</a>
       </nav>
-    <div class="footer-links">
-      <a href="#services">What We Clean</a>
+    <nav class="footer-col" aria-label="Company">
+      <p class="footer-col-h">Company</p>
+      <a href="/about/">About Us</a>
+      <a href="/services/">Services</a>
       <a href="#property-managers">Property Managers</a>
       <a href="#coverage">Coverage</a>
       <a href="#quote">Price Estimator</a>
-      <a href="#contact">Request a Quote</a>
-    </div>
+      <a href="#contact">Contact</a>
+    </nav>
     <div class="footer-copy">&copy; 2025&ndash;2026 Urgent Clean Kamloops. All rights reserved.</div>
   </div>
 </footer>

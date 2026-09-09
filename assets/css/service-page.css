@@ -198,11 +198,16 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 #nav-drawer a:last-child { border-bottom: none; }
 #nav-drawer a.nav-drawer-cta { color: var(--ember); }
 
-/* Hamburger takes over at 920px, not 860px. Between ~865px and ~919px the
-   desktop nav (logo + phone CTA + 4 links + Request a Quote) was still shown
-   but no longer fit, pushing ~16-49px of horizontal overflow onto the page.
-   Keep this value in sync with the identical rule in index.html. */
-@media (max-width: 920px) {
+/* Hamburger takes over at 1040px. This value tracks how wide the desktop nav
+   actually is and has been raised twice as the nav grew:
+     860px  -> 920px  when the 4-link nav stopped fitting below ~920px
+     920px  -> 1040px when the About link made it a 5-link nav; measured, the
+                      full bar (logo + phone CTA + 5 links + Request a Quote)
+                      only clears its container from 1040px up. Below that it
+                      spilled and pushed up to 60px of page overflow.
+   If a nav item is ever added or removed, re-measure and update this value in
+   BOTH this file and the identical rule in index.html. */
+@media (max-width: 1040px) {
   .nav-right { display: none; }
   #menu-btn { display: flex; }
 }
