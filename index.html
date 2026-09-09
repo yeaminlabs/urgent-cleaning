@@ -18,15 +18,15 @@
      primary "house cleaning Kamloops" intent is owned by the dedicated page at
      /house-cleaning-kamloops/ — keep this title broad so the two don't compete
      for the same query. -->
-<title>Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean</title>
-<meta name="description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
+<title>Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning</title>
+<meta name="description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
 <link rel="canonical" href="https://www.urgentcleankamloops.ca/">
 
 <!-- Open Graph (Facebook, iMessage link previews) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.urgentcleankamloops.ca/">
-<meta property="og:title" content="Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean">
-<meta property="og:description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
+<meta property="og:title" content="Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning">
+<meta property="og:description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
 <meta property="og:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
 <meta property="og:image:width" content="1856">
 <meta property="og:image:height" content="1080">
@@ -35,8 +35,8 @@
 
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Cleaning Services Kamloops | Same-Day &amp; Short-Notice | Urgent Clean">
-<meta name="twitter:description" content="Same-day and short-notice cleaning services in Kamloops for homes, move-outs, deep cleans, rental turnovers and more. Fast quotes from Urgent Clean.">
+<meta name="twitter:title" content="Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning">
+<meta name="twitter:description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
 <meta name="twitter:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
 
 <!-- Local business structured data (Google rich results) -->
@@ -278,7 +278,11 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 #nav-drawer a:last-child { border-bottom: none; }
 #nav-drawer a.nav-drawer-cta { color: var(--ember); }
 
-@media (max-width: 860px) {
+/* Hamburger takes over at 920px, not 860px. Between ~865px and ~919px the
+   desktop nav (logo + phone CTA + 4 links + Request a Quote) was still shown
+   but no longer fit, pushing ~16-49px of horizontal overflow onto the page.
+   Keep this value in sync with the identical rule in service-page.css. */
+@media (max-width: 920px) {
   .nav-right { display: none; }
   #menu-btn { display: flex; }
 }
@@ -570,6 +574,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .svc-desc { font-size: 14px; color: var(--ink-2); line-height: 1.6; }
 .svc-cta { margin-top: auto; padding-top: 4px; font-size: 13px; font-weight: 700; color: var(--ember); display: inline-flex; align-items: center; gap: 4px; }
 .svc-cta-arrow { display: inline-block; transition: transform 0.2s ease; }
+/* Hub CTA under the service grid — routes to the /services/ overview page. */
+.svc-all { margin-top: 26px; text-align: center; }
+.svc-all a {
+  font-size: 15px; font-weight: 700; color: var(--ember);
+  text-decoration: underline; text-underline-offset: 4px;
+  display: inline-block; padding: 10px 4px;
+}
+.svc-all a:hover { color: var(--ember-lt); }
 .svc:hover .svc-cta { color: var(--ember-lt); }
 .svc:hover .svc-cta-arrow { transform: translateX(3px); }
 
@@ -826,6 +838,17 @@ footer {
 }
 .footer-about { display: flex; flex-direction: column; gap: 10px; }
 .footer-since { font-size: 12px; color: rgba(255,255,255,0.45); }
+/* Footer "Services" column — links every service page from every page, giving
+   the /services/ hub and its children a site-wide inbound link. Uses the same
+   muted footer link treatment as .footer-links, just stacked with a heading. */
+.footer-col { display: flex; flex-direction: column; gap: 6px; }
+.footer-col-h {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.75); margin-bottom: 2px;
+}
+.footer-col a { font-size: 12px; color: rgba(255,255,255,0.45); transition: color 0.15s; }
+.footer-col a:hover { color: rgba(255,255,255,0.9); }
+
 .footer-links { display: flex; gap: 24px; }
 .footer-links a { font-size: 12px; color: rgba(255,255,255,0.45); transition: color 0.15s; }
 .footer-links a:hover { color: rgba(255,255,255,0.9); }
@@ -1348,7 +1371,7 @@ footer {
     </a>
     <div class="nav-right">
       <ul class="nav-links">
-        <li><a href="#services">Services</a></li>
+        <li><a href="/services/">Services</a></li>
         <li><a href="#property-managers">Property Managers</a></li>
         <li><a href="#coverage">Coverage</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -1363,7 +1386,7 @@ footer {
     <a href="tel:+12508792425" style="font-size:20px;font-weight:800;color:var(--ember);letter-spacing:-0.02em;border-bottom:1px solid var(--border);padding:18px 0;">(250) 879-2425</a>
     <a href="#contact" class="nav-drawer-cta">Request a Quote</a>
     <a href="#quote">Price estimate</a>
-    <a href="#services">Services</a>
+    <a href="/services/">Services</a>
     <a href="#property-managers">Property Managers</a>
     <a href="#coverage">Coverage</a>
     <a href="sms:+12508792425">Text us a photo</a>
@@ -1477,6 +1500,7 @@ footer {
         <span class="svc-cta">Post-renovation cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
+    <p class="svc-all reveal"><a href="/services/">View All Cleaning Services in Kamloops &rarr;</a></p>
   </div>
 </section>
 
@@ -2006,8 +2030,18 @@ footer {
       </address>
       <p class="footer-since">Locally operating in Kamloops since 2025.</p>
     </div>
+      <nav class="footer-col" aria-label="Services">
+        <p class="footer-col-h">Services</p>
+        <a href="/services/">Cleaning Services</a>
+        <a href="/house-cleaning-kamloops/">House Cleaning</a>
+        <a href="/deep-cleaning-kamloops/">Deep Cleaning</a>
+        <a href="/same-day-cleaning-kamloops/">Same-Day Cleaning</a>
+        <a href="/move-out-cleaning-kamloops/">Move-Out Cleaning</a>
+        <a href="/rental-turnover-cleaning-kamloops/">Rental Turnover Cleaning</a>
+        <a href="/post-renovation-cleaning-kamloops/">Post-Renovation Cleaning</a>
+      </nav>
     <div class="footer-links">
-      <a href="#services">Services</a>
+      <a href="#services">What We Clean</a>
       <a href="#property-managers">Property Managers</a>
       <a href="#coverage">Coverage</a>
       <a href="#quote">Price Estimator</a>
