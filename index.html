@@ -19,24 +19,24 @@
      /house-cleaning-kamloops/ — keep this title broad so the two don't compete
      for the same query. -->
 <title>Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning</title>
-<meta name="description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
+<meta name="description" content="Fast, reliable cleaning services in Kamloops: house cleaning, deep cleaning, move-outs, rental turnovers and short-notice work. Get a quick quote today.">
 <link rel="canonical" href="https://www.urgentcleankamloops.ca/">
 
 <!-- Open Graph (Facebook, iMessage link previews) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.urgentcleankamloops.ca/">
 <meta property="og:title" content="Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning">
-<meta property="og:description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
+<meta property="og:description" content="Fast, reliable cleaning services in Kamloops: house cleaning, deep cleaning, move-outs, rental turnovers and short-notice work. Get a quick quote today.">
 <meta property="og:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
-<meta property="og:image:width" content="1856">
-<meta property="og:image:height" content="1080">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="698">
 <meta property="og:locale" content="en_CA">
 <meta property="og:site_name" content="Urgent Clean Kamloops">
 
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Urgent Clean Kamloops | Same-Day &amp; Short-Notice Cleaning">
-<meta name="twitter:description" content="Urgent Clean provides fast and reliable cleaning services in Kamloops including house cleaning, deep cleaning, move-outs, rental turnovers and short-notice cleaning. Get a quick quote today.">
+<meta name="twitter:description" content="Fast, reliable cleaning services in Kamloops: house cleaning, deep cleaning, move-outs, rental turnovers and short-notice work. Get a quick quote today.">
 <meta name="twitter:image" content="https://www.urgentcleankamloops.ca/kamloops_city.2400x1397.webp">
 
 <!-- Local business structured data (Google rich results) -->
@@ -130,7 +130,13 @@
 
 /* ── RESET ───────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+/* scroll-padding-top keeps in-page anchor targets clear of the sticky nav.
+   Measured nav height: 57px below 768px, 65px at and above it. 76px clears
+   both (19px / 11px of breathing room) and matches the value already used by
+   assets/css/service-page.css, so every page now behaves identically.
+   Without it, #services / #quote / #coverage / #contact landed with their
+   headings underneath the nav at 360-768px. */
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
 body {
   font-family: var(--font);
   background: var(--ground);
@@ -1395,6 +1401,7 @@ footer {
   <div id="nav-drawer">
     <a href="tel:+12508792425" style="font-size:20px;font-weight:800;color:var(--ember);letter-spacing:-0.02em;border-bottom:1px solid var(--border);padding:18px 0;">(250) 879-2425</a>
     <a href="#contact" class="nav-drawer-cta">Request a Quote</a>
+    <a href="/blog/">Blog</a>
     <a href="#quote">Price estimate</a>
     <a href="/services/">Services</a>
     <a href="/about/">About</a>
@@ -1528,6 +1535,10 @@ footer {
       <div class="pq-visual-glow" aria-hidden="true"></div>
       <img
         src="./assets/images/urgent-clean-fast-quote-process.webp"
+        srcset="./assets/images/urgent-clean-fast-quote-process-640.webp 640w,
+                ./assets/images/urgent-clean-fast-quote-process-1280.webp 1280w,
+                ./assets/images/urgent-clean-fast-quote-process.webp 1672w"
+        sizes="(min-width: 1100px) 560px, (min-width: 700px) 440px, 100vw"
         alt="Illustration showing Urgent Clean's quick quote and booking process"
         width="1672" height="941"
         loading="lazy" decoding="async"
@@ -1671,6 +1682,10 @@ footer {
       <div class="why-visual reveal">
         <img
           src="./assets/images/urgent-clean-timing-matters-home.webp"
+          srcset="./assets/images/urgent-clean-timing-matters-home-640.webp 640w,
+                  ./assets/images/urgent-clean-timing-matters-home-1280.webp 1280w,
+                  ./assets/images/urgent-clean-timing-matters-home.webp 1448w"
+          sizes="(min-width: 1100px) 470px, (min-width: 700px) 700px, 100vw"
           alt="Clean living room and kitchen with professional cleaning supplies"
           width="1448" height="1086"
           loading="lazy" decoding="async"
@@ -1732,6 +1747,10 @@ footer {
         <div class="pm-photo-wrap">
           <img
             src="./assets/images/urgent-clean-property-manager-turnover.webp"
+            srcset="./assets/images/urgent-clean-property-manager-turnover-640.webp 640w,
+                    ./assets/images/urgent-clean-property-manager-turnover-1280.webp 1280w,
+                    ./assets/images/urgent-clean-property-manager-turnover.webp 1448w"
+            sizes="(min-width: 1100px) 560px, (min-width: 700px) 700px, 100vw"
             alt="Clean vacant rental unit prepared for a tenant turnover"
             width="1448" height="1086"
             loading="lazy" decoding="async"
@@ -1826,36 +1845,37 @@ footer {
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  "@id": "https://www.urgentcleankamloops.ca/#faq",
   "mainEntity": [
     {
       "@type": "Question",
       "name": "Do you offer same-day cleaning in Kamloops?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Same-day cleaning is often possible in Kamloops, scheduling permitting. Call or send a quick request before noon and we can frequently have a team at your property that same afternoon." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — same-day cleaning is often possible in Kamloops, scheduling permitting. Call or send a quick request before noon and we can frequently have a team at your property that same afternoon; evening slots are sometimes available too. Reaching out as early as possible gives you the best chance at short notice." }
     },
     {
       "@type": "Question",
       "name": "How much does house cleaning in Kamloops cost?",
-      "acceptedAnswer": { "@type": "Answer", "text": "A standard 2-bedroom clean typically runs $155–$185. A move-out clean of the same unit runs $225–$270. Call or send a quick request for a fast quote — most standard jobs don't need a site visit." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Prices depend on bedrooms, bathrooms, and the condition of the property. A standard 2-bedroom clean typically runs $155–$185. A move-out clean of the same unit runs $225–$270. Use the price estimator on this page for a live range, then call or send a quick request to confirm — most standard jobs don't need an in-person site visit." }
     },
     {
       "@type": "Question",
       "name": "What areas of Kamloops do you serve?",
-      "acceptedAnswer": { "@type": "Answer", "text": "We cover all of Kamloops: Downtown, Sahali, Brocklehurst, Aberdeen, Westsyde, Valleyview, Juniper Ridge, Pineview, Rayleigh, Sun Rivers, Dallas, and Barnhartvale." }
+      "acceptedAnswer": { "@type": "Answer", "text": "We cover all of Kamloops: Downtown, Sahali, Brocklehurst, Aberdeen, Westsyde, Valleyview, Juniper Ridge, Pineview, Rayleigh, Sun Rivers, Dallas, and Barnhartvale. Not on this list? Call us — we regularly take jobs in surrounding areas not listed here." }
     },
     {
       "@type": "Question",
       "name": "What's included in a move-out clean in Kamloops?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Floors, surfaces, baseboards, light fixtures, window sills, and all bathrooms scrubbed. Detailed extras like inside appliances and inside cabinets can be included in your quote based on scope — inspection-ready for your landlord's walkthrough." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Our move-out cleaning in Kamloops covers every room top to bottom: floors, surfaces, baseboards, light fixtures, window sills, and all bathrooms scrubbed. Detailed extras like inside appliances (fridge, oven) and inside cabinets can be included in your quote based on the scope you need. The goal is inspection-ready — the property in the best possible shape for your landlord's walkthrough." }
     },
     {
       "@type": "Question",
       "name": "Do you do post-renovation cleaning in Kamloops?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. We remove drywall dust, paint overspray, adhesive residue, and construction debris from surfaces, floors, and fixtures so the space is ready to use again." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. We remove drywall dust, paint overspray, adhesive residue, and construction debris from surfaces, floors, and fixtures so the space is ready to move into or back to renting. The amount of cleaning needed varies with the scope of the renovation — we confirm the details and pricing before we start." }
     },
     {
       "@type": "Question",
       "name": "Do I need to sign a contract?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No contracts. You call when you need us, we quote on the phone, we show up." }
+      "acceptedAnswer": { "@type": "Answer", "text": "No contracts. No recurring commitments unless you want them. You call when you need us, we quote on the phone, we show up. For landlords who want a regular turnover schedule, we can set that up — but it's never a requirement." }
     }
   ]
 }
