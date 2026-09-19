@@ -12,9 +12,9 @@
      <div id="qc-condition" data-preselect="standard">      auto-select clean type
      <form id="quote-form" data-preselect-service="House Cleaning">
 
-   PRICING NOTE: the estimator constants and formula below are copied verbatim
-   from the homepage and are approved and fixed. Do not change BASE, BATH_X,
-   MULT, the rounding, or the low/high range without an explicit request.
+   PRICING NOTE: prices, extras and the estimate formula live only in
+   assets/js/pricing.js, which estimator pages load before this file. Change
+   prices there, never here, then run `npm run qa`.
    ========================================================================== */
 (function () {
   'use strict';
@@ -79,11 +79,12 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   /* ── QUOTE CALCULATOR ─────────────────────────────────────────
-     Constants and math copied verbatim from the homepage — approved and fixed. */
+     Prices and math live in assets/js/pricing.js (window.UrgentCleanPricing),
+     shared with the homepage — this block only renders them. Pages without an
+     estimator don't load pricing.js; nothing here touches it unless the
+     estimator's own elements exist, so those pages are unaffected. */
   (function () {
-    const BASE   = { 1: 120, 2: 155, 3: 195, 4: 250, 5: 315 };
-    const BATH_X = 38;
-    const MULT   = { standard: 1.0, moveout: 1.45, deep: 1.30, postreno: 1.65 };
+    const Pricing = window.UrgentCleanPricing;
     const MULT_L = { standard: 'Standard clean', moveout: 'Move-out surcharge', deep: 'Deep clean surcharge', postreno: 'Post-reno surcharge' };
     const state  = { beds: null, baths: null, cond: null, extras: new Set() };
     let lastEstimateSig = null; // analytics dedup only
@@ -107,16 +108,14 @@
       }
 
       const baths    = state.baths || 1;
-      const base     = BASE[state.beds];
-      const bathAdd  = (baths - 1) * BATH_X;
-      const extrasTotal = [...state.extras].reduce((s, k) => {
-        const btn = document.querySelector(`#qc-extras [data-val="${k}"]`);
-        return s + (btn ? +btn.dataset.price : 0);
-      }, 0);
-      const subtotal = base + bathAdd + extrasTotal;
-      const raw      = subtotal * MULT[state.cond];
-      const lo       = Math.round(raw / 5) * 5;
-      const hi       = Math.round(raw * 1.20 / 5) * 5;
+      const est      = Pricing.estimate(state.beds, baths, state.cond, state.extras);
+      const base        = est.base;
+      const bathAdd     = est.bathAdd;
+      const extrasTotal = est.extrasTotal;
+      const subtotal    = est.subtotal;
+      const raw         = est.raw;
+      const lo          = est.low;
+      const hi          = est.high;
 
       /* price display */
       priceEl.classList.add('flash');
@@ -135,7 +134,7 @@
       /* The multiplier applies to the whole subtotal (base + baths + extras),
          so its line-item markup is raw - subtotal — not a formula involving
          only base/baths, which under- or over-counted extras. */
-      document.getElementById('qcb-cond-val').textContent   = MULT[state.cond] === 1 ? 'included' : '+' + fmt(raw - subtotal);
+      document.getElementById('qcb-cond-val').textContent   = est.mult === 1 ? 'included' : '+' + fmt(raw - subtotal);
       const extRow = document.getElementById('qcb-extras');
       extRow.style.display = extrasTotal > 0 ? '' : 'none';
       document.getElementById('qcb-extras-val').textContent = '+' + fmt(extrasTotal);
@@ -159,6 +158,9 @@
         });
       }
     }
+
+    /* Extras labels come from the same numbers the calculation uses. */
+    if (document.getElementById('qc-extras') && Pricing) Pricing.syncExtraLabels(document);
 
     /* single-select groups */
     [['qc-beds', 'beds'], ['qc-baths', 'baths'], ['qc-condition', 'cond']].forEach(([id, key]) => {

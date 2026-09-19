@@ -1634,10 +1634,10 @@ footer {
         <div class="qc-step reveal">
           <div class="qc-step-label">Extras <span class="qc-step-optional">(optional add-ons)</span></div>
           <div class="qc-extras" id="qc-extras">
-            <button class="qc-toggle" data-val="fridge" data-price="35">Inside fridge <span class="qc-toggle-price">+$35</span></button>
-            <button class="qc-toggle" data-val="oven"   data-price="30">Inside oven <span class="qc-toggle-price">+$30</span></button>
-            <button class="qc-toggle" data-val="cabinets" data-price="50">Inside cabinets <span class="qc-toggle-price">+$50</span></button>
-            <button class="qc-toggle" data-val="laundry"  data-price="40">Laundry <span class="qc-toggle-price">+$40</span></button>
+            <button class="qc-toggle" data-val="fridge">Inside fridge <span class="qc-toggle-price">+$35</span></button>
+            <button class="qc-toggle" data-val="oven">Inside oven <span class="qc-toggle-price">+$30</span></button>
+            <button class="qc-toggle" data-val="cabinets">Inside cabinets <span class="qc-toggle-price">+$50</span></button>
+            <button class="qc-toggle" data-val="laundry">Laundry <span class="qc-toggle-price">+$40</span></button>
           </div>
         </div>
 
@@ -2120,6 +2120,9 @@ footer {
   </div>
 </footer>
 
+<!-- Pricing source of truth. Not deferred: the inline script below runs as soon
+     as it is parsed, so pricing.js must already have executed. -->
+<script src="/assets/js/pricing.js"></script>
 <script>
 (function () {
   'use strict';
@@ -2179,11 +2182,12 @@ footer {
   }, { threshold: 0.10 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* ── QUOTE CALCULATOR ─────────────────────────────────────── */
+  /* ── QUOTE CALCULATOR ───────────────────────────────────────
+     Prices and math live in assets/js/pricing.js (window.UrgentCleanPricing),
+     loaded just before this script and shared with the service pages. This
+     block only renders them. */
   (function() {
-    const BASE   = { 1: 120, 2: 155, 3: 195, 4: 250, 5: 315 };
-    const BATH_X = 38;
-    const MULT   = { standard: 1.0, moveout: 1.45, deep: 1.30, postreno: 1.65 };
+    const Pricing = window.UrgentCleanPricing;
     const MULT_L = { standard: 'Standard clean', moveout: 'Move-out surcharge', deep: 'Deep clean surcharge', postreno: 'Post-reno surcharge' };
     const state  = { beds: null, baths: null, cond: null, extras: new Set() };
     let lastEstimateSig = null; // analytics dedup only
@@ -2206,16 +2210,14 @@ footer {
       }
 
       const baths    = state.baths || 1;
-      const base     = BASE[state.beds];
-      const bathAdd  = (baths - 1) * BATH_X;
-      const extrasTotal = [...state.extras].reduce((s, k) => {
-        const btn = document.querySelector(`#qc-extras [data-val="${k}"]`);
-        return s + (btn ? +btn.dataset.price : 0);
-      }, 0);
-      const subtotal = base + bathAdd + extrasTotal;
-      const raw      = subtotal * MULT[state.cond];
-      const lo       = Math.round(raw / 5) * 5;
-      const hi       = Math.round(raw * 1.20 / 5) * 5;
+      const est      = Pricing.estimate(state.beds, baths, state.cond, state.extras);
+      const base        = est.base;
+      const bathAdd     = est.bathAdd;
+      const extrasTotal = est.extrasTotal;
+      const subtotal    = est.subtotal;
+      const raw         = est.raw;
+      const lo          = est.low;
+      const hi          = est.high;
 
       /* price display */
       priceEl.classList.add('flash');
@@ -2235,7 +2237,7 @@ footer {
          so its line-item markup is raw - subtotal — not a formula involving
          only base/baths, which under- or over-counted extras depending on
          combination and made the visible rows not sum to the total. */
-      document.getElementById('qcb-cond-val').textContent   = MULT[state.cond] === 1 ? 'included' : '+' + fmt(raw - subtotal);
+      document.getElementById('qcb-cond-val').textContent   = est.mult === 1 ? 'included' : '+' + fmt(raw - subtotal);
       const extRow = document.getElementById('qcb-extras');
       extRow.style.display = extrasTotal > 0 ? '' : 'none';
       document.getElementById('qcb-extras-val').textContent = '+' + fmt(extrasTotal);
@@ -2258,6 +2260,9 @@ footer {
         });
       }
     }
+
+    /* Extras labels come from the same numbers the calculation uses. */
+    if (document.getElementById('qc-extras') && Pricing) Pricing.syncExtraLabels(document);
 
     /* single-select groups */
     [['qc-beds','beds'],['qc-baths','baths'],['qc-condition','cond']].forEach(([id, key]) => {

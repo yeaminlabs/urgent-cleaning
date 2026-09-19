@@ -1,0 +1,4 @@
+# Files excluded from the Vercel deployment. The site is static HTML plus
+# api/quote.js; nothing under qa/ is served or required by production.
+# QA source stays in git (see .gitignore) but is never published.
+/qa/

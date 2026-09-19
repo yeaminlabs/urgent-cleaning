@@ -5,6 +5,15 @@
   "engines": {
     "node": ">=18.x"
   },
+  "scripts": {
+    "qa": "node qa/pricing-consistency.js && node qa/site-integrity.js",
+    "qa:pricing": "node qa/pricing-consistency.js",
+    "qa:site": "node qa/site-integrity.js",
+    "qa:browser:install": "npm --prefix qa/browser ci && npm --prefix qa/browser run install-browser",
+    "qa:ga-safety": "npm --prefix qa/browser run test:ga-safety",
+    "qa:browser": "npm --prefix qa/browser run test:ga-safety && npm --prefix qa/browser test",
+    "qa:all": "npm run qa && npm run qa:browser"
+  },
   "dependencies": {
     "nodemailer": "^9.1.1"
   }

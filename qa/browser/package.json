@@ -1,0 +1,13 @@
+{
+  "name": "urgent-clean-browser-qa",
+  "private": true,
+  "description": "Browser regression suite for the Urgent Clean Kamloops site. Kept separate from the root package.json so Vercel never installs Playwright. Analytics traffic to Google is blocked at three layers — see helpers/analytics-guard.js.",
+  "scripts": {
+    "test": "playwright test",
+    "test:ga-safety": "playwright test specs/ga-safety.spec.js",
+    "install-browser": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

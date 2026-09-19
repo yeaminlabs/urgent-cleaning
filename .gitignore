@@ -12,3 +12,6 @@ skills-lock.json
 .env.local
 .env.*.local
 node_modules/
+
+# browser QA output (qa/browser/playwright.config.js: list reporter, default outputDir)
+qa/browser/test-results/
