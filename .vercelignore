@@ -2,3 +2,5 @@
 # api/quote.js; nothing under qa/ is served or required by production.
 # QA source stays in git (see .gitignore) but is never published.
 /qa/
+/DESIGN.md
+/PRODUCT.md
