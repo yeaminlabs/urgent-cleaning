@@ -292,6 +292,8 @@ check('no unregistered prices anywhere in the site HTML', () => {
 const STARTING_SLOTS = {
   'index.html': ['standard', 'moveout', 'standard', 'deep', 'moveout', 'postreno'],   // service cards, in grid order
   'services/index.html': ['standard', 'deep', 'standard', 'moveout', 'moveout', 'postreno'],   // hub cards, in grid order
+  // Same-day article: pricing section + the "does it cost more" FAQ answer.
+  'blog/same-day-cleaning-kamloops/index.html': ['standard', 'standard'],
   'house-cleaning-kamloops/index.html':           ['standard', 'standard'],   // hero, pricing section
   // The third slot on these four is the cost FAQ answer, which cites the
   // page's own starting price (Sprint 37).

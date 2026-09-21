@@ -5,7 +5,7 @@
    Static checks over the HTML source: SEO metadata, structured data, FAQ
    schema, GA4 tag, forms, calls to action, navigation, footer, trust copy and
    secrets. Replaces the old ad-hoc "qa-meta-intact" suite, updated for the
-   current 13-page site.
+   current 14-page site.
 
    Pricing architecture (one engine in assets/js/pricing.js, no duplicate
    constants in index.html or service-page.js, no data-price attributes,
@@ -45,7 +45,7 @@ const jsonLd = h => [...h.matchAll(/<script type="application\/ld\+json">([\s\S]
 const nodes = block => block['@graph'] || [block];
 
 /* ── 1. METADATA ─────────────────────────────────────────────────────────── */
-section('1. SEO metadata (all 13 pages)');
+section(`1. SEO metadata (all ${PAGES.length} pages)`);
 const meta = {};
 for (const p of PAGES) {
   const h = html[p.path];
@@ -78,7 +78,7 @@ for (const key of ['title', 'description', 'canonical']) check(`every ${key} is 
   for (const p of PAGES) (seen[meta[p.path][key]] = seen[meta[p.path][key]] || []).push(p.path);
   assert.deepStrictEqual(Object.values(seen).filter(v => v.length > 1), []);
 });
-check('sitemap.xml lists exactly the 13 pages; robots.txt points to it', () => {
+check(`sitemap.xml lists exactly the ${PAGES.length} pages; robots.txt points to it`, () => {
   const locs = [...read('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]).sort();
   assert.deepStrictEqual(locs, PAGES.map(p => PRODUCTION + p.path).sort());
   assert.match(read('robots.txt'), /Sitemap: https:\/\/www\.urgentcleankamloops\.ca\/sitemap\.xml/);
@@ -180,6 +180,41 @@ check('homepage hero image is responsive and still the priority LCP image', () =
       : fourcc === 'VP8X' ? (b.readUIntLE(24, 3) + 1) : null;
     assert.ok(real, `${c.file}: unrecognised WebP header "${fourcc}" — cannot verify its width`);
     assert.strictEqual(real, c.w, `${c.file} is ${real}px wide but declared ${c.w}w`);
+  }
+});
+
+/* Sprint 40: the same-day content cluster. The page inventory already covers
+   this article's metadata, FAQ equality, nav/footer and GA tag; these are the
+   cluster-specific relationships and the claims this topic must not make. */
+const SAME_DAY_ARTICLE = '/blog/same-day-cleaning-kamloops/';
+check(`${SAME_DAY_ARTICLE}: links out to the service page, hub, contact, services and about`, () => {
+  const h = html[SAME_DAY_ARTICLE];
+  const main = h.slice(h.indexOf('<main'), h.indexOf('<footer'));
+  for (const target of ['/same-day-cleaning-kamloops/', '/blog/', '/contact/', '/services/', '/about/']) {
+    const n = (main.match(new RegExp(`<a href="${target}"`, 'g')) || []).length;
+    assert.ok(n > 0, `no contextual link to ${target}`);
+  }
+});
+check(`${SAME_DAY_ARTICLE}: BlogPosting, BreadcrumbList and FAQPage, no second business entity`, () => {
+  const all = jsonLd(html[SAME_DAY_ARTICLE]).flatMap(nodes);
+  for (const t of ['BlogPosting', 'BreadcrumbList', 'FAQPage'])
+    assert.strictEqual(all.filter(n => n['@type'] === t).length, 1, `expected exactly one ${t}`);
+  assert.strictEqual(all.filter(n => n['@type'] === 'LocalBusiness').length, 0, 'the article must reference #business, not declare it');
+  const post = all.find(n => n['@type'] === 'BlogPosting');
+  assert.strictEqual(post.publisher['@id'], PRODUCTION + '/#business', 'publisher @id');
+  assert.strictEqual(post.author['@id'], PRODUCTION + '/#business', 'author @id');
+  assert.strictEqual(post.isPartOf['@id'], PRODUCTION + '/blog/#blog', 'isPartOf @id');
+  const crumbs = all.find(n => n['@type'] === 'BreadcrumbList').itemListElement.map(i => i.name);
+  assert.deepStrictEqual(crumbs.slice(0, 2), ['Home', 'Blog'], 'breadcrumb trail');
+});
+check('same-day copy never promises guaranteed availability or arrival', () => {
+  const SAME_DAY_PAGES = [SAME_DAY_ARTICLE, '/same-day-cleaning-kamloops/'];
+  const banned = /guaranteed same[- ]day|same[- ]day.{0,20}guaranteed available|guarantee(d)? (arrival|a slot|availability)|always available|within (one|an) hour guarantee|24\/7 guaranteed/i;
+  // No exemptions: the honest forms ("not guaranteed", "cannot be guaranteed",
+  // "availability depends on the schedule") do not match these patterns at all.
+  for (const p of SAME_DAY_PAGES) {
+    const hit = html[p].replace(/<[^>]+>/g, ' ').match(banned);
+    assert.ok(!hit, `${p}: "${hit && hit[0]}"`);
   }
 });
 
