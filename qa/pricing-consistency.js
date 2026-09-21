@@ -262,6 +262,14 @@ check('no unregistered prices anywhere in the site HTML', () => {
     }
     // extras labels are verified in section 6
     h = h.replace(/class="qc-toggle-price">\+\$\d+</g, '');
+    // A FAQPage answer repeats its visible answer verbatim — qa/site-integrity.js
+    // proves the two are identical, and the price in the visible copy is checked
+    // as a bound starting price below. Drop the JSON-LD mirror so it is not
+    // reported as a second, unregistered price.
+    for (const m of read(f).matchAll(/<details class="faq-item">[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/g)) {
+      const plain = decode(m[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+      if (plain) h = h.split(plain).join('');
+    }
     // starting prices are verified in section 9; only a CORRECT one is
     // accounted for here, so a stale one is reported twice, never zero times
     h = h.replace(STARTING_EL, (el, type, text) => (MULT_TYPES.includes(type) && text === `$${Pricing.startingFrom(type)}`) ? '' : el);
@@ -285,10 +293,12 @@ const STARTING_SLOTS = {
   'index.html': ['standard', 'moveout', 'standard', 'deep', 'moveout', 'postreno'],   // service cards, in grid order
   'services/index.html': ['standard', 'deep', 'standard', 'moveout', 'moveout', 'postreno'],   // hub cards, in grid order
   'house-cleaning-kamloops/index.html':           ['standard', 'standard'],   // hero, pricing section
-  'deep-cleaning-kamloops/index.html':            ['deep', 'deep'],
-  'same-day-cleaning-kamloops/index.html':        ['standard', 'standard'],
-  'move-out-cleaning-kamloops/index.html':        ['moveout', 'moveout'],
-  'rental-turnover-cleaning-kamloops/index.html': ['moveout', 'moveout'],
+  // The third slot on these four is the cost FAQ answer, which cites the
+  // page's own starting price (Sprint 37).
+  'deep-cleaning-kamloops/index.html':            ['deep', 'deep', 'deep'],
+  'same-day-cleaning-kamloops/index.html':        ['standard', 'standard', 'standard'],
+  'move-out-cleaning-kamloops/index.html':        ['moveout', 'moveout', 'moveout'],
+  'rental-turnover-cleaning-kamloops/index.html': ['moveout', 'moveout', 'moveout'],
   'post-renovation-cleaning-kamloops/index.html': ['postreno', 'postreno'],
 };
 section('9. Starting prices in marketing copy vs pricing.js');

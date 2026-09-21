@@ -62,6 +62,8 @@ for (const p of PAGES) {
   };
   check(`${p.path}: title, description, canonical, robots, Open Graph, Twitter, one H1`, () => {
     assert.ok(m.title, 'missing <title>');
+    // Google truncates around 60 characters; 62 is the agreed ceiling (Sprint 37).
+    assert.ok(m.title.length <= 62, `title is ${m.title.length} chars (want <= 62): "${m.title}"`);
     assert.ok(m.description.length > 50 && m.description.length <= 160, `description is ${m.description.length} chars (want 51-160)`);
     assert.strictEqual(m.canonical, PRODUCTION + p.path, 'canonical');
     assert.strictEqual(m.ogUrl, PRODUCTION + p.path, 'og:url');
@@ -115,6 +117,70 @@ for (const p of PAGES.filter(p => p.faq)) check(`${p.path}: FAQ schema matches t
     assert.strictEqual(q.name, qs[i], `question ${i + 1} differs`);
     assert.strictEqual(q.acceptedAnswer.text, as[i], `answer ${i + 1} ("${q.name}") differs`);
   });
+});
+
+/* Sprint 37: the six service pages each answer "how much does X cost" for
+   their own service. They shared one generic answer before, which duplicated
+   FAQ content across four pages. Other answers (availability, service area)
+   are legitimately shared between pages and are not covered here. */
+check('each service page answers its own cost question in its own words', () => {
+  const SERVICE_PAGES = PAGES.filter(p => p.estimator && p.path !== '/');
+  const answers = new Map();
+  for (const p of SERVICE_PAGES) {
+    const pairs = [...html[p.path].matchAll(/<details class="faq-item">\s*<summary[^>]*>([\s\S]*?)<\/summary>\s*<p[^>]*>([\s\S]*?)<\/p>/g)];
+    const cost = pairs.find(m => /how much|cost/i.test(text(m[1])));
+    assert.ok(cost, `${p.path} has no cost FAQ`);
+    const a = text(cost[2]);
+    assert.ok(a.length >= 200, `${p.path} cost answer is only ${a.length} chars`);
+    (answers.get(a) || answers.set(a, []).get(a)).push(p.path);
+  }
+  const shared = [...answers.values()].filter(v => v.length > 1);
+  assert.deepStrictEqual(shared, [], `service pages sharing one cost answer: ${JSON.stringify(shared)}`);
+});
+
+/* Sprint 38: prose links into the two service pages that had the least
+   contextual support. Each sits in a paragraph that already discusses the
+   service, so if the surrounding copy is rewritten the link should be
+   re-placed deliberately rather than quietly dropped. */
+const PROSE_LINKS = [
+  ['/about/', '/same-day-cleaning-kamloops/', 'same-day or short-notice cleaning'],
+  ['/about/', '/post-renovation-cleaning-kamloops/', 'post-renovation cleanup'],
+  ['/blog/house-cleaning-cost-kamloops/', '/same-day-cleaning-kamloops/', 'Same-day and short-notice appointments'],
+  ['/blog/move-out-cleaning-checklist-kamloops/', '/same-day-cleaning-kamloops/', 'Same-day availability'],
+  ['/same-day-cleaning-kamloops/', '/post-renovation-cleaning-kamloops/', 'post-renovation cleanup'],
+];
+check('contextual prose links into Same-Day and Post-Renovation are in place', () => {
+  for (const [from, to, anchor] of PROSE_LINKS) {
+    const re = new RegExp(`<a href="${to}"[^>]*>${anchor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</a>`);
+    assert.match(html[from], re, `${from} -> ${to} ("${anchor}")`);
+  }
+});
+
+/* The homepage hero is the LCP image: responsive sources, but still eager and
+   high priority, with dimensions so it reserves its box. */
+check('homepage hero image is responsive and still the priority LCP image', () => {
+  const img = (html['/'].match(/<img[^>]*kamloops_city[\s\S]*?>/) || [''])[0];
+  assert.ok(img, 'hero <img> not found');
+  for (const [re, what] of [[/sizes="100vw"/, 'sizes'], [/fetchpriority="high"/, 'fetchpriority'],
+    [/loading="eager"/, 'eager loading'], [/width="\d+"/, 'width'], [/height="\d+"/, 'height'], [/alt="[^"]+"/, 'alt text']])
+    assert.match(img, re, `hero image lost its ${what}`);
+  const srcset = (img.match(/srcset="([\s\S]*?)"/) || [, ''])[1];
+  const widths = [...srcset.matchAll(/(\S+)\s+(\d+)w/g)].map(m => ({ file: m[1].replace('./', ''), w: +m[2] }));
+  assert.ok(widths.length >= 3, `hero srcset has ${widths.length} candidates (want 3+)`);
+  assert.ok(widths.some(c => c.w <= 640), 'hero srcset has no small (<=640w) candidate for phones');
+  for (const c of widths) {
+    const p = path.join(ROOT, c.file);
+    assert.ok(fs.existsSync(p), `hero srcset points at a missing file: ${c.file}`);
+    // Declared width must match the file, or the browser picks the wrong one.
+    // All three WebP header forms, so no candidate is skipped silently.
+    const b = fs.readFileSync(p);
+    const fourcc = b.slice(12, 16).toString();
+    const real = fourcc === 'VP8 ' ? (b.readUInt16LE(26) & 0x3fff)
+      : fourcc === 'VP8L' ? ((b.readUInt32LE(21) & 0x3fff) + 1)
+      : fourcc === 'VP8X' ? (b.readUIntLE(24, 3) + 1) : null;
+    assert.ok(real, `${c.file}: unrecognised WebP header "${fourcc}" — cannot verify its width`);
+    assert.strictEqual(real, c.w, `${c.file} is ${real}px wide but declared ${c.w}w`);
+  }
 });
 
 /* ── 3. ANALYTICS ────────────────────────────────────────────────────────── */
