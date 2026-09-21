@@ -586,7 +586,12 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .svc-cta { margin-top: auto; padding-top: 4px; font-size: 13px; font-weight: 700; color: var(--ember); display: inline-flex; align-items: center; gap: 4px; }
 .svc-cta-arrow { display: inline-block; transition: transform 0.2s ease; }
 /* Hub CTA under the service grid — routes to the /services/ overview page. */
-.svc-all { margin-top: 26px; text-align: center; }
+.svc-all { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; column-gap: 28px; text-align: center; }
+/* Starting price on each service card. The number is written from
+   startingFrom() in assets/js/pricing.js; `npm run qa` fails if it drifts. */
+.svc-price { font-size: 14px; color: var(--ink-2); }
+.svc-price strong { font-size: 16px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+.svc-price-note { margin: 26px auto 0; max-width: 620px; font-size: 13px; color: var(--ink-2); line-height: 1.6; text-align: center; }
 .svc-all a {
   font-size: 15px; font-weight: 700; color: var(--ember);
   text-decoration: underline; text-underline-offset: 4px;
@@ -1486,40 +1491,47 @@ footer {
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 17V8l7-5 7 5v9M8 17v-5h4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">House Cleaning</h3>
         <p class="svc-desc">Top-to-bottom cleaning for occupied homes — kitchens, bathrooms, floors, and every surface in between.</p>
+        <p class="svc-price">From <strong data-starting-from="standard">$120</strong></p>
         <span class="svc-cta">House cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/move-out-cleaning-kamloops/" class="svc reveal" data-service="Move-Out Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="7" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M7 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Move-Out Cleaning</h3>
         <p class="svc-desc">Inspection-ready cleaning for vacant units between tenants — for landlords, property managers, and anyone moving out. Move-in cleaning is available too.</p>
+        <p class="svc-price">From <strong data-starting-from="moveout">$175</strong></p>
         <span class="svc-cta">Move-out cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/same-day-cleaning-kamloops/" class="svc reveal" data-service="Same-Day / Short-Notice Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Same-Day / Short-Notice Cleaning</h3>
         <p class="svc-desc">Need someone today or tomorrow? We take on short-notice bookings when scheduling allows.</p>
+        <p class="svc-price">From <strong data-starting-from="standard">$120</strong></p>
         <span class="svc-cta">Same-day cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/deep-cleaning-kamloops/" class="svc reveal" data-service="Deep Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Deep Cleaning</h3>
         <p class="svc-desc">Detailed cleaning for overdue homes — surfaces, grout, vents and commonly missed areas. Appliance and cabinet interiors can be added as needed.</p>
+        <p class="svc-price">From <strong data-starting-from="deep">$155</strong></p>
         <span class="svc-cta">Deep cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/rental-turnover-cleaning-kamloops/" class="svc reveal" data-service="Rental Turnover Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M4 6h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Rental Turnover Cleaning</h3>
         <p class="svc-desc">Preparing a unit between tenants on a short timeline — built for landlords and property managers juggling tight turnover windows.</p>
+        <p class="svc-price">From <strong data-starting-from="moveout">$175</strong></p>
         <span class="svc-cta">Rental turnover cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/post-renovation-cleaning-kamloops/" class="svc reveal" data-service="Post-Renovation Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M6 5v11M14 5v11M4 16h12M8 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Post-Renovation Cleaning</h3>
         <p class="svc-desc">Construction dust, debris, and residue cleared from every surface and floor so the space is ready to use again.</p>
+        <p class="svc-price">From <strong data-starting-from="postreno">$200</strong></p>
         <span class="svc-cta">Post-renovation cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
-    <p class="svc-all reveal"><a href="/services/">View All Cleaning Services in Kamloops &rarr;</a></p>
+    <p class="svc-price-note reveal">Starting prices are for a studio or 1-bedroom, 1-bathroom home with no add-ons. Your final quote can vary based on the details of the property and any additional services.</p>
+    <p class="svc-all reveal"><a href="#quote">Get your instant estimate &rarr;</a><a href="/services/">View All Cleaning Services in Kamloops &rarr;</a></p>
   </div>
 </section>
 
@@ -1580,8 +1592,8 @@ footer {
 <section class="section quote-calc" id="quote">
   <div class="section-inner">
     <div class="reveal">
-      <h2 class="section-title">Ballpark cleaning estimate</h2>
-      <p class="section-sub">Pick your situation below to see a live range. Your estimate is based on the information selected here — we'll confirm the final amount within that range after speaking with you and reviewing the cleaning requirements.</p>
+      <h2 class="section-title">Affordable cleaning services in Kamloops</h2>
+      <p class="section-sub">Clear starting prices help you know what to expect. Pick your situation below to see a ballpark price range based on the details you provide. We&rsquo;ll review your cleaning needs and confirm the final quote.</p>
     </div>
 
     <div class="qc-layout">

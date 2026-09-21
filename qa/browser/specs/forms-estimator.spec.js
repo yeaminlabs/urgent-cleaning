@@ -60,6 +60,16 @@ test.describe('Estimators', () => {
       if (p.preselect) await expect(active).toHaveAttribute('data-val', p.preselect);
       else await expect(active).toHaveCount(0);
 
+      // Every rendered "from $X" starting price equals startingFrom() for its
+      // clean type, is visible, and the page's own service is among them.
+      const starting = await page.$$eval('[data-starting-from]', els => els.map(el => {
+        const r = el.getBoundingClientRect();
+        return { type: el.dataset.startingFrom, text: el.textContent, visible: r.width > 0 && r.height > 0 };
+      }));
+      expect(starting.length, 'starting prices on the page').toBeGreaterThan(0);
+      for (const s of starting) expect(s, `starting price for ${s.type}`).toEqual({ type: s.type, text: '$' + Pricing.startingFrom(s.type), visible: true });
+      if (p.preselect) expect(starting.map(s => s.type)).toContain(p.preselect);
+
       // Visible extras labels are generated from EXTRAS.
       const labels = await page.$$eval('#qc-extras .qc-toggle', els => els.map(b => [b.dataset.val, b.querySelector('.qc-toggle-price').textContent, b.hasAttribute('data-price')]));
       expect(labels).toEqual(EXTRA_KEYS.map(k => [k, '+$' + Pricing.EXTRAS[k], false]));

@@ -228,8 +228,9 @@ for (const f of codeFiles) check(`${f.replace('/index.html', '/')} has no pricin
    "$155–$185" is also what a 1-bed deep clean costs, so matching the number
    alone would prove nothing. `count` includes the FAQ JSON-LD copy.
 
-   Adding "starting from" copy later? Register it here (kind: 'from'). Any
-   price in the HTML that is not registered fails this check. */
+   Starting prices ("from $X") are NOT registered here — they are bound to a
+   clean type in the markup itself and checked in section 9. Any price in the
+   HTML that is neither registered here nor a correct starting price fails. */
 const PUBLISHED = [
   { file: 'index.html', kind: 'range', beds: 2, baths: 1, type: 'standard', count: 2,
     where: 'homepage FAQ "How much does house cleaning in Kamloops cost?" (visible + JSON-LD)' },
@@ -238,6 +239,8 @@ const PUBLISHED = [
   { file: 'house-cleaning-kamloops/index.html', kind: 'range', beds: 2, baths: 1, type: 'standard', count: 2,
     where: 'House Cleaning FAQ "How much does house cleaning cost in Kamloops?" (visible + JSON-LD)' },
 ];
+const STARTING_EL = /<strong data-starting-from="([a-z]*)">([^<]*)<\/strong>/g;   // see section 9
+const MULT_TYPES = TYPES;
 const decode = s => s.replace(/&ndash;|&#8211;|&#x2013;/gi, '–').replace(/&mdash;|&#8212;/gi, '—').replace(/&#36;|&dollar;/gi, '$');
 section('8. Published prices vs pricing.js');
 for (const entry of PUBLISHED) {
@@ -259,9 +262,96 @@ check('no unregistered prices anywhere in the site HTML', () => {
     }
     // extras labels are verified in section 6
     h = h.replace(/class="qc-toggle-price">\+\$\d+</g, '');
+    // starting prices are verified in section 9; only a CORRECT one is
+    // accounted for here, so a stale one is reported twice, never zero times
+    h = h.replace(STARTING_EL, (el, type, text) => (MULT_TYPES.includes(type) && text === `$${Pricing.startingFrom(type)}`) ? '' : el);
     for (const m of h.matchAll(/\$\s?\d[\d,]*(?:\s*[–—-]\s*\$?\s?\d[\d,]*)?/g)) problems.push(`${f}: "${m[0]}"`);
   }
   assert.strictEqual(problems.length, 0, 'unregistered or stale price(s):\n' + problems.join('\n'));
+});
+
+/* ── 6. STARTING PRICES IN MARKETING COPY ────────────────────────────────── */
+/* Marketing copy -> clean type -> pricing.js. Every "from $X" figure is written
+   as <strong data-starting-from="TYPE">$X</strong>, and X must equal
+   startingFrom(TYPE). The number sits in the HTML (so it is visible without
+   JavaScript, indexable, and causes no layout shift), but it can never drift:
+   change a price in pricing.js and this fails until the copy is updated.
+
+   STARTING_SLOTS pins where they appear, in page order, so a price cannot
+   silently be added, removed or attached to the wrong service. Same-Day uses
+   `standard` and Rental Turnover uses `moveout` — they have no pricing type of
+   their own (see pricing.js). */
+const STARTING_SLOTS = {
+  'index.html': ['standard', 'moveout', 'standard', 'deep', 'moveout', 'postreno'],   // service cards, in grid order
+  'services/index.html': ['standard', 'deep', 'standard', 'moveout', 'moveout', 'postreno'],   // hub cards, in grid order
+  'house-cleaning-kamloops/index.html':           ['standard', 'standard'],   // hero, pricing section
+  'deep-cleaning-kamloops/index.html':            ['deep', 'deep'],
+  'same-day-cleaning-kamloops/index.html':        ['standard', 'standard'],
+  'move-out-cleaning-kamloops/index.html':        ['moveout', 'moveout'],
+  'rental-turnover-cleaning-kamloops/index.html': ['moveout', 'moveout'],
+  'post-renovation-cleaning-kamloops/index.html': ['postreno', 'postreno'],
+};
+section('9. Starting prices in marketing copy vs pricing.js');
+for (const f of allHtml) {
+  const h = read(f);
+  const found = [...h.matchAll(STARTING_EL)];
+  const loose = (h.match(/data-starting-from/g) || []).length;
+  const want = STARTING_SLOTS[f] || [];
+  if (!want.length && !loose) continue;
+  const label = f.replace('/index.html', '/');
+  check(`${label}: starting prices [${want.join(', ')}] = [${want.map(t => '$' + Pricing.startingFrom(t)).join(', ')}]`, () => {
+    assert.strictEqual(loose, found.length, 'a data-starting-from attribute is not on a <strong> holding a single "$N"');
+    assert.deepStrictEqual(found.map(m => m[1]), want, 'starting-price slots (types, order) changed — update STARTING_SLOTS deliberately');
+    for (const [, type, text] of found) {
+      assert.ok(MULT_TYPES.includes(type), `unknown clean type "${type}"`);
+      assert.strictEqual(text, `$${Pricing.startingFrom(type)}`, `${type}: page says ${text}, pricing.js says $${Pricing.startingFrom(type)}`);
+    }
+  });
+}
+/* On the card grids (homepage, Services hub) each price sits inside the <a>
+   that links to a service page, so it can also be checked against the page it
+   links to — a price on the wrong card fails even if the slot order still
+   matches. The type per service page is ESTIMATOR_PAGES, already pinned above. */
+const CARD_PAGES = ['index.html', 'services/index.html'];
+for (const f of CARD_PAGES) check(`${f.replace('/index.html', '/')}: each card's price matches the service page it links to`, () => {
+  const cards = [...read(f).matchAll(/<a href="\/([a-z-]+)\/"[^>]*>([\s\S]*?)<\/a>/g)].filter(m => m[2].includes('data-starting-from'));
+  assert.strictEqual(cards.length, 6, `expected 6 priced service cards, found ${cards.length}`);
+  for (const [, slug, inner] of cards) {
+    const want = ESTIMATOR_PAGES[`${slug}/index.html`];
+    assert.ok(want, `card links to /${slug}/, which is not a service page with a pricing type`);
+    const got = inner.match(/data-starting-from="([a-z]*)"/)[1];
+    assert.strictEqual(got, want, `card linking to /${slug}/ shows the ${got} price; that page prices as ${want}`);
+  }
+});
+/* The conversion path each priced card grid has to complete: starting price ->
+   estimator -> quote. Without this, the CTA could be dropped in an edit and
+   nothing else would fail. The homepage links to its own estimator, the hub to
+   the homepage's. */
+const ESTIMATE_CTA = {
+  'index.html': { href: '#quote', text: 'Get your instant estimate &rarr;' },
+  'services/index.html': { href: '/#quote', text: 'Get Your Instant Estimate &rarr;' },
+};
+for (const [f, cta] of Object.entries(ESTIMATE_CTA)) check(`${f.replace('/index.html', '/')}: "${cta.text.replace(' &rarr;', '')}" CTA links to ${cta.href}`, () => {
+  const h = read(f);
+  const links = [...h.matchAll(/<a href="([^"]+)"[^>]*>([^<]*[Ii]nstant [Ee]stimate[^<]*)<\/a>/g)];
+  assert.strictEqual(links.length, 1, `expected exactly 1 instant-estimate CTA, found ${links.length}`);
+  assert.strictEqual(links[0][1], cta.href, 'CTA points somewhere else');
+  assert.strictEqual(links[0][2].trim(), cta.text, 'CTA wording changed');
+  // It must sit in the priced card section, after the honesty note.
+  const note = h.indexOf('Starting prices are for a studio');
+  assert.ok(note !== -1 && h.indexOf(links[0][0]) > note, 'CTA must follow the starting-price note');
+});
+check('every page with starting prices is registered in STARTING_SLOTS', () => {
+  for (const f of Object.keys(STARTING_SLOTS)) assert.ok(allHtml.includes(f), `${f} does not exist`);
+});
+check('starting prices are never presented as a guaranteed or lowest price', () => {
+  for (const f of Object.keys(STARTING_SLOTS)) {
+    const text = read(f).replace(/<[^>]+>/g, ' ');
+    // The last pattern is the wording Sprint 33 removed: promising the final
+    // amount lands inside the estimator's range is a guarantee, not a ballpark.
+    const hit = text.match(/\b(cheapest|lowest price|lowest prices|best price|price guarantee|guaranteed price|flat[- ]rate price|exactly \$|final (amount|price|quote) within that range)/i);
+    assert.ok(!hit, `${f}: "${hit && hit[0]}"`);
+  }
 });
 
 /* ── RESULT ──────────────────────────────────────────────────────────────── */

@@ -861,6 +861,14 @@ footer {
 }
 .svc-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .svc-hero-note { font-size: 13px; color: var(--ink-3); margin-top: 12px; }
+/* Starting price under the hero buttons. The number is written from
+   startingFrom() in assets/js/pricing.js; `npm run qa` fails if it drifts. */
+.svc-hero-price { margin-top: 14px; font-size: 15px; color: var(--ink-2); }
+.svc-hero-price strong { font-weight: 800; color: var(--ink); }
+/* The link sits on its own line: neither line can re-wrap when the web font
+   swaps in, so the hero's height (and the photo below it) cannot shift. */
+.svc-hero-price a { display: block; width: fit-content; padding: 10px 0; font-weight: 700; color: var(--ember); white-space: nowrap; }
+.svc-hero-price a:hover { color: var(--ember-lt); }
 .svc-hero-figure { margin: 0; }
 .svc-hero-photo {
   width: 100%;
@@ -1037,6 +1045,22 @@ footer {
 .rel-t { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
 .rel-b { font-size: 13.5px; color: var(--ink-2); line-height: 1.55; }
 .rel-go { font-size: 13px; font-weight: 700; color: var(--ember); margin-top: 10px; }
+/* Starting price on a service card (Services hub). Same classes as the
+   homepage; the number is written from startingFrom() in assets/js/pricing.js
+   and `npm run qa` fails if it drifts. */
+.svc-price { margin-top: 10px; font-size: 13.5px; color: var(--ink-2); }
+.svc-price strong { font-size: 15px; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+.svc-price-note { margin: 22px auto 0; max-width: 620px; font-size: 13px; color: var(--ink-2); line-height: 1.6; text-align: center; }
+/* Centred underlined CTA under a card grid — the same treatment as the
+   homepage, copied verbatim so the two stylesheets stay in step. The padding
+   is what keeps the link a >=44px tap target. */
+.svc-all { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; column-gap: 28px; text-align: center; }
+.svc-all a {
+  font-size: 15px; font-weight: 700; color: var(--ember);
+  text-decoration: underline; text-underline-offset: 4px;
+  display: inline-block; padding: 10px 4px;
+}
+.svc-all a:hover { color: var(--ember-lt); }
 
 /* ============================================================================
    9. RESPONSIVE — mobile-first, so these build upward from the base rules
