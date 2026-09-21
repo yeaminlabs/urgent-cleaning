@@ -187,16 +187,23 @@ check('homepage hero image is responsive and still the priority LCP image', () =
    this article's metadata, FAQ equality, nav/footer and GA tag; these are the
    cluster-specific relationships and the claims this topic must not make. */
 const SAME_DAY_ARTICLE = '/blog/same-day-cleaning-kamloops/';
-check(`${SAME_DAY_ARTICLE}: links out to the service page, hub, contact, services and about`, () => {
-  const h = html[SAME_DAY_ARTICLE];
+const POST_RENO_ARTICLE = '/blog/post-renovation-cleaning-kamloops/';
+/* Each supporting article must reach its own service page plus the shared
+   conversion paths. [article, its service page] */
+const CLUSTERS = [[SAME_DAY_ARTICLE, '/same-day-cleaning-kamloops/'], [POST_RENO_ARTICLE, '/post-renovation-cleaning-kamloops/']];
+for (const [article, service] of CLUSTERS) check(`${article}: links out to the service page, hub, contact, services and about`, () => {
+  const h = html[article];
   const main = h.slice(h.indexOf('<main'), h.indexOf('<footer'));
-  for (const target of ['/same-day-cleaning-kamloops/', '/blog/', '/contact/', '/services/', '/about/']) {
+  for (const target of [service, '/blog/', '/contact/', '/services/', '/about/']) {
     const n = (main.match(new RegExp(`<a href="${target}"`, 'g')) || []).length;
     assert.ok(n > 0, `no contextual link to ${target}`);
   }
+  // The service page links back, exactly once.
+  const backlinks = (html[service].match(new RegExp(`<a href="${article}"`, 'g')) || []).length;
+  assert.strictEqual(backlinks, 1, `${service} has ${backlinks} backlinks to the article (want exactly 1)`);
 });
-check(`${SAME_DAY_ARTICLE}: BlogPosting, BreadcrumbList and FAQPage, no second business entity`, () => {
-  const all = jsonLd(html[SAME_DAY_ARTICLE]).flatMap(nodes);
+for (const [article] of CLUSTERS) check(`${article}: BlogPosting, BreadcrumbList and FAQPage, no second business entity`, () => {
+  const all = jsonLd(html[article]).flatMap(nodes);
   for (const t of ['BlogPosting', 'BreadcrumbList', 'FAQPage'])
     assert.strictEqual(all.filter(n => n['@type'] === t).length, 1, `expected exactly one ${t}`);
   assert.strictEqual(all.filter(n => n['@type'] === 'LocalBusiness').length, 0, 'the article must reference #business, not declare it');
@@ -206,6 +213,36 @@ check(`${SAME_DAY_ARTICLE}: BlogPosting, BreadcrumbList and FAQPage, no second b
   assert.strictEqual(post.isPartOf['@id'], PRODUCTION + '/blog/#blog', 'isPartOf @id');
   const crumbs = all.find(n => n['@type'] === 'BreadcrumbList').itemListElement.map(i => i.name);
   assert.deepStrictEqual(crumbs.slice(0, 2), ['Home', 'Blog'], 'breadcrumb trail');
+});
+/* Sprint 42: every article hero is that page's LCP image, so it carries the
+   same obligations as the homepage hero — responsive sources that exist, and
+   still eager and high priority. */
+for (const [article] of CLUSTERS) check(`${article}: hero image is responsive and still the priority LCP image`, () => {
+  const img = (html[article].match(/<img[\s\S]*?class="svc-hero-photo"[\s\S]*?>/) || [''])[0];
+  assert.ok(img, 'hero <img> not found');
+  for (const [re, what] of [[/fetchpriority="high"/, 'fetchpriority'], [/width="\d+"/, 'width'], [/height="\d+"/, 'height'],
+    [/alt="[^"]+"/, 'alt text'], [/sizes="/, 'sizes']]) assert.match(img, re, `hero lost its ${what}`);
+  assert.ok(!/loading="lazy"/.test(img), 'the hero must not be lazy-loaded');
+  const cands = [...(img.match(/srcset="([\s\S]*?)"/) || [, ''])[1].matchAll(/(\S+)\s+(\d+)w/g)];
+  assert.ok(cands.length >= 3, `hero srcset has ${cands.length} candidates (want 3+)`);
+  assert.ok(cands.some(c => +c[2] <= 640), 'hero srcset has no small (<=640w) candidate for phones');
+  for (const c of cands) assert.ok(fs.existsSync(path.join(ROOT, c[1].replace(/^\//, ''))), `hero srcset points at a missing file: ${c[1]}`);
+});
+
+/* Sprint 42: the renovation topic must never read as a remediation service.
+   Honest scope exclusions ("does not carry out", "is a licensed trade") are
+   required and do not match these patterns, which need a service claim. */
+check('renovation copy never claims remediation or restoration work', () => {
+  const RENO_PAGES = [POST_RENO_ARTICLE, '/post-renovation-cleaning-kamloops/'];
+  const claim = /(we|our team|urgent clean)[^.]{0,60}(remove|handle|carry out|offer|provide)[^.]{0,40}(asbestos|hazardous material|mould|mold|biohazard)|(asbestos|mould|mold|biohazard|fire|flood) (removal|remediation|restoration) service/gi;
+  // Only an AFFIRMATIVE claim fails. The site's honest exclusions ("we do not
+  // handle hazardous materials, asbestos or demolition waste") must keep
+  // working, so a match carrying a negation is not a claim.
+  const negated = s => /\b(do not|does not|don['’]t|doesn['’]t|never|cannot|can['’]t|outside|not included|is not)\b/i.test(s);
+  for (const p of RENO_PAGES) {
+    const hits = [...html[p].replace(/<[^>]+>/g, ' ').matchAll(claim)].map(m => m[0]).filter(m => !negated(m));
+    assert.deepStrictEqual(hits, [], `${p} claims remediation work: ${JSON.stringify(hits)}`);
+  }
 });
 check('same-day copy never promises guaranteed availability or arrival', () => {
   const SAME_DAY_PAGES = [SAME_DAY_ARTICLE, '/same-day-cleaning-kamloops/'];

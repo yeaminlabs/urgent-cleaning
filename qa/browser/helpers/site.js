@@ -32,6 +32,7 @@ const PAGES = [
   { path: '/blog/house-cleaning-cost-kamloops/', name: 'Article: house cleaning cost', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   { path: '/blog/move-out-cleaning-checklist-kamloops/', name: 'Article: move-out checklist', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   { path: '/blog/same-day-cleaning-kamloops/', name: 'Article: same-day cleaning', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
+  { path: '/blog/post-renovation-cleaning-kamloops/', name: 'Article: post-renovation cleaning', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   SERVICE('/house-cleaning-kamloops/', 'House Cleaning', 'standard', 'house_cleaning_page'),
   SERVICE('/move-out-cleaning-kamloops/', 'Move-Out Cleaning', 'moveout', 'move_out_cleaning_page'),
   SERVICE('/same-day-cleaning-kamloops/', 'Same-Day Cleaning', 'standard', 'same_day_cleaning_page'),   // no same-day surcharge

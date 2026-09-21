@@ -7,6 +7,7 @@ const ARTICLES = [
   { path: '/blog/house-cleaning-cost-kamloops/', h1: 'How Much Does House Cleaning Cost in Kamloops?' },
   { path: '/blog/move-out-cleaning-checklist-kamloops/', h1: 'Move-Out Cleaning Checklist for Kamloops Renters' },
   { path: '/blog/same-day-cleaning-kamloops/', h1: 'Same-Day Cleaning in Kamloops: What to Expect & How It Works' },
+  { path: '/blog/post-renovation-cleaning-kamloops/', h1: 'Post-Renovation Cleaning in Kamloops' },
 ];
 /* The homepage teaser row intentionally shows only the first two guides — it is
    a two-up layout, and the hub is the complete index. */
@@ -52,6 +53,9 @@ test('articles link to each other, back to the blog, and are linked from their s
   // Sprint 40: the same-day cluster links both ways.
   expect(await inMain('/same-day-cleaning-kamloops/', ARTICLES[2].path), 'Same-Day service -> article 3').toBeGreaterThan(0);
   expect(await inMain(ARTICLES[2].path, '/same-day-cleaning-kamloops/'), 'article 3 -> Same-Day service').toBeGreaterThan(0);
+  // Sprint 42: the post-renovation cluster links both ways.
+  expect(await inMain('/post-renovation-cleaning-kamloops/', ARTICLES[3].path), 'Post-Renovation service -> article 4').toBeGreaterThan(0);
+  expect(await inMain(ARTICLES[3].path, '/post-renovation-cleaning-kamloops/'), 'article 4 -> Post-Renovation service').toBeGreaterThan(0);
   for (const a of ARTICLES) {
     await page.goto(a.path, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.crumb a[href="/blog/"]')).toHaveCount(1);
