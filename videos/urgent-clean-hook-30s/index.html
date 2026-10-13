@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-400.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-600.woff2") format("woff2"); font-weight: 600; }
+      @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage-800.woff2") format("woff2"); font-weight: 800; }
+      @font-face { font-family: "JetBrains Mono"; src: url("assets/fonts/jbmono-700.woff2") format("woff2"); font-weight: 700; }
+
+      :root {
+        --signal: #c94b0c;
+        --signal-lt: #ea580c;
+        --ink: #0d1117;
+        --ink-2: #161b24;
+        --paper: #ffffff;
+        --muted: #c3c9d3;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden;
+        font-family: "Bricolage Grotesque", sans-serif; color: var(--paper); background: var(--ink);
+      }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+
+      /* shared bits */
+      .label {
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 34px;
+        letter-spacing: 0.14em; text-transform: uppercase; color: var(--signal-lt);
+      }
+      .chip {
+        display: inline-block; padding: 14px 26px; border-radius: 10px;
+        background: var(--signal); color: #fff;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 34px; letter-spacing: 0.08em; text-transform: uppercase;
+      }
+      .line { display: block; will-change: transform; }
+      .photo { position: absolute; inset: 0; }
+      .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+
+      /* S1 — landlord hook */
+      #s1 { background: var(--ink); }
+      #s1-label { position: absolute; left: 80px; top: 250px; }
+      #s1-text { position: absolute; left: 80px; right: 80px; top: 360px; }
+      #s1 .big { font-weight: 800; font-size: 98px; line-height: 0.98; letter-spacing: -0.04em; }
+      #s1 .soft { color: var(--muted); }
+      #s1 .hot { color: var(--signal-lt); font-size: 150px; }
+      #s1-clock-wrap { position: absolute; left: 80px; right: 80px; top: 1080px; }
+      #s1-clock-cap { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 30px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 18px; }
+      #s1-clock {
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 150px; letter-spacing: 0.02em;
+        color: #fff; background: var(--ink-2); border: 3px solid #2a3140; border-radius: 22px; padding: 26px 40px; display: inline-block;
+      }
+      #s1-flash { position: absolute; inset: 0; background: var(--signal); opacity: 0; }
+
+      /* S2 — homeowner hook */
+      #s2-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0.92) 0%, rgba(13,17,23,0.78) 45%, rgba(13,17,23,0.35) 75%, rgba(13,17,23,0.85) 100%); }
+      #s2-label { position: absolute; left: 80px; top: 250px; }
+      #s2-text { position: absolute; left: 80px; right: 80px; top: 350px; font-weight: 800; font-size: 90px; line-height: 1.0; letter-spacing: -0.035em; }
+      #s2-text .hot { color: var(--signal-lt); }
+
+      /* S3 — answer */
+      #s3 { background: var(--signal); }
+      #s3-logo { position: absolute; left: 90px; right: 90px; top: 430px; height: 300px; }
+      #s3-logo img { width: 100%; height: 100%; object-fit: contain; filter: brightness(0) invert(1); }
+      #s3-text { position: absolute; left: 80px; right: 80px; top: 820px; text-align: center; }
+      #s3 .big { font-weight: 800; font-size: 132px; line-height: 0.98; letter-spacing: -0.04em; }
+      #s3 .sub { margin-top: 40px; font-weight: 600; font-size: 52px; line-height: 1.2; color: #fff3ea; }
+
+      /* S4 — proof montage */
+      .proof-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,17,23,0.55) 0%, rgba(13,17,23,0) 25%, rgba(13,17,23,0) 42%, rgba(13,17,23,0.88) 60%, rgba(13,17,23,0.95) 100%); }
+      #s4-tag { position: absolute; left: 80px; top: 250px; }
+      .proof-cap { position: absolute; left: 80px; right: 80px; top: 1200px; }
+      .proof-cap .big { font-weight: 800; font-size: 100px; line-height: 0.98; letter-spacing: -0.04em; }
+      .proof-cap .sub { margin-top: 18px; font-weight: 600; font-size: 46px; color: var(--muted); }
+      #s4-bar { position: absolute; left: 80px; right: 80px; top: 1490px; height: 10px; border-radius: 5px; background: rgba(255,255,255,0.18); overflow: hidden; }
+      #s4-bar-fill { position: absolute; inset: 0; background: var(--signal-lt); transform-origin: 0 50%; }
+
+      /* S5 — how it works */
+      #s5 { background: var(--ink); }
+      #s5-label { position: absolute; left: 80px; top: 250px; }
+      #s5-title { position: absolute; left: 80px; right: 80px; top: 330px; font-weight: 800; font-size: 104px; line-height: 1.0; letter-spacing: -0.04em; }
+      #s5-steps { position: absolute; left: 80px; right: 80px; top: 640px; }
+      .step {
+        display: flex; align-items: center; gap: 36px; padding: 40px 40px; margin-bottom: 30px;
+        background: var(--ink-2); border: 3px solid #2a3140; border-radius: 24px; will-change: transform;
+      }
+      .step .n { flex: 0 0 auto; width: 120px; height: 120px; border-radius: 60px; background: var(--signal); display: flex; align-items: center; justify-content: center;
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 48px; color: #fff; }
+      .step .t { font-weight: 800; font-size: 56px; line-height: 1.05; letter-spacing: -0.02em; }
+      .step .d { margin-top: 8px; font-weight: 400; font-size: 36px; color: var(--muted); }
+      #s5-foot { position: absolute; left: 80px; right: 80px; top: 1440px; font-weight: 600; font-size: 44px; color: var(--muted); }
+      #s5-foot b { color: #fff; font-weight: 800; }
+
+      /* S6 — price */
+      #s6 { background: var(--ink); }
+      #s6-photo img { filter: saturate(0.85); }
+      #s6-shade { position: absolute; inset: 0; background: rgba(13,17,23,0.82); }
+      #s6-text { position: absolute; left: 80px; right: 80px; top: 520px; text-align: center; }
+      #s6 .pre { font-weight: 600; font-size: 64px; color: var(--muted); }
+      #s6 .price { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 300px; line-height: 1.05; color: #fff; letter-spacing: -0.03em; }
+      #s6 .price .cur { color: var(--signal-lt); }
+      #s6 .post { margin-top: 10px; font-weight: 800; font-size: 64px; letter-spacing: -0.02em; }
+      #s6 .fine { margin-top: 44px; font-weight: 400; font-size: 34px; color: var(--muted); line-height: 1.35; }
+
+      /* S7 — CTA */
+      #s7 { background: var(--ink); }
+      #s7-glow { position: absolute; left: -200px; right: -200px; top: 1000px; height: 1200px; background: radial-gradient(closest-side, rgba(201,75,12,0.55), rgba(201,75,12,0)); }
+      #s7-logo { position: absolute; left: 120px; right: 120px; top: 260px; height: 260px; }
+      #s7-logo img { width: 100%; height: 100%; object-fit: contain; }
+      #s7-head { position: absolute; left: 80px; right: 80px; top: 600px; text-align: center; font-weight: 800; font-size: 112px; line-height: 0.98; letter-spacing: -0.04em; }
+      #s7-phone-wrap { position: absolute; left: 60px; right: 60px; top: 920px; display: flex; justify-content: center; }
+      #s7-phone {
+        font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 96px; color: #fff;
+        background: var(--signal); border-radius: 28px; padding: 36px 48px; will-change: transform;
+      }
+      #s7-sub { position: absolute; left: 80px; right: 80px; top: 1170px; text-align: center; font-weight: 600; font-size: 46px; line-height: 1.3; color: var(--muted); }
+      #s7-url { position: absolute; left: 80px; right: 80px; top: 1340px; text-align: center; font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 38px; color: #fff; letter-spacing: 0.02em; }
+
+      /* transition wipe (shared, above scenes) */
+      .wipe { position: absolute; left: 0; right: 0; top: 0; height: 1920px; background: var(--signal); will-change: transform; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+
+      <!-- S1 · 0.0–4.4 · Landlord hook -->
+      <section id="s1" class="clip" data-start="0" data-duration="4.4" data-track-index="0">
+        <div id="s1-label" class="label">Kamloops landlords</div>
+        <div id="s1-text">
+          <span class="line big soft" id="s1-a">Tenant moved out</span>
+          <span class="line big soft" id="s1-b">this morning.</span>
+          <span class="line big" id="s1-c" style="margin-top: 60px">New one moves in</span>
+          <span class="line big hot" id="s1-d">TOMORROW.</span>
+        </div>
+        <div id="s1-clock-wrap">
+          <div id="s1-clock-cap">Time to get it rent-ready</div>
+          <div id="s1-clock">23:59:59</div>
+        </div>
+        <div id="s1-flash"></div>
+      </section>
+
+      <!-- S2 · 4.4–8.4 · Homeowner hook -->
+      <section id="s2" class="clip" data-start="4.4" data-duration="4" data-track-index="0">
+        <div class="photo" id="s2-photo"><img src="assets/img/bathroom-double-vanity.webp" alt="" /></div>
+        <div id="s2-shade"></div>
+        <div id="s2-label" class="label">Homeowners</div>
+        <div id="s2-text">
+          <span class="line" id="s2-a">Or scrubbing the tub</span>
+          <span class="line" id="s2-b">just isn't worth</span>
+          <span class="line hot" id="s2-c">your back anymore.</span>
+        </div>
+      </section>
+
+      <!-- S3 · 8.4–11.0 · The answer -->
+      <section id="s3" class="clip" data-start="8.4" data-duration="2.6" data-track-index="0">
+        <div id="s3-logo"><img src="assets/img/logo.png" alt="Urgent Clean" /></div>
+        <div id="s3-text">
+          <span class="line big" id="s3-a">We'll handle it.</span>
+          <div class="sub" id="s3-b">Same-day &amp; next-day house cleaning in Kamloops.</div>
+        </div>
+      </section>
+
+      <!-- S4 · 11.0–19.0 · Real jobs montage -->
+      <section id="s4" class="clip" data-start="11" data-duration="8" data-track-index="0">
+        <div class="photo" id="p1"><img src="assets/img/kitchen-stove-wide.webp" alt="" /></div>
+        <div class="photo" id="p2"><img src="assets/img/living-space.webp" alt="" /></div>
+        <div class="photo" id="p3"><img src="assets/img/open-living-room-kitchen.webp" alt="" /></div>
+        <div class="photo" id="p4"><img src="assets/img/bedroom.webp" alt="" /></div>
+        <div class="proof-shade"></div>
+        <div id="s4-tag" class="chip">Real Urgent Clean jobs</div>
+        <div class="proof-cap" id="c1"><div class="big">Move-out cleans</div><div class="sub">Get the deposit-ready finish.</div></div>
+        <div class="proof-cap" id="c2"><div class="big">Rental turnovers</div><div class="sub">Between tenants, on your timeline.</div></div>
+        <div class="proof-cap" id="c3"><div class="big">Deep cleans</div><div class="sub">Kitchens, bathrooms, every corner.</div></div>
+        <div class="proof-cap" id="c4"><div class="big">Regular house cleaning</div><div class="sub">So you don't have to.</div></div>
+        <div id="s4-bar"><div id="s4-bar-fill"></div></div>
+      </section>
+
+      <!-- S5 · 19.0–24.6 · How it works -->
+      <section id="s5" class="clip" data-start="19" data-duration="5.6" data-track-index="0">
+        <div id="s5-label" class="label">How it works</div>
+        <div id="s5-title">No waiting days for a quote.</div>
+        <div id="s5-steps">
+          <div class="step" id="st1"><div class="n">01</div><div><div class="t">Call or text us</div><div class="d">Tell us the basics. Photo optional.</div></div></div>
+          <div class="step" id="st2"><div class="n">02</div><div><div class="t">Get your estimate</div><div class="d">We usually respond within an hour.</div></div></div>
+          <div class="step" id="st3"><div class="n">03</div><div><div class="t">Book your clean</div><div class="d">Same-day or next-day. Done before your deadline.</div></div></div>
+        </div>
+        <div id="s5-foot"><b>No in-person visit</b> needed for most jobs.</div>
+      </section>
+
+      <!-- S6 · 24.6–27.4 · Price -->
+      <section id="s6" class="clip" data-start="24.6" data-duration="2.8" data-track-index="0">
+        <div class="photo" id="s6-photo"><img src="assets/img/stovetop.webp" alt="" /></div>
+        <div id="s6-shade"></div>
+        <div id="s6-text">
+          <div class="pre" id="s6-pre">Standard cleans from</div>
+          <div class="price" id="s6-price"><span class="cur">$</span><span id="s6-num">0</span></div>
+          <div class="post" id="s6-post">Honest, upfront estimates.</div>
+          <div class="fine" id="s6-fine">Studio / 1-bed standard clean. Final price confirmed with your quote.</div>
+        </div>
+      </section>
+
+      <!-- S7 · 27.4–30.0 · CTA -->
+      <section id="s7" class="clip" data-start="27.4" data-duration="2.6" data-track-index="0">
+        <div id="s7-glow" data-layout-allow-overflow></div>
+        <div id="s7-logo"><img src="assets/img/logo.png" alt="Urgent Clean Kamloops" /></div>
+        <div id="s7-head">Need it clean, fast?</div>
+        <div id="s7-phone-wrap"><div id="s7-phone">(250) 879-2425</div></div>
+        <div id="s7-sub">Call or text — answering 24/7.</div>
+        <div id="s7-url">urgentcleankamloops.ca</div>
+      </section>
+
+      <!-- Transition wipes -->
+      <div id="w1" class="clip wipe-layer" data-start="8.0" data-duration="0.8" data-track-index="1" style="pointer-events:none"><div class="wipe" id="w1-bar" data-layout-allow-overflow></div></div>
+      <div id="w2" class="clip wipe-layer" data-start="10.6" data-duration="0.8" data-track-index="1" style="pointer-events:none"><div class="wipe" id="w2-bar" data-layout-allow-overflow></div></div>
+      <div id="w3" class="clip wipe-layer" data-start="18.6" data-duration="0.8" data-track-index="1" style="pointer-events:none"><div class="wipe" id="w3-bar" data-layout-allow-overflow></div></div>
+      <div id="w4" class="clip wipe-layer" data-start="27.0" data-duration="0.8" data-track-index="1" style="pointer-events:none"><div class="wipe" id="w4-bar" data-layout-allow-overflow></div></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // ---------- S1 · landlord hook (kinetic-beat-slam) ----------
+      tl.fromTo("#s1-label", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.05);
+      tl.fromTo("#s1-a", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.32, ease: "power3.out" }, 0.1);
+      tl.fromTo("#s1-b", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.32, ease: "power3.out" }, 0.3);
+      tl.fromTo("#s1-c", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 1.25);
+      tl.fromTo("#s1-d", { opacity: 0, scale: 1.9, transformOrigin: "0% 50%" }, { opacity: 1, scale: 1, duration: 0.32, ease: "power4.in" }, 1.7);
+      // impact shake after the slam lands
+      tl.fromTo("#s1-text", { x: 0 }, { keyframes: { x: [0, -14, 12, -8, 5, 0] }, duration: 0.3, ease: "none" }, 2.02);
+      tl.fromTo("#s1-clock-wrap", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(1.6)" }, 2.1);
+      // countdown: 24h drains fast over the scene (deterministic, driven by timeline time)
+      const clock = { s: 86399 };
+      const clockEl = document.getElementById("s1-clock");
+      const pad = (n) => String(n).padStart(2, "0");
+      const drawClock = () => {
+        const s = Math.max(0, Math.round(clock.s));
+        clockEl.textContent = pad(Math.floor(s / 3600)) + ":" + pad(Math.floor((s % 3600) / 60)) + ":" + pad(s % 60);
+      };
+      tl.fromTo(clock, { s: 86399 }, { s: 61200, duration: 2.0, ease: "power2.in", onUpdate: drawClock }, 2.2);
+      tl.fromTo("#s1-clock", { color: "#ffffff" }, { color: "#ea580c", duration: 0.6, ease: "none" }, 3.4);
+      tl.fromTo("#s1-flash", { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none" }, 4.28);
+
+      // ---------- S2 · homeowner hook ----------
+      tl.fromTo("#s2-photo img", { scale: 1.18 }, { scale: 1.04, duration: 4, ease: "none" }, 4.4);
+      tl.fromTo("#s2-label", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 4.5);
+      tl.fromTo("#s2-a", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 4.6);
+      tl.fromTo("#s2-b", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 5.1);
+      tl.fromTo("#s2-c", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 5.7);
+
+      // ---------- wipes (orange bar sweeps up through the cut) ----------
+      [["#w1-bar", 8.0], ["#w2-bar", 10.6], ["#w3-bar", 18.6], ["#w4-bar", 27.0]].forEach(([sel, t]) => {
+        tl.fromTo(sel, { y: 1920 }, { y: -1920, duration: 0.8, ease: "power3.inOut" }, t);
+      });
+
+      // ---------- S3 · the answer ----------
+      tl.fromTo("#s3-logo", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 8.6);
+      tl.fromTo("#s3-a", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 8.9);
+      tl.fromTo("#s3-b", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 9.3);
+
+      // ---------- S4 · montage (Ken Burns + caption swap) ----------
+      const shots = [
+        { p: "#p1", c: "#c1", t: 11.0, from: { scale: 1.25, x: 60 }, to: { scale: 1.08, x: -40 } },
+        { p: "#p2", c: "#c2", t: 13.0, from: { scale: 1.08, x: -60 }, to: { scale: 1.22, x: 40 } },
+        { p: "#p3", c: "#c3", t: 15.0, from: { scale: 1.25, x: -40 }, to: { scale: 1.1, x: 50 } },
+        { p: "#p4", c: "#c4", t: 17.0, from: { scale: 1.1, x: 40 }, to: { scale: 1.24, x: -40 } },
+      ];
+      shots.forEach((s, i) => {
+        tl.fromTo(s.p, { opacity: i === 0 ? 1 : 0 }, { opacity: 1, duration: i === 0 ? 0.01 : 0.25, ease: "none" }, s.t);
+        tl.fromTo(s.p + " img", s.from, { ...s.to, duration: 2.3, ease: "none" }, s.t);
+        tl.fromTo(s.c, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, s.t + 0.15);
+        if (i < shots.length - 1) tl.fromTo(s.c, { opacity: 1 }, { opacity: 0, duration: 0.2, ease: "none", immediateRender: false }, s.t + 1.85);
+      });
+      tl.fromTo("#s4-tag", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 11.2);
+      tl.fromTo("#s4-bar-fill", { scaleX: 0 }, { scaleX: 1, duration: 8, ease: "none" }, 11.0);
+
+      // ---------- S5 · steps (stagger rise) ----------
+      tl.fromTo("#s5-label", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 19.15);
+      tl.fromTo("#s5-title", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 19.25);
+      ["#st1", "#st2", "#st3"].forEach((sel, i) => {
+        tl.fromTo(sel, { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 19.9 + i * 0.9);
+        tl.fromTo(sel + " .n", { scale: 0.4 }, { scale: 1, duration: 0.4, ease: "back.out(2.2)" }, 20.0 + i * 0.9);
+      });
+      tl.fromTo("#s5-foot", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 22.9);
+
+      // ---------- S6 · price (counting-dynamic-scale) ----------
+      tl.fromTo("#s6-photo img", { scale: 1.15 }, { scale: 1.0, duration: 2.8, ease: "none" }, 24.6);
+      tl.fromTo("#s6-pre", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 24.7);
+      const price = { v: 0 };
+      const numEl = document.getElementById("s6-num");
+      tl.fromTo(price, { v: 0 }, { v: 120, duration: 0.9, ease: "power3.out", onUpdate: () => { numEl.textContent = String(Math.round(price.v)); } }, 24.85);
+      tl.fromTo("#s6-price", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: "power3.out" }, 24.85);
+      tl.fromTo("#s6-post", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 25.8);
+      tl.fromTo("#s6-fine", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, 26.0);
+
+      // ---------- S7 · CTA ----------
+      tl.fromTo("#s7-logo", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 27.5);
+      tl.fromTo("#s7-head", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 27.65);
+      tl.fromTo("#s7-phone", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 27.9);
+      tl.fromTo("#s7-phone", { scale: 1 }, { keyframes: { scale: [1, 1.06, 1, 1.06, 1] }, duration: 1.2, ease: "sine.inOut", immediateRender: false }, 28.6);
+      tl.fromTo("#s7-sub", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, 28.2);
+      tl.fromTo("#s7-url", { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "none" }, 28.4);
+      tl.fromTo("#s7-glow", { opacity: 0.4 }, { opacity: 1, duration: 2.4, ease: "sine.inOut" }, 27.5);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
