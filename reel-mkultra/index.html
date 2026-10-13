@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=1080, height=1920"/>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Georgia,"Times New Roman",serif;color:#e9e6dc}
+.scene{position:absolute;inset:0;overflow:hidden;background:#07090b}
+.in{position:absolute;inset:0;filter:saturate(.35) contrast(1.15) brightness(.9)}
+.abs{position:absolute}
+svg{position:absolute;overflow:visible}
+#grain{position:absolute;left:-540px;top:-960px;width:2160px;height:3840px;background:url(assets/grain.png);background-size:540px 960px;opacity:.16;mix-blend-mode:overlay;pointer-events:none}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%);pointer-events:none}
+#flick{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.cap{position:absolute;left:70px;right:70px;bottom:180px;text-align:center;font-size:58px;line-height:1.3;font-style:italic;font-weight:700;text-shadow:0 3px 18px #000,0 0 6px #000}
+.tag{position:absolute;left:0;right:0;text-align:center;font:600 28px "Courier New",monospace;letter-spacing:6px;color:#bdb8a8;opacity:.85}
+.fold{position:absolute;background:#b9a273;border-radius:6px 6px 0 0;box-shadow:0 20px 40px rgba(0,0,0,.6)}
+.stamp{position:absolute;font:900 82px "Courier New",monospace;color:#a0201c;border:10px solid #a0201c;padding:6px 26px;letter-spacing:4px;transform:rotate(-8deg);opacity:.9}
+.ln{position:absolute;height:14px;background:#3a352c;border-radius:3px}
+.red{position:absolute;height:34px;background:#050505}
+</style></head><body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="40" data-width="1080" data-height="1920">
+
+<!-- S1 -->
+<div id="s1" class="scene clip" data-start="0" data-duration="5.8" data-track-index="0"><div class="in" id="s1in">
+ <div class="abs" style="left:0;top:0;width:1080px;height:1920px;background:linear-gradient(#10161a,#06080a)"></div>
+ <div class="abs" style="left:0;top:1320px;width:1080px;height:600px;background:#14181b"></div>
+ <div id="tube" class="abs" style="left:240px;top:150px;width:600px;height:26px;background:#e8f1ee;box-shadow:0 0 120px 60px rgba(190,220,215,.35)"></div>
+ <div id="cone" class="abs" style="left:120px;top:176px;width:840px;height:1300px;background:linear-gradient(rgba(200,225,220,.22),rgba(200,225,220,0));clip-path:polygon(35% 0,65% 0,100% 100%,0 100%)"></div>
+ <!-- table + reel recorder -->
+ <div class="abs" style="left:30px;top:1180px;width:360px;height:30px;background:#2a2d2a"></div>
+ <div class="abs" style="left:60px;top:1000px;width:300px;height:180px;background:#3a3d38;border-radius:12px"></div>
+ <svg style="left:60px;top:1000px" width="300" height="180"><g id="rA" style="transform-origin:90px 70px"><circle cx="90" cy="70" r="52" fill="#15171a"/><path d="M90 20v100M40 70h100" stroke="#8a8c86" stroke-width="8"/></g><g id="rB" style="transform-origin:210px 70px"><circle cx="210" cy="70" r="52" fill="#15171a"/><path d="M210 20v100M160 70h100" stroke="#8a8c86" stroke-width="8"/></g></svg>
+ <!-- chair + man -->
+ <svg id="man" style="left:300px;top:380px" width="700" height="1300" viewBox="0 0 700 1300">
+  <rect x="120" y="480" width="460" height="700" rx="20" fill="#2b1f17"/>
+  <rect x="180" y="440" width="340" height="500" rx="70" fill="#4d5560"/>
+  <rect x="270" y="380" width="160" height="110" rx="40" fill="#b79273"/>
+  <ellipse cx="350" cy="290" rx="120" ry="140" fill="#c4a07f"/>
+  <path d="M225 270 Q232 140 350 138 Q468 140 475 270 Q440 200 350 200 Q260 200 225 270Z" fill="#241a14"/>
+  <g id="eyes"><ellipse cx="305" cy="300" rx="22" ry="14" fill="#f0ede4"/><ellipse cx="395" cy="300" rx="22" ry="14" fill="#f0ede4"/><circle cx="305" cy="300" r="8" fill="#0c0c0c"/><circle cx="395" cy="300" r="8" fill="#0c0c0c"/></g>
+  <path d="M272 284 L335 262 M428 284 L365 262" stroke="#241a14" stroke-width="9" stroke-linecap="round"/>
+  <path d="M315 372 Q350 360 385 372" stroke="#5a3a2a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M200 520 Q150 700 280 800" stroke="#4d5560" stroke-width="70" fill="none" stroke-linecap="round"/>
+  <path d="M500 520 Q550 700 420 800" stroke="#4d5560" stroke-width="70" fill="none" stroke-linecap="round"/>
+ </svg>
+</div></div>
+
+<!-- S2 -->
+<div id="s2" class="scene clip" style="opacity:0" data-start="5.8" data-duration="10.8" data-track-index="1"><div class="in" id="s2in">
+ <div id="s2a" class="abs" style="inset:0">
+  <div class="abs" style="inset:0;background:linear-gradient(#1a1c1d,#0b0c0d)"></div>
+  <div class="abs" style="left:0;top:1250px;width:1080px;height:700px;background:#3a2a1c"></div>
+  <div class="fold" style="left:90px;top:760px;width:760px;height:500px;transform:rotate(-4deg);background:#a99565"></div>
+  <div class="fold" style="left:150px;top:700px;width:760px;height:500px;transform:rotate(3deg)"></div>
+  <div class="abs" style="left:230px;top:790px;width:600px;height:20px;background:#6b5a38"></div>
+  <div class="abs" style="left:230px;top:850px;font:700 38px 'Courier New',monospace;color:#3a2f1c;letter-spacing:3px">PERSONNEL FILE · 1953</div>
+  <div id="stamp" class="stamp" style="left:220px;top:950px">TOP SECRET</div>
+ </div>
+ <div id="s2b" class="abs" style="inset:0;opacity:0">
+  <div class="abs" style="inset:0;background:linear-gradient(#202526,#0c0e0f)"></div>
+  <!-- researcher -->
+  <svg style="left:120px;top:450px" width="840" height="1300" viewBox="0 0 840 1300">
+   <path d="M120 1300 Q110 620 300 560 L540 560 Q730 620 720 1300Z" fill="#cfd1ca"/>
+   <path d="M380 560 L420 760 L460 560Z" fill="#8a8d86"/>
+   <rect x="365" y="470" width="110" height="110" rx="36" fill="#b89473"/>
+   <ellipse cx="420" cy="380" rx="115" ry="132" fill="#c4a07f"/>
+   <path d="M300 360 Q305 230 420 228 Q535 230 540 360 Q505 300 420 300 Q335 300 300 360Z" fill="#2a2018"/>
+   <path d="M330 372 H390 M450 372 H510" stroke="#111" stroke-width="10"/>
+   <rect x="326" y="348" width="76" height="46" rx="12" fill="none" stroke="#1c1c1c" stroke-width="8"/><rect x="438" y="348" width="76" height="46" rx="12" fill="none" stroke="#1c1c1c" stroke-width="8"/>
+   <path d="M170 820 Q280 960 470 880" stroke="#cfd1ca" stroke-width="90" fill="none" stroke-linecap="round"/>
+   <path d="M670 820 Q600 960 500 880" stroke="#cfd1ca" stroke-width="90" fill="none" stroke-linecap="round"/>
+   <g id="vial"><rect x="448" y="760" width="48" height="150" rx="10" fill="rgba(190,225,230,.55)" stroke="#dfe7e6" stroke-width="5"/><rect x="450" y="840" width="44" height="68" rx="8" fill="rgba(160,190,200,.9)"/><rect x="442" y="748" width="60" height="22" rx="6" fill="#1c1c1c"/></g>
+  </svg>
+ </div>
+ <div id="s2c" class="abs" style="inset:0;opacity:0">
+  <div class="abs" style="inset:0;background:linear-gradient(#9aa0a0,#4d5254 60%,#202325)"></div>
+  <svg style="left:0;top:700px" width="1080" height="900" viewBox="0 0 1080 900">
+   <g fill="#171a1b"><rect x="440" y="140" width="200" height="260"/><path d="M420 140 Q540 -40 660 140Z"/><rect x="525" y="-120" width="30" height="120"/>
+   <rect x="120" y="300" width="840" height="100"/><rect x="0" y="400" width="1080" height="500"/></g>
+   <g fill="#59605f"><rect x="160" y="320" width="22" height="80"/><rect x="230" y="320" width="22" height="80"/><rect x="300" y="320" width="22" height="80"/><rect x="760" y="320" width="22" height="80"/><rect x="830" y="320" width="22" height="80"/><rect x="900" y="320" width="22" height="80"/></g>
+  </svg>
+  <div class="tag" style="top:520px;font-size:34px;letter-spacing:8px;color:#161819">WASHINGTON, D.C. · 1950s</div>
+ </div>
+</div></div>
+
+<!-- S3 -->
+<div id="s3" class="scene clip" style="opacity:0" data-start="16.6" data-duration="9.2" data-track-index="2"><div class="in" id="s3in">
+ <svg style="left:0;top:0" width="1080" height="1920" viewBox="0 0 1080 1920">
+  <rect width="1080" height="1920" fill="#0b0f10"/>
+  <polygon points="0,0 1080,0 700,760 380,760" fill="#1b2325"/>
+  <polygon points="0,1920 1080,1920 700,1160 380,1160" fill="#10171a"/>
+  <polygon points="0,0 380,760 380,1160 0,1920" fill="#162022"/>
+  <polygon points="1080,0 700,760 700,1160 1080,1920" fill="#131c1e"/>
+  <rect x="380" y="760" width="320" height="400" fill="#05090a"/>
+  <g id="lights" fill="#d8ece6"><rect x="470" y="60" width="140" height="22"/><rect x="495" y="330" width="90" height="14"/><rect x="515" y="560" width="50" height="9"/></g>
+  <g stroke="#2a3a3c" stroke-width="3"><path d="M380 760 L0 560 M700 760 L1080 560 M380 1160 L0 1360 M700 1160 L1080 1360"/></g>
+ </svg>
+ <!-- room door w/ seated man -->
+ <svg id="man3" style="left:380px;top:850px" width="320" height="430" viewBox="0 0 320 430">
+  <rect x="60" y="180" width="200" height="250" rx="30" fill="#3d444a"/>
+  <ellipse cx="160" cy="110" rx="56" ry="64" fill="#b79273"/>
+  <path d="M104 100 Q108 36 160 34 Q212 36 216 100 Q196 70 160 70 Q124 70 104 100Z" fill="#241a14"/>
+  <circle cx="140" cy="116" r="6" fill="#111"/><circle cx="180" cy="116" r="6" fill="#111"/>
+ </svg>
+ <div id="s3glow" class="abs" style="left:0;top:700px;width:1080px;height:560px;background:radial-gradient(ellipse,rgba(190,225,220,.25),rgba(0,0,0,0) 70%)"></div>
+</div></div>
+
+<!-- S4 -->
+<div id="s4" class="scene clip" style="opacity:0" data-start="25.8" data-duration="9.2" data-track-index="3"><div class="in" id="s4in">
+ <div id="s4a" class="abs" style="inset:0">
+  <div class="abs" style="inset:0;background:linear-gradient(#1a1d1e,#0a0b0c)"></div>
+  <div class="abs" style="left:150px;top:640px;width:780px;height:330px;background:#2c3033;border-radius:20px;box-shadow:0 30px 60px #000"></div>
+  <div class="abs" style="left:230px;top:600px;width:620px;height:30px;background:#050607;border-radius:8px"></div>
+  <div id="stack" class="abs" style="left:250px;top:300px;width:580px;height:300px;background:#d9d4c4;border-radius:4px;box-shadow:0 0 0 6px #cfc9b6,0 0 0 12px #bfb9a6"></div>
+  <div id="strips" class="abs" style="left:230px;top:960px;width:620px;height:900px;overflow:hidden"></div>
+ </div>
+ <div id="s4b" class="abs" style="inset:0;opacity:0">
+  <div class="abs" style="inset:0;background:linear-gradient(#222628,#0a0c0d)"></div>
+  <div class="abs" style="left:0;top:1100px;width:1080px;height:820px;background:#2a2118"></div>
+  <div class="abs" style="left:100px;top:700px;width:880px;height:360px;background:#3a2b1c;border-radius:10px"></div>
+  <div class="abs" style="left:60px;top:460px;width:960px;height:240px;background:#1a1410"></div>
+  <svg style="left:0;top:560px" width="1080" height="600" viewBox="0 0 1080 600"><g stroke="#aaa" stroke-width="8" fill="none"><path d="M270 500 V300 M270 300 Q290 270 330 280"/><path d="M540 500 V280 M540 280 Q560 250 600 260"/><path d="M810 500 V300 M810 300 Q830 270 870 280"/></g><g fill="#111"><circle cx="330" cy="280" r="22"/><circle cx="600" cy="260" r="22"/><circle cx="870" cy="280" r="22"/></g></svg>
+  <div class="abs" style="left:300px;top:520px;width:480px;height:130px;background:#17120d;border:6px solid #54452f;text-align:center;font:700 40px 'Courier New',monospace;line-height:118px;color:#c8bfa3;letter-spacing:4px">SENATE HEARING</div>
+ </div>
+</div></div>
+
+<!-- S5 -->
+<div id="s5" class="scene clip" style="opacity:0" data-start="35" data-duration="5" data-track-index="4"><div class="in" id="s5in">
+ <div id="doc" class="abs" style="left:-1000px;top:-1100px;width:3200px;height:3600px;background:#cfc7b0;box-shadow:0 0 400px 200px rgba(0,0,0,.6)">
+  <div class="abs" style="left:200px;top:300px;font:700 120px 'Courier New',monospace;color:#2a2418;letter-spacing:10px">[ILLUSTRATIVE RECREATION]</div>
+  <div id="lines"></div>
+ </div>
+</div></div>
+
+<div id="grain"></div><div id="vig"></div><div id="flick"></div>
+
+<div class="tag" style="top:70px;font-size:22px">DRAMATIZED RECREATION · NOT ACTUAL ARCHIVAL FOOTAGE</div>
+<div id="hook" class="abs" style="left:50px;right:50px;top:250px;text-align:center;font:900 92px Impact,'Arial Black',sans-serif;line-height:1.05;color:#f2efe6;text-shadow:0 0 30px #000,0 4px 0 #8a1410;letter-spacing:2px">THE CIA<br>ACTUALLY<br>DID THIS.</div>
+
+<div class="cap clip" data-start="0.3" data-duration="5.4" data-track-index="6" style="bottom:200px">What if I told you the CIA once experimented on Americans without their consent?</div>
+<div class="cap clip" data-start="6.0" data-duration="10.4" data-track-index="6">In 1953, the CIA launched MKUltra. A secret program exploring drugs, hypnosis, and techniques to influence human behavior.</div>
+<div class="cap clip" data-start="17.0" data-duration="8.6" data-track-index="6">Some subjects were given LSD without knowing it. The experiments took place across universities, hospitals, and other institutions.</div>
+<div class="cap clip" data-start="26.0" data-duration="8.8" data-track-index="6">In 1973, many MKUltra records were destroyed. Years later, investigations exposed parts of what happened.</div>
+<div class="cap clip" data-start="35.2" data-duration="4.4" data-track-index="6">The terrifying part? We may never know the full extent of the experiments.</div>
+
+<audio id="a0" src="assets/bed.wav" data-start="0" data-duration="40" data-track-index="10" data-volume="0.55"></audio>
+<audio id="a1" src="assets/tick.wav" data-start="0" data-duration="40" data-track-index="11" data-volume="0.35"></audio>
+<audio id="v1" src="assets/v1.wav" data-start="0.3" data-duration="5.3" data-track-index="12" data-volume="1"></audio>
+<audio id="v2" src="assets/v2.wav" data-start="6.0" data-duration="10.3" data-track-index="13" data-volume="1"></audio>
+<audio id="v3" src="assets/v3.wav" data-start="17.0" data-duration="8.5" data-track-index="14" data-volume="1"></audio>
+<audio id="v4" src="assets/v4.wav" data-start="26.0" data-duration="8.7" data-track-index="15" data-volume="1"></audio>
+<audio id="v5" src="assets/v5.wav" data-start="35.2" data-duration="4.3" data-track-index="16" data-volume="1"></audio>
+</div>
+<script>
+const tl=gsap.timeline({paused:true});
+// build procedural bits
+let h="";for(let i=0;i<34;i++){const w=900+((i*137)%1500);h+=`<div class="ln" style="left:200px;top:${520+i*86}px;width:${w}px"></div>`;if(i%5==2)h+=`<div class="red" style="left:${260+(i*61)%500}px;top:${515+i*86}px;width:${600+(i*97)%900}px"></div>`;}
+document.getElementById("lines").innerHTML=h;
+let st="";for(let i=0;i<22;i++)st+=`<div class="strip abs" style="left:${i*28}px;top:-300px;width:20px;height:${180+(i*53)%160}px;background:#d9d4c4"></div>`;
+document.getElementById("strips").innerHTML=st;
+
+// global grain jitter (stepped, deterministic)
+for(let i=0;i<160;i++){tl.set("#grain",{x:(i*97)%540,y:(i*61)%960},i*0.25);}
+// scenes visibility
+
+const xf=(a,b,t)=>{tl.to(a,{opacity:0,duration:.5},t);tl.to(b,{opacity:1,duration:.5},t)};
+xf("#s1","#s2",5.5);xf("#s2","#s3",16.3);xf("#s3","#s4",25.5);xf("#s4","#s5",34.7);
+tl.to("#s5",{opacity:0,duration:1.2},38.8);
+
+// hook
+tl.from("#hook",{opacity:0,scale:1.15,duration:.5,ease:"power3.out"},.3);
+tl.to("#hook",{opacity:0,duration:.6},3.6);
+
+// S1
+tl.fromTo("#s1in",{scale:1.0,transformOrigin:"62% 38%"},{scale:1.9,duration:5.8,ease:"power1.in"},0);
+tl.to("#rA",{rotation:720,duration:5.8,ease:"none"},0);tl.to("#rB",{rotation:-540,duration:5.8,ease:"none"},0);
+const fl=[.6,.75,1.4,1.5,1.55,2.8,3.3,3.35,4.4,4.9,5.0];fl.forEach(t=>{tl.set("#tube",{opacity:.25},t);tl.set("#tube",{opacity:1},t+.07);tl.set("#flick",{opacity:.55},t);tl.set("#flick",{opacity:0},t+.07)});
+tl.to("#eyes",{y:3,duration:.2,yoyo:true,repeat:9,ease:"sine.inOut"},.5);
+
+// S2
+tl.fromTo("#s2in",{scale:1.08},{scale:1,duration:10.8,ease:"none"},5.8);
+tl.fromTo("#stamp",{scale:3,opacity:0},{scale:1,opacity:.9,duration:.15,ease:"power4.in"},6.9);
+tl.fromTo("#s2a",{y:30},{y:-30,duration:3.4,ease:"sine.inOut"},5.8);
+tl.to("#s2a",{opacity:0,duration:.5},9.2);tl.to("#s2b",{opacity:1,duration:.5},9.2);
+tl.fromTo("#vial",{y:0,rotation:-2},{y:-30,rotation:6,duration:3,ease:"sine.inOut"},9.5);
+tl.fromTo("#s2b",{x:40},{x:-40,duration:3.5,ease:"none"},9.2);
+tl.to("#s2b",{opacity:0,duration:.5},12.6);tl.to("#s2c",{opacity:1,duration:.5},12.6);
+tl.fromTo("#s2c",{scale:1.12},{scale:1,duration:3.8,ease:"none"},12.6);
+
+// S3
+tl.fromTo("#s3in",{scale:1.0,rotation:-2,transformOrigin:"50% 50%"},{scale:1.5,rotation:2,duration:9.2,ease:"sine.inOut"},16.6);
+[18,18.1,19.5,19.6,19.7,21.2,22.4,22.45,23.9,24.8].forEach(t=>{tl.set("#lights",{opacity:.1},t);tl.set("#lights",{opacity:1},t+.08);tl.set("#flick",{opacity:.6},t);tl.set("#flick",{opacity:0},t+.08)});
+tl.to("#man3",{x:-8,rotation:-2,duration:1.2,yoyo:true,repeat:6,ease:"sine.inOut"},17);
+
+// S4
+tl.fromTo("#stack",{y:0,height:300},{y:260,height:40,duration:3.6,ease:"none"},26.4);
+tl.fromTo(".strip",{y:0,opacity:1},{y:700,duration:.9,stagger:.12,ease:"power1.in"},26.6);
+tl.to("#s4a",{opacity:0,duration:.5},30.0);tl.to("#s4b",{opacity:1,duration:.5},30.0);
+tl.fromTo("#s4b",{scale:1.12},{scale:1,duration:5,ease:"none"},30);
+
+// S5: extreme close-up, pull back into darkness
+tl.fromTo("#doc",{scale:2.2,x:0,y:0,transformOrigin:"1000px 900px"},{scale:.55,duration:5,ease:"power2.inOut"},35);
+tl.to("#s5in",{opacity:.0,duration:2.2,ease:"power1.in"},37.4);
+
+window.__timelines={main:tl};tl.seek(0);
+</script></body></html>
