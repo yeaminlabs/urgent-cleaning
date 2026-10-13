@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:"BN";src:url("assets/bn800.ttf");font-weight:800}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#120c0a}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"BN",Inter,sans-serif;font-weight:800;color:#fff}
+.scene{position:absolute;inset:0;overflow:hidden}
+.abs{position:absolute}
+svg{position:absolute;overflow:visible}
+.cap{position:absolute;left:60px;right:60px;bottom:210px;text-align:center;font-size:62px;line-height:1.35;text-shadow:0 4px 24px rgba(0,0,0,.7)}
+.cap b{color:#ff3b4a;font-weight:800}
+.bub{position:absolute;background:#fff;color:#222;border-radius:30px 30px 30px 6px;padding:20px 28px;font-size:34px;font-family:Inter,sans-serif;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.bub i{display:block;font-style:normal;font-size:24px;color:#1877f2;margin-bottom:4px}
+.badge{position:absolute;background:#e11d2e;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;font:800 46px Inter}
+.card{position:absolute;border-radius:18px;overflow:hidden;background:#fff}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="15" data-width="1080" data-height="1920">
+
+<!-- SCENE 1 -->
+<div id="s1" class="scene clip" data-start="0" data-duration="4.4" data-track-index="0" style="background:linear-gradient(#e9c08a,#b9824f 55%,#6b4429)">
+  <div id="s1in" class="abs" style="inset:0">
+    <!-- window light -->
+    <div class="abs" style="left:640px;top:120px;width:360px;height:560px;background:linear-gradient(#fff6dc,#ffd98f);border:14px solid #5a3a22;opacity:.9"></div>
+    <!-- clothes rack -->
+    <svg style="left:0;top:560px" width="1080" height="600" viewBox="0 0 1080 600">
+      <rect x="40" y="40" width="500" height="14" fill="#3b2a1e"/>
+      <rect x="60" y="40" width="12" height="560" fill="#3b2a1e"/><rect x="510" y="40" width="12" height="560" fill="#3b2a1e"/>
+      <g id="shirts"></g>
+    </svg>
+    <!-- owner -->
+    <svg id="own1" style="left:300px;top:760px" width="520" height="900" viewBox="0 0 520 900">
+      <rect x="140" y="320" width="240" height="480" rx="60" fill="#244a6b"/>
+      <rect x="130" y="760" width="110" height="140" fill="#1a1a1f"/><rect x="280" y="760" width="110" height="140" fill="#1a1a1f"/>
+      <rect x="215" y="250" width="90" height="90" rx="30" fill="#b9754a"/>
+      <ellipse cx="260" cy="200" rx="95" ry="105" fill="#c98558"/>
+      <path d="M160 190 Q170 90 260 92 Q350 90 360 190 Q330 140 260 140 Q190 140 160 190Z" fill="#1c1210"/>
+      <g id="brow"><rect x="205" y="188" width="40" height="8" rx="4" fill="#1c1210" transform="rotate(14 225 192)"/><rect x="275" y="188" width="40" height="8" rx="4" fill="#1c1210" transform="rotate(-14 295 192)"/></g>
+      <circle cx="225" cy="215" r="8" fill="#1c1210"/><circle cx="295" cy="215" r="8" fill="#1c1210"/>
+      <path d="M232 270 Q260 252 288 270" stroke="#5a2a1a" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M150 360 Q60 470 200 560" stroke="#244a6b" stroke-width="70" fill="none" stroke-linecap="round"/>
+      <path d="M370 360 Q470 470 330 560" stroke="#244a6b" stroke-width="70" fill="none" stroke-linecap="round"/>
+      <rect x="215" y="480" width="90" height="150" rx="14" fill="#111" transform="rotate(-6 260 555)"/>
+      <rect x="225" y="492" width="70" height="126" rx="8" fill="#1877f2" transform="rotate(-6 260 555)"/>
+    </svg>
+    <div id="b1" class="bub" style="left:80px;top:300px"><i>Facebook Messenger</i>ভাই, এই শার্ট আছে?</div>
+    <div id="b2" class="bub" style="left:560px;top:430px"><i>Facebook Messenger</i>প্রাইস কত? ডেলিভারি?</div>
+    <div id="b3" class="bub" style="left:120px;top:560px"><i>Facebook Messenger</i>সাইজ M আছে?</div>
+    <div id="b4" class="bub" style="left:520px;top:640px"><i>Facebook Messenger</i>অর্ডার কনফার্ম করুন!</div>
+    <div id="bd" class="badge" style="left:760px;top:260px">27</div>
+  </div>
+</div>
+
+<!-- SCENE 2 -->
+<div id="s2" class="scene clip" data-start="4" data-duration="4.4" data-track-index="1" style="background:linear-gradient(#f0cf9c,#c99560 60%,#7a4d2d)">
+  <div id="s2in" class="abs" style="inset:0">
+    <div class="abs" style="left:0;top:1100px;width:1080px;height:820px;background:#8a5a36"></div>
+    <div class="abs" style="left:60px;top:1080px;width:960px;height:40px;background:#5a3a22"></div>
+    <!-- boxes -->
+    <div id="bx1" class="abs" style="left:110px;top:860px;width:300px;height:230px;background:#c9955a;border-radius:8px"><div class="abs" style="left:120px;top:0;width:60px;height:100%;background:#e8c48f"></div></div>
+    <div id="bx2" class="abs" style="left:450px;top:900px;width:260px;height:190px;background:#d4a46b;border-radius:8px"><div class="abs" style="left:100px;top:0;width:60px;height:100%;background:#eed3a4"></div></div>
+    <div id="bx3" class="abs" style="left:750px;top:830px;width:230px;height:260px;background:#c08850;border-radius:8px"><div class="abs" style="left:85px;top:0;width:60px;height:100%;background:#e8c48f"></div></div>
+    <!-- folded shirt -->
+    <div id="fs" class="abs" style="left:300px;top:1010px;width:420px;height:70px;background:#e11d2e;border-radius:14px"></div>
+    <!-- thought bubble with website -->
+    <div id="tb" class="abs" style="left:150px;top:180px;width:780px;height:560px;background:#fff;border-radius:50px;box-shadow:0 20px 50px rgba(0,0,0,.35)">
+      <div class="abs" style="left:40px;top:40px;width:700px;height:60px;background:#eee;border-radius:30px"></div>
+      <div class="abs" style="left:70px;top:58px;width:24px;height:24px;border-radius:50%;background:#e11d2e"></div>
+      <div class="abs" style="left:120px;top:56px;font:700 28px Inter;color:#666">yourstore.com</div>
+      <div class="abs" style="left:40px;top:130px;width:700px;height:200px;background:linear-gradient(120deg,#e11d2e,#7a0f18);border-radius:22px"></div>
+      <div class="abs" style="left:40px;top:360px;width:210px;height:150px;background:#f1e7dc;border-radius:16px"></div>
+      <div class="abs" style="left:285px;top:360px;width:210px;height:150px;background:#f1e7dc;border-radius:16px"></div>
+      <div class="abs" style="left:530px;top:360px;width:210px;height:150px;background:#f1e7dc;border-radius:16px"></div>
+    </div>
+    <div class="abs" style="left:230px;top:760px;width:60px;height:60px;border-radius:50%;background:#fff;opacity:.9"></div>
+    <div class="abs" style="left:190px;top:830px;width:34px;height:34px;border-radius:50%;background:#fff;opacity:.9"></div>
+    <!-- owner head & hands -->
+    <svg id="own2" style="left:340px;top:960px" width="400" height="300" viewBox="0 0 400 300">
+      <path d="M0 300 Q10 120 120 100 L280 100 Q390 120 400 300Z" fill="#244a6b"/>
+      <ellipse cx="200" cy="60" rx="85" ry="95" fill="#c98558" transform="translate(0 -30)"/>
+    </svg>
+  </div>
+</div>
+
+<!-- SCENE 3 -->
+<div id="s3" class="scene clip" data-start="8" data-duration="4.4" data-track-index="2" style="background:radial-gradient(circle at 50% 40%,#3a2218,#120c0a 75%)">
+  <div id="s3in" class="abs" style="inset:0">
+    <div id="ph" class="abs" style="left:230px;top:200px;width:620px;height:1180px;border-radius:90px;background:#0d0d10;border:14px solid #2a2a30;box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 120px rgba(225,29,46,.25);overflow:hidden">
+      <div class="abs" style="left:0;top:0;width:100%;height:110px;background:#fff"></div>
+      <div class="abs" style="left:40px;top:38px;font:800 36px Inter;color:#111">URBAN<span style="color:#e11d2e">WEAR</span></div>
+      <div id="hero" class="abs" style="left:0;top:110px;width:100%;height:330px;background:linear-gradient(120deg,#e11d2e,#5c0b14)"><div class="abs" style="left:40px;top:90px;font:800 52px Inter;line-height:1.1">New<br>Collection</div></div>
+      <div class="abs" style="left:0;top:440px;width:100%;height:740px;background:#fafafa"></div>
+      <div id="p1" class="card" style="left:30px;top:470px;width:260px;height:320px"><div style="height:220px;background:#244a6b"></div><div style="font:700 24px Inter;color:#111;padding:14px">Denim Shirt ৳১২৯০</div></div>
+      <div id="p2" class="card" style="left:316px;top:470px;width:260px;height:320px"><div style="height:220px;background:#e8c48f"></div><div style="font:700 24px Inter;color:#111;padding:14px">Panjabi ৳২২৫০</div></div>
+      <div id="p3" class="card" style="left:30px;top:820px;width:260px;height:320px"><div style="height:220px;background:#2c2c32"></div><div style="font:700 24px Inter;color:#111;padding:14px">Polo Tee ৳৮৯০</div></div>
+      <div id="p4" class="card" style="left:316px;top:820px;width:260px;height:320px"><div style="height:220px;background:#a8262f"></div><div style="font:700 24px Inter;color:#111;padding:14px">Hoodie ৳১৮৫০</div></div>
+    </div>
+    <div id="tap" class="abs" style="left:520px;top:620px;width:90px;height:90px;border-radius:50%;border:6px solid #fff;opacity:0"></div>
+    <div id="ok" class="abs" style="left:560px;top:1440px;width:340px;padding:22px;background:#e11d2e;border-radius:26px;font:800 40px Inter;text-align:center;opacity:0">✓ Order placed</div>
+    <svg style="left:-60px;top:1230px" width="400" height="500" viewBox="0 0 400 500"><rect x="60" y="260" width="260" height="240" rx="50" fill="#7a3d2b"/><ellipse cx="190" cy="170" rx="80" ry="90" fill="#a8683f"/><path d="M110 150 Q120 70 190 74 Q265 72 272 150 Q240 110 190 110 Q140 110 110 150Z" fill="#150d0a"/></svg>
+  </div>
+</div>
+
+<!-- SCENE 4 -->
+<div id="s4" class="scene clip" data-start="12" data-duration="3" data-track-index="3" style="background:linear-gradient(#2a1a14,#0c0706)">
+  <div id="glow" class="abs" style="left:-200px;top:300px;width:1480px;height:1300px;background:radial-gradient(closest-side,rgba(225,29,46,.55),rgba(225,29,46,0))"></div>
+  <svg id="own4" style="left:290px;top:230px" width="500" height="1000" viewBox="0 0 500 1000">
+    <rect x="120" y="380" width="260" height="520" rx="64" fill="#244a6b"/>
+    <rect x="110" y="860" width="120" height="140" fill="#15151a"/><rect x="270" y="860" width="120" height="140" fill="#15151a"/>
+    <rect x="205" y="310" width="90" height="90" rx="30" fill="#b9754a"/>
+    <ellipse cx="250" cy="260" rx="95" ry="105" fill="#c98558"/>
+    <path d="M150 250 Q160 150 250 152 Q340 150 350 250 Q320 200 250 200 Q180 200 150 250Z" fill="#1c1210"/>
+    <circle cx="215" cy="275" r="8" fill="#1c1210"/><circle cx="285" cy="275" r="8" fill="#1c1210"/>
+    <path d="M215 320 Q250 352 285 320" stroke="#5a2a1a" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M135 420 Q140 600 175 660" stroke="#244a6b" stroke-width="64" fill="none" stroke-linecap="round"/>
+    <path d="M365 420 Q360 600 325 660" stroke="#244a6b" stroke-width="64" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div id="logo" class="abs" style="left:0;width:1080px;top:1320px;text-align:center;font:800 120px Inter;letter-spacing:-2px">SNBD<span style="color:#ff3b4a"> HOST</span></div>
+  <div id="url" class="abs" style="left:0;width:1080px;top:1470px;text-align:center;font:700 52px Inter;color:#f3d9d6">snbdhost.com</div>
+  <div id="line" class="abs" style="left:440px;top:1450px;width:200px;height:6px;background:#e11d2e;border-radius:3px"></div>
+</div>
+
+<!-- Captions (Bangla voiceover) -->
+<div id="c1" class="cap clip" data-start="0.2" data-duration="3.8" data-track-index="5"><b>Facebook</b> পেজ আছে, কিন্তু<br>নিজের ওয়েবসাইট নেই?</div>
+<div id="c2" class="cap clip" data-start="4.4" data-duration="3.6" data-track-index="5">আপনার ব্যবসাকে দিন একটা<br><b>প্রফেশনাল পরিচয়</b></div>
+<div id="c3" class="cap clip" data-start="8.4" data-duration="3.4" data-track-index="5"><b>SNBD HOST</b> এর সাথে<br>শুরু করুন আজই।</div>
+
+</div>
+<script>
+const tl = gsap.timeline({paused:true});
+// shirts on rack
+const cols=["#e11d2e","#244a6b","#e8c48f","#2c2c32","#7a3d2b","#f1f1f1"];
+const g=document.getElementById("shirts");
+cols.forEach((c,i)=>{g.insertAdjacentHTML("beforeend",`<path d="M${90+i*70} 56 l-36 40 l22 22 l14-12 v180 h60 v-180 l14 12 l22-22 l-36-40 z" fill="${c}" transform="translate(0 0)"/>`)});
+
+// S1
+tl.fromTo("#s1in",{scale:1.12,x:-30},{scale:1,x:30,duration:4.4,ease:"sine.inOut"},0);
+tl.from("#own1",{y:60,opacity:0,duration:.6,ease:"power2.out"},0);
+["b1","b2","b3","b4"].forEach((id,i)=>tl.from("#"+id,{scale:0,opacity:0,transformOrigin:"0% 100%",duration:.35,ease:"back.out(2)"},.5+i*.7));
+tl.from("#bd",{scale:0,duration:.3,ease:"back.out(3)"},.5);
+tl.to("#bd",{scale:1.25,duration:.15,yoyo:true,repeat:5},1.2);
+tl.to("#brow",{y:-6,duration:.3,yoyo:true,repeat:5},.8);
+tl.to("#own1",{x:-6,duration:.1,yoyo:true,repeat:11},1.2);
+tl.to("#s1",{opacity:0,duration:.4},4.0);
+
+tl.set(["#s2","#s3","#s4"],{opacity:0},0);
+// S2
+tl.to("#s2",{opacity:1,duration:.4},4);
+tl.fromTo("#s2in",{scale:1.18,y:30},{scale:1.02,y:-20,duration:4.4,ease:"sine.inOut"},4);
+tl.from(["#bx1","#bx2","#bx3"],{y:-300,opacity:0,stagger:.35,duration:.5,ease:"bounce.out"},4.4);
+tl.from("#fs",{x:-500,opacity:0,duration:.5,ease:"power3.out"},4.9);
+tl.from("#own2",{y:200,duration:.7,ease:"power2.out"},4.2);
+tl.from("#tb",{scale:0,transformOrigin:"20% 100%",opacity:0,duration:.6,ease:"back.out(1.6)"},6.2);
+tl.to("#s2",{opacity:0,duration:.4},8.0);
+
+// S3
+tl.to("#s3",{opacity:1,duration:.4},8);
+tl.fromTo("#s3in",{scale:1.15,rotate:-2},{scale:1,rotate:0,duration:4.4,ease:"power2.out"},8);
+tl.from("#ph",{y:400,rotateY:25,opacity:0,duration:.9,ease:"power3.out"},8);
+tl.from(["#p1","#p2","#p3","#p4"],{y:60,opacity:0,stagger:.2,duration:.4},9);
+tl.fromTo("#tap",{opacity:0,scale:.4},{opacity:1,scale:1.2,duration:.35},10.6);
+tl.to("#tap",{opacity:0,duration:.3},11);
+tl.fromTo("#ok",{opacity:0,y:30},{opacity:1,y:0,duration:.4},11.1);
+tl.to("#s3",{opacity:0,duration:.4},12.0);
+
+// S4
+tl.to("#s4",{opacity:1,duration:.5},12);
+tl.fromTo("#glow",{opacity:.2},{opacity:1,duration:1.4},12);
+tl.from("#own4",{y:80,opacity:0,scale:.95,duration:.9,ease:"power2.out"},12.1);
+tl.to("#own4",{scale:1.04,duration:2.5,ease:"sine.inOut"},12.5);
+tl.from("#logo",{y:40,opacity:0,duration:.6,ease:"power3.out"},13);
+tl.from("#line",{scaleX:0,duration:.5},13.5);
+tl.from("#url",{opacity:0,duration:.5},13.7);
+
+// captions
+["c1","c2","c3"].forEach(id=>{tl.from("#"+id,{y:30,opacity:0,duration:.4},{c1:.2,c2:4.4,c3:8.4}[id])});
+window.__timelines={main:tl};
+tl.seek(0);
+</script>
+</body>
+</html>
