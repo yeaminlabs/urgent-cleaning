@@ -158,15 +158,37 @@ const ESTIMATOR_PAGES = {
   'rental-turnover-cleaning-kamloops/index.html':   'moveout',   // priced as a move-out clean
   'post-renovation-cleaning-kamloops/index.html':   'postreno',
 };
+/* The internal team price guide is deliberately NOT a public page: it is behind
+   HTTP Basic Auth (proxy.mjs), carries its own staff rate card, and is allowed
+   to differ from the public engine. Scanning it here would force internal rates
+   to be registered against pricing.js, which is exactly the coupling we do not
+   want. Its own guard is qa/team-guide-auth.js, which proves it stays private
+   and keeps its prices self-contained. Public pages remain fully covered. */
+const PRIVATE_DIRS = ['team-price-guide'];
 const allHtml = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['node_modules', '.git', 'qa'].includes(e.name)) continue;
+    if (['node_modules', '.git', 'qa', ...PRIVATE_DIRS].includes(e.name)) continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p);
     else if (e.name.endsWith('.html')) allHtml.push(path.relative(ROOT, p).split(path.sep).join('/'));
   }
 })(ROOT);
+
+check('the only HTML skipped by this suite is the private, authenticated guide', () => {
+  for (const dir of PRIVATE_DIRS) {
+    const p = path.join(ROOT, dir);
+    assert.ok(fs.existsSync(p), `${dir}/ does not exist — remove it from PRIVATE_DIRS`);
+    // Skipping is only justified while the route is actually protected.
+    const cfg = JSON.parse(read('vercel.json'));
+    assert.ok(cfg.proxy && cfg.proxy.matcher.some(m => m.startsWith('/' + dir)),
+      `${dir}/ is skipped here but no longer protected by vercel.json`);
+    // And only for files that are genuinely private: nothing in there may be
+    // reachable from the public site or the sitemap.
+    assert.ok(!read('sitemap.xml').includes('/' + dir), `${dir}/ appears in sitemap.xml`);
+    for (const f of allHtml) assert.ok(!read(f).includes('/' + dir + '/'), `${f} links to the private ${dir}/`);
+  }
+});
 
 section('6. Estimator pages');
 check('exactly the expected pages host an estimator', () => {

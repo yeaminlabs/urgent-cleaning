@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#111827">
+<meta name="color-scheme" content="light">
+<title>Team Price Guide · Urgent Clean</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Brand tokens — matched to urgentcleankamloops.ca */
+  --ember:#C94B0C; --ember-dk:#A63D0A; --ember-lt:#EA580C; --ember-tint:rgba(201,75,12,.09);
+  --ink:#111827; --ink-2:#4B5563; --ink-3:#9CA3AF;
+  --ground:#FFFFFF; --surface:#F6F8FA; --surface-2:#EEF1F5;
+  --border:#E5E7EB; --border-2:#D1D5DB;
+  --good:#15803D; --good-tint:#ECFDF3;
+  --r-sm:4px; --r:8px; --r-lg:14px;
+  --font:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+html,body{margin:0}
+body{background:var(--surface);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:calc(92px + var(--safe-b))}
+@media(min-width:900px){body{padding-bottom:0}}
+button{font-family:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+
+/* ---------- Top bar ---------- */
+.topbar{background:var(--ground);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;height:60px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);min-width:0}
+.logo img{height:30px;width:auto;display:block}
+.logo .fallback{font-weight:800;font-size:19px;letter-spacing:-.02em}
+.logo .fallback b{color:var(--ember)}
+.callbtn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;background:var(--ember);color:#fff;text-decoration:none;border-radius:var(--r);padding:6px 14px;line-height:1.1;flex:0 0 auto}
+.callbtn small{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.callbtn span{font-size:15px;font-weight:800}
+.callbtn:active{background:var(--ember-dk)}
+
+/* ---------- Hero ---------- */
+.hero{background:linear-gradient(160deg,#1f2937 0%,#111827 60%);color:#fff;padding:26px 0 22px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(234,88,12,.28),transparent 70%)}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ember-lt)}
+.hero h1{font-size:clamp(28px,7.5vw,44px);line-height:1.05;font-weight:800;letter-spacing:-.025em;margin:8px 0 8px}
+.hero p{margin:0;color:#D1D5DB;font-size:15px;max-width:520px}
+.hero .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.hero .chips span{font-size:12px;font-weight:600;padding:6px 10px;border-radius:var(--r);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#E5E7EB}
+
+/* ---------- Section nav ---------- */
+.secnav{position:sticky;top:60px;z-index:20;background:var(--ground);border-bottom:1px solid var(--border)}
+.secnav .wrap{display:flex;gap:6px;overflow-x:auto;padding:10px 16px;scrollbar-width:none}
+.secnav .wrap::-webkit-scrollbar{display:none}
+.secnav a{flex:0 0 auto;text-decoration:none;color:var(--ink-2);font-weight:700;font-size:13.5px;padding:8px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--border)}
+.secnav a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ---------- Layout ---------- */
+main{padding-top:18px}
+.layout{display:grid;gap:16px}
+@media(min-width:900px){.layout{grid-template-columns:minmax(0,1fr) 360px;align-items:start}}
+section{margin-bottom:26px}
+.shead{margin:0 0 12px}
+.shead h2{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:2px 0 4px;line-height:1.15}
+.shead p{margin:0;color:var(--ink-2);font-size:14px}
+.card{background:var(--ground);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;box-shadow:0 1px 2px rgba(17,24,39,.04)}
+
+/* ---------- Calculator steps ---------- */
+.step{padding:16px 0;border-top:1px solid var(--border)}
+.step:first-child{border-top:0;padding-top:0}
+.step:last-child{padding-bottom:0}
+.step-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.num{width:26px;height:26px;border-radius:50%;background:var(--ember);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;flex:0 0 auto}
+.step-h h3{margin:0;font-size:16.5px;font-weight:700}
+.step-h .opt{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:600}
+
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mode{border:1.5px solid var(--border);background:var(--ground);border-radius:var(--r-lg);padding:12px 8px;text-align:center;cursor:pointer;color:var(--ink);min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:border-color .15s,background .15s}
+.mode svg{width:24px;height:24px;stroke:var(--ink-2)}
+.mode b{font-size:13.5px;font-weight:700;line-height:1.15}
+.mode small{font-size:11px;color:var(--ink-3);line-height:1.2}
+.mode.on{border-color:var(--ember);background:var(--ember-tint)}
+.mode.on svg{stroke:var(--ember)}
+
+.lbl{font-size:12px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px}
+.lbl:first-child{margin-top:0}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--border);background:var(--ground);color:var(--ink);border-radius:var(--r);padding:10px 13px;font-size:14.5px;font-weight:600;cursor:pointer;min-height:44px;display:inline-flex;align-items:center;gap:6px;transition:.12s}
+.chip .pr{font-weight:700;color:var(--ink-3);font-size:13px}
+.chip.on{border-color:var(--ember);background:var(--ember);color:#fff}
+.chip.on .pr{color:#FFE4D5}
+.chipset.grid2{display:grid;grid-template-columns:1fr 1fr}
+.chipset.grid2 .chip{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;text-align:left;line-height:1.2;padding:10px 12px}
+@media(min-width:640px){.chipset.grid2 .chip{flex-direction:row;align-items:center;justify-content:space-between}}
+
+.list{display:grid;gap:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1.5px solid var(--border);border-radius:var(--r);padding:11px 12px;background:var(--ground);cursor:pointer;min-height:52px;text-align:left;width:100%;color:var(--ink)}
+.row .t{font-size:15px;font-weight:600;line-height:1.2}
+.row .s{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.row .p{font-weight:800;font-size:15px;white-space:nowrap}
+.row.on{border-color:var(--ember);background:var(--ember-tint)}
+.row.on .p{color:var(--ember)}
+
+.steppers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.stepper{border:1.5px solid var(--border);border-radius:var(--r);padding:8px 10px;background:var(--ground)}
+.stepper .k{font-size:11.5px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+.stepper .ctl{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.stepper .v{font-size:22px;font-weight:800;min-width:40px;text-align:center}
+.stepper.off{opacity:.4;pointer-events:none}
+.sbtn{width:44px;height:44px;border-radius:var(--r);border:1.5px solid var(--border-2);background:var(--surface);color:var(--ink);font-size:22px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1}
+.sbtn:active{background:var(--surface-2)}
+
+.addon{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1.5px solid var(--border);border-radius:var(--r);padding:8px 8px 8px 12px;background:var(--ground);min-height:58px}
+.addon.on{border-color:var(--ember);background:var(--ember-tint)}
+.addon .t{font-size:14.5px;font-weight:600;line-height:1.2}
+.addon .s{font-size:12.5px;color:var(--ink-3)}
+.addon.on .s{color:var(--ember-dk)}
+.qty{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.qty .v{min-width:20px;text-align:center;font-weight:800;font-size:16px}
+.qty .sbtn{width:40px;height:40px;font-size:20px}
+.qty .sbtn.plus{background:var(--ink);border-color:var(--ink);color:#fff}
+.more{margin-top:8px;width:100%;background:none;border:1.5px dashed var(--border-2);border-radius:var(--r);padding:11px;font-weight:700;color:var(--ink-2);font-size:14px;cursor:pointer}
+
+/* ---------- Summary ---------- */
+.summary{position:sticky;top:122px}
+.summary .k{font-size:12px;font-weight:700;color:var(--ink-2);text-transform:uppercase;letter-spacing:.08em}
+.summary .big{font-size:46px;font-weight:800;letter-spacing:-.03em;color:var(--ink);line-height:1;margin:6px 0 2px}
+.summary .big .plus{color:var(--ember)}
+.summary .tax{font-size:13px;color:var(--ink-3)}
+.lines{list-style:none;margin:14px 0 0;padding:0}
+.lines li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--border);font-size:14px}
+.lines li span:first-child{color:var(--ink-2)}
+.lines li span:last-child{font-weight:700;white-space:nowrap}
+.lines li.tot{border-top:2px solid var(--ink);font-size:16px}
+.lines li.tot span{color:var(--ink);font-weight:800}
+.note{font-size:13px;padding:10px 12px;border-radius:var(--r);margin-top:10px;line-height:1.35;display:flex;gap:8px}
+.note:before{content:"";flex:0 0 6px;border-radius:3px}
+.note.warn{background:#FFF4EC;color:#9A3412}.note.warn:before{background:var(--ember)}
+.note.info{background:var(--surface);color:var(--ink-2)}.note.info:before{background:var(--ink-3)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border:0;border-radius:var(--r);background:var(--ember);color:#fff;font-weight:800;font-size:15.5px;cursor:pointer;margin-top:14px}
+.btn:active{background:var(--ember-dk)}
+.btn svg{width:18px;height:18px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--border-2);margin-top:8px;font-weight:700}
+
+/* ---------- Mobile bottom bar ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);color:#fff;padding:10px 16px calc(10px + var(--safe-b));display:flex;align-items:center;gap:12px;box-shadow:0 -6px 20px rgba(17,24,39,.18)}
+.bar .info{flex:1;min-width:0}
+.bar .k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.bar .v{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.bar .d{font-size:12px;color:#D1D5DB;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar button{flex:0 0 auto;min-height:48px;padding:0 16px;border:0;border-radius:var(--r);background:var(--ember);color:#fff;font-weight:800;font-size:15px;cursor:pointer}
+@media(min-width:900px){.bar{display:none}}
+
+/* ---------- Reference ---------- */
+.sizes{display:grid;gap:10px}
+@media(min-width:640px){.sizes{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.sizes{grid-template-columns:1fr 1fr 1fr}}
+.sz{background:var(--ground);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px}
+.sz .h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.sz .h b{font-size:16px;font-weight:800}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.sz .p3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.sz .p3 div{background:var(--surface);border-radius:var(--r);padding:8px 6px;text-align:center}
+.sz .p3 small{display:block;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.sz .p3 span{display:block;font-size:19px;font-weight:800;margin-top:2px}
+.sz .p3 .mv span{color:var(--ember)}
+
+.plist{background:var(--ground);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.pi{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-top:1px solid var(--border)}
+.pi:first-child{border-top:0}
+.pi .t{font-weight:600;font-size:15px;line-height:1.25}
+.pi .s{font-size:12.5px;color:var(--ink-3);margin-top:2px}
+.pi .p{text-align:right;white-space:nowrap}
+.pi .p b{font-size:18px;font-weight:800}
+.pi .p small{display:block;font-size:11.5px;color:var(--ink-3);font-weight:600}
+.pi.hl{background:var(--ember-tint)}
+.pi.hl .p b{color:var(--ember)}
+.cols{display:grid;gap:0 16px}
+@media(min-width:760px){.cols{grid-template-columns:1fr 1fr}}
+
+footer{background:var(--ink);color:#9CA3AF;padding:24px 0 28px;font-size:13px;margin-top:10px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+footer a{color:#fff;text-decoration:none;font-weight:700}
+
+.toast{position:fixed;left:50%;bottom:calc(100px + var(--safe-b));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--good);color:#fff;padding:11px 18px;border-radius:999px;font-size:14px;font-weight:700;transition:.25s;pointer-events:none;z-index:50;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(min-width:900px){.toast{bottom:28px}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Urgent Clean">
+      <img src="https://www.urgentcleankamloops.ca/assets/images/urgent-clean-main-logo.png" alt="Urgent Clean"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <span class="fallback" style="display:none">Urgent<b>Clean</b></span>
+    </a>
+    <a class="callbtn" href="tel:+12508792425"><small>Office line</small><span>(250) 879-2425</span></a>
+  </div>
+</div>
+
+<div class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">Team price guide · Staff only</div>
+    <h1>Quote any job<br>in under a minute.</h1>
+    <p>Tap the job type, size, extras and timing. The price builds itself — copy it straight to the client.</p>
+    <div class="chips"><span>Prices before tax</span><span>Supplies included</span><span>Kamloops</span></div>
+  </div>
+</div>
+
+<nav class="secnav" aria-label="Sections">
+  <div class="wrap" id="secnav">
+    <a href="#calc" class="on">Quick quote</a>
+    <a href="#flat">By home size</a>
+    <a href="#hourly">Hourly</a>
+    <a href="#turnover">Airbnb / rental</a>
+    <a href="#addons">Add-ons</a>
+    <a href="#rush">Rush fees</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ================= CALCULATOR ================= -->
+  <section id="calc">
+    <div class="layout">
+      <div class="card">
+        <div class="step">
+          <div class="step-h"><span class="num">1</span><h3>How are we pricing it?</h3></div>
+          <div class="modes" id="modes">
+            <button class="mode on" data-mode="flat">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+              <b>Home size</b><small>Flat rate</small></button>
+            <button class="mode" data-mode="turnover">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              <b>Airbnb</b><small>Rental turnover</small></button>
+            <button class="mode" data-mode="hourly">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <b>Hourly</b><small>Custom jobs</small></button>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-h"><span class="num">2</span><h3 id="step2title">Job details</h3></div>
+
+          <div id="flatBox">
+            <div class="lbl">Type of clean</div>
+            <div class="chipset" id="flatType"></div>
+            <div class="lbl">Home size</div>
+            <div class="chipset grid2" id="flatSize"></div>
+          </div>
+
+          <div id="turnBox" class="hidden">
+            <div class="lbl">Home size</div>
+            <div class="chipset grid2" id="turnSize"></div>
+          </div>
+
+          <div id="hourBox" class="hidden">
+            <div class="lbl">Service</div>
+            <div class="list" id="hourType"></div>
+            <div class="steppers">
+              <div class="stepper" id="cleanersBox">
+                <div class="k">Cleaners</div>
+                <div class="ctl"><button class="sbtn" data-s="cleaners" data-d="-1" aria-label="Fewer cleaners">−</button><span class="v" id="cleanersV">1</span><button class="sbtn" data-s="cleaners" data-d="1" aria-label="More cleaners">+</button></div>
+              </div>
+              <div class="stepper">
+                <div class="k">Hours</div>
+                <div class="ctl"><button class="sbtn" data-s="hours" data-d="-0.5" aria-label="Fewer hours">−</button><span class="v" id="hoursV">3</span><button class="sbtn" data-s="hours" data-d="0.5" aria-label="More hours">+</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-h"><span class="num">3</span><h3>Add-ons</h3><span class="opt">Optional</span></div>
+          <div class="list" id="addonList"></div>
+          <button class="more" id="moreBtn">Show all add-ons</button>
+        </div>
+
+        <div class="step">
+          <div class="step-h"><span class="num">4</span><h3>When do they need it?</h3></div>
+          <div class="list" id="rushList"></div>
+        </div>
+      </div>
+
+      <aside class="card summary" id="summary">
+        <div class="k">Quote total</div>
+        <div class="big" id="total">$0</div>
+        <div class="tax">Before tax</div>
+        <ul class="lines" id="lines"></ul>
+        <div id="notes"></div>
+        <button class="btn" id="copyBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 012-2h10"/></svg>
+          Copy quote for client</button>
+        <button class="btn ghost" id="resetBtn">Start over</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ================= REFERENCE ================= -->
+  <section id="flat">
+    <div class="shead"><div class="eyebrow">Flat rates</div><h2>By home size</h2>
+      <p>Residential homes. Studio up to 3 bed / 2 bath is normally a 1-person job.</p></div>
+    <div class="sizes" id="flatRef"></div>
+  </section>
+
+  <section id="hourly">
+    <div class="shead"><div class="eyebrow">Hourly</div><h2>Hourly rates</h2>
+      <p>For custom jobs, odd layouts, or when the client wants hourly.</p></div>
+    <div class="plist" id="hourRef"></div>
+  </section>
+
+  <div class="cols">
+    <section id="turnover">
+      <div class="shead"><div class="eyebrow">Airbnb / rental</div><h2>Turnover cleans</h2>
+        <p>For units that are reasonably maintained.</p></div>
+      <div class="plist" id="turnRef"></div>
+    </section>
+    <section id="rush">
+      <div class="shead"><div class="eyebrow">Timing</div><h2>Rush &amp; overnight</h2>
+        <p>Added to the job total. Charge the % or the minimum — whichever is higher.</p></div>
+      <div class="plist" id="rushRef"></div>
+    </section>
+  </div>
+
+  <section id="addons">
+    <div class="shead"><div class="eyebrow">Extras</div><h2>Add-ons</h2><p>Can be added to any job.</p></div>
+    <div class="plist" id="addonRef"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Urgent Clean Kamloops · Internal team price guide</span>
+    <a href="tel:+12508792425">(250) 879-2425</a>
+  </div>
+</footer>
+
+<div class="bar" id="bar">
+  <div class="info">
+    <div class="k">Quote total</div>
+    <div class="v" id="barTotal">$0</div>
+    <div class="d" id="barDesc">—</div>
+  </div>
+  <button id="barCopy">Copy quote</button>
+</div>
+
+<div class="toast" id="toast">Quote copied ✓</div>
+
+<script>
+/* =========================================================
+   PRICE LIST — change numbers here and the whole page updates.
+   ========================================================= */
+const PRICES = {
+  minimumBooking: 135,               // applies to hourly jobs
+
+  sizes: ["Studio / small 1 bed","1 bed / 1 bath","2 bed / 1 bath","3 bed / 2 bath","4 bed / 2–3 bath","5+ bedroom"],
+  onePersonUpTo: 3,                  // studio → 3 bed / 2 bath is a 1-person job
+
+  // Flat rates: one number per size above. The last one is a "starting at" price.
+  flat: {
+    "Standard":      [125, 150, 175, 200, 250, 350],
+    "Deep":          [175, 200, 260, 350, 450, 550],
+    "Move in / out": [195, 235, 295, 395, 495, 595]
+  },
+
+  // perCleaner:true = rate × cleaners × hours.   perCleaner:false = crew rate × hours.
+  hourly: [
+    { name: "Standard / custom cleaning",        rate: 50,  perCleaner: true  },
+    { name: "2-person standard crew",            rate: 95,  perCleaner: false },
+    { name: "Deep cleaning",                     rate: 70,  perCleaner: true,  note: "Own supplies" },
+    { name: "2-person deep cleaning crew",       rate: 105, perCleaner: false },
+    { name: "Move-out / custom turnover work",   rate: 70,  perCleaner: true  },
+    { name: "Post-renovation cleaning",          rate: 60,  perCleaner: true  },
+    { name: "2-person post-reno crew",           rate: 115, perCleaner: false },
+    { name: "Recurring commercial / janitorial", rate: 50,  perCleaner: true,  range: "$45–50", note: "$45–50 depending on contract" }
+  ],
+
+  turnover: [
+    { size: "Studio / 1 bedroom", price: 110 },
+    { size: "2 bedroom",          price: 145 },
+    { size: "3 bedroom",          price: 185 },
+    { size: "4 bedroom",          price: 225 },
+    { size: "5+ bedroom",         price: null }   // null = custom quote
+  ],
+
+  // common:true shows in the calculator before "Show all add-ons". price:null = custom quote.
+  addons: [
+    { id:"oven",     name: "Inside oven",                      price: 20, common:true },
+    { id:"fridge",   name: "Inside fridge",                    price: 20, common:true },
+    { id:"cabinets", name: "Inside all kitchen cabinets",      price: 20, common:true },
+    { id:"laundry1", name: "Laundry — first load",             price: 30, max: 1, common:true },
+    { id:"laundryX", name: "Laundry — additional load",        price: 15, unit: "load" },
+    { id:"linen",    name: "Linen change",                     price: 10, unit: "bed", common:true },
+    { id:"window",   name: "Interior standard windows",        price: 10, unit: "window" },
+    { id:"patio",    name: "Large patio / sliding door glass", price: 10, unit: "door" },
+    { id:"pet",      name: "Heavy pet hair",                   price: 25, max: 1, common:true },
+    { id:"grease",   name: "Heavy grease",                     price: null, max: 1 },
+    { id:"walls",    name: "Wall washing",                     price: null, max: 1 }
+  ],
+
+  rush: [
+    { name: "Normal booking",            sub: "No rush fee",  pct: 0,  min: 0  },
+    { name: "Within 24 hours",           pct: 15, min: 50 },
+    { name: "Under 6 hours",             pct: 20, min: 60 },
+    { name: "Under 3 hours",             pct: 30, min: 70 },
+    { name: "Overnight (10 PM – 7 AM)",  pct: 35, min: 70 }
+  ]
+};
+
+/* ========================= APP ========================= */
+const $ = id => document.getElementById(id);
+const money = n => "$" + (Math.round(n*100)/100).toLocaleString("en-CA",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
+const LAST = PRICES.sizes.length - 1;
+const TYPES = Object.keys(PRICES.flat);
+
+const S = { mode:"flat", type:0, size:0, turn:0, hour:0, cleaners:1, hours:3, rush:0, showAll:false, qty:{} };
+PRICES.addons.forEach(a => S.qty[a.id] = 0);
+
+/* ---- render controls ---- */
+function renderControls(){
+  $("flatType").innerHTML = TYPES.map((t,i)=>`<button class="chip ${i===S.type?"on":""}" data-k="type" data-i="${i}">${t}</button>`).join("");
+  $("flatSize").innerHTML = PRICES.sizes.map((s,i)=>{
+    const p = PRICES.flat[TYPES[S.type]][i];
+    return `<button class="chip ${i===S.size?"on":""}" data-k="size" data-i="${i}"><span>${s}</span><span class="pr">${money(p)}${i===LAST?"+":""}</span></button>`;
+  }).join("");
+  $("turnSize").innerHTML = PRICES.turnover.map((t,i)=>
+    `<button class="chip ${i===S.turn?"on":""}" data-k="turn" data-i="${i}"><span>${t.size}</span><span class="pr">${t.price==null?"Custom":money(t.price)}</span></button>`).join("");
+  $("hourType").innerHTML = PRICES.hourly.map((h,i)=>
+    `<button class="row ${i===S.hour?"on":""}" data-k="hour" data-i="${i}">
+      <div><div class="t">${h.name}</div>${h.note?`<div class="s">${h.note}</div>`:""}</div>
+      <div class="p">${h.range||money(h.rate)}<span style="font-weight:600;font-size:12px;color:var(--ink-3)">${h.perCleaner?" /cleaner/hr":" /hr"}</span></div></button>`).join("");
+  $("rushList").innerHTML = PRICES.rush.map((r,i)=>
+    `<button class="row ${i===S.rush?"on":""}" data-k="rush" data-i="${i}">
+      <div><div class="t">${r.name}</div><div class="s">${r.pct?`Minimum ${money(r.min)}`:r.sub}</div></div>
+      <div class="p">${r.pct?"+"+r.pct+"%":"$0"}</div></button>`).join("");
+
+  const shown = PRICES.addons.filter(a => S.showAll || a.common || S.qty[a.id]>0);
+  $("addonList").innerHTML = shown.map(a=>{
+    const q=S.qty[a.id];
+    return `<div class="addon ${q?"on":""}">
+      <div><div class="t">${a.name}</div><div class="s">${a.price==null?"Custom quote":money(a.price)+(a.unit?" / "+a.unit:"")}</div></div>
+      <div class="qty">${q?`<button class="sbtn" data-a="${a.id}" data-d="-1" aria-label="Remove ${a.name}">−</button><span class="v">${q}</span>`:""}
+      <button class="sbtn plus" data-a="${a.id}" data-d="1" aria-label="Add ${a.name}">+</button></div></div>`;
+  }).join("");
+  $("moreBtn").textContent = S.showAll ? "Show fewer add-ons" : `Show all add-ons (${PRICES.addons.length})`;
+
+  const h = PRICES.hourly[S.hour];
+  $("cleanersBox").classList.toggle("off", !h.perCleaner);
+  $("cleanersV").textContent = h.perCleaner ? S.cleaners : (h.name.startsWith("2-person")?2:1);
+  $("hoursV").textContent = S.hours;
+
+  document.querySelectorAll("#modes .mode").forEach(b=>b.classList.toggle("on", b.dataset.mode===S.mode));
+  $("flatBox").classList.toggle("hidden", S.mode!=="flat");
+  $("turnBox").classList.toggle("hidden", S.mode!=="turnover");
+  $("hourBox").classList.toggle("hidden", S.mode!=="hourly");
+}
+
+/* ---- calculate ---- */
+function calc(){
+  const lines=[], notes=[]; let base=0, plus=false, desc="";
+
+  if(S.mode==="flat"){
+    const t=TYPES[S.type]; base=PRICES.flat[t][S.size]; plus=S.size===LAST;
+    desc=`${t} · ${PRICES.sizes[S.size]}`;
+    lines.push([`${t} clean — ${PRICES.sizes[S.size]}`, money(base)+(plus?"+":"")]);
+    if(plus) notes.push(["warn","5+ bedroom is a starting price. Check size and condition before confirming."]);
+    if(S.size<=PRICES.onePersonUpTo) notes.push(["info","Usually a 1-person job."]);
+  }
+  if(S.mode==="turnover"){
+    const t=PRICES.turnover[S.turn]; desc=`Airbnb turnover · ${t.size}`;
+    if(t.price==null){ lines.push([`Airbnb / rental turnover — ${t.size}`,"Custom"]); notes.push(["warn","5+ bedroom turnovers are custom quoted."]); }
+    else { base=t.price; lines.push([`Airbnb / rental turnover — ${t.size}`, money(base)]); }
+    notes.push(["info","Assumes the unit is reasonably maintained. Quote hourly if it isn't."]);
+  }
+  if(S.mode==="hourly"){
+    const h=PRICES.hourly[S.hour];
+    base = h.rate*S.hours*(h.perCleaner?S.cleaners:1);
+    desc=`${h.name} · ${S.hours} h`;
+    lines.push([h.perCleaner?`${h.name} (${S.cleaners} × ${S.hours} h × ${money(h.rate)})`:`${h.name} (${S.hours} h × ${money(h.rate)})`, money(base)]);
+    if(h.note) notes.push(["info",h.note+"."]);
+  }
+
+  let add=0; const custom=[];
+  PRICES.addons.forEach(a=>{
+    const q=S.qty[a.id]; if(!q) return;
+    if(a.price==null){ custom.push(a.name); lines.push([a.name,"Custom"]); return; }
+    add+=a.price*q; lines.push([a.unit||q>1?`${a.name} × ${q}`:a.name, money(a.price*q)]);
+  });
+  if(custom.length) notes.push(["warn",`Custom-priced: ${custom.join(", ")}. Add your price after seeing the job.`]);
+
+  let sub=base+add;
+  if(S.mode==="hourly" && sub>0 && sub<PRICES.minimumBooking){
+    lines.push(["Minimum booking top-up", money(PRICES.minimumBooking-sub)]);
+    notes.push(["warn",`Hourly jobs have a ${money(PRICES.minimumBooking)} minimum booking.`]);
+    sub=PRICES.minimumBooking;
+  }
+
+  const r=PRICES.rush[S.rush]; let fee=0;
+  if(r.pct && sub>0){
+    const pctFee=sub*r.pct/100; fee=Math.max(pctFee,r.min);
+    lines.push([`${r.name} (+${r.pct}%${pctFee<r.min?`, min ${money(r.min)} applied`:""})`, money(fee)]);
+  }
+
+  const total=sub+fee, totStr=money(total)+(plus?"+":"");
+  $("total").innerHTML = money(total)+(plus?'<span class="plus">+</span>':"");
+  $("lines").innerHTML = lines.map(l=>`<li><span>${l[0]}</span><span>${l[1]}</span></li>`).join("") +
+    `<li class="tot"><span>Total</span><span>${totStr}</span></li>`;
+  $("notes").innerHTML = notes.map(n=>`<div class="note ${n[0]}">${n[1]}</div>`).join("");
+  $("barTotal").textContent = totStr;
+  const extras = lines.length-1-(fee?1:0);
+  $("barDesc").textContent = desc + (extras>0?` · +${extras} extra${extras>1?"s":""}`:"") + (r.pct?` · ${r.name}`:"");
+  window._q={lines,totStr,custom};
+}
+
+function update(){ renderControls(); calc(); }
+
+/* ---- events ---- */
+document.addEventListener("click", e=>{
+  const m=e.target.closest("[data-mode]"); if(m){ S.mode=m.dataset.mode; update(); return; }
+  const k=e.target.closest("[data-k]"); if(k){ S[k.dataset.k]=+k.dataset.i; update(); return; }
+  const a=e.target.closest("[data-a]");
+  if(a){ const ad=PRICES.addons.find(x=>x.id===a.dataset.a);
+    S.qty[ad.id]=Math.max(0,Math.min(ad.max||99,S.qty[ad.id]+(+a.dataset.d))); update(); return; }
+  const s=e.target.closest("[data-s]");
+  if(s){ const key=s.dataset.s, d=+s.dataset.d;
+    if(key==="cleaners") S.cleaners=Math.max(1,Math.min(10,S.cleaners+d));
+    else S.hours=Math.max(0.5,Math.min(24,S.hours+d));
+    update(); }
+});
+$("moreBtn").onclick=()=>{ S.showAll=!S.showAll; update(); };
+$("resetBtn").onclick=()=>{ Object.assign(S,{mode:"flat",type:0,size:0,turn:0,hour:0,cleaners:1,hours:3,rush:0,showAll:false});
+  Object.keys(S.qty).forEach(k=>S.qty[k]=0); update(); scrollTo({top:0,behavior:"smooth"}); };
+
+function quoteText(){
+  const q=window._q;
+  return "Urgent Clean Kamloops — Quote\n\n" + q.lines.map(l=>`• ${l[0]}: ${l[1]}`).join("\n") +
+    `\n\nTotal: ${q.totStr} (before tax)` +
+    (q.custom.length?`\nPlus custom-priced items: ${q.custom.join(", ")}`:"") +
+    "\n\nQuestions? Call or text (250) 879-2425";
+}
+async function copyQuote(){
+  const t=quoteText();
+  try{ await navigator.clipboard.writeText(t); toast("Quote copied ✓"); }
+  catch(_){ const ta=document.createElement("textarea"); ta.value=t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select(); try{document.execCommand("copy"); toast("Quote copied ✓");}catch(e){toast("Couldn't copy");} ta.remove(); }
+}
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),1700); }
+$("copyBtn").onclick=copyQuote; $("barCopy").onclick=copyQuote;
+
+/* ---- reference sections ---- */
+function renderRef(){
+  $("flatRef").innerHTML = PRICES.sizes.map((s,i)=>`
+    <div class="sz"><div class="h"><b>${s}</b>${i<=PRICES.onePersonUpTo?'<span class="tag">1 person</span>':""}</div>
+      <div class="p3">${TYPES.map((t,j)=>`<div class="${j===2?"mv":""}"><small>${t==="Move in / out"?"Move":t}</small><span>${money(PRICES.flat[t][i])}${i===LAST?"+":""}</span></div>`).join("")}</div></div>`).join("");
+
+  $("hourRef").innerHTML = PRICES.hourly.map(h=>`
+    <div class="pi"><div><div class="t">${h.name}</div>${h.note?`<div class="s">${h.note}</div>`:""}</div>
+      <div class="p"><b>${h.range||money(h.rate)}</b><small>${h.perCleaner?"per cleaner / hr":"per hour, crew"}</small></div></div>`).join("") +
+    `<div class="pi hl"><div><div class="t">Minimum booking</div><div class="s">Hourly jobs</div></div><div class="p"><b>${money(PRICES.minimumBooking)}</b></div></div>`;
+
+  $("turnRef").innerHTML = PRICES.turnover.map(t=>`
+    <div class="pi"><div class="t">${t.size}</div><div class="p"><b>${t.price==null?"Custom":money(t.price)}</b></div></div>`).join("");
+
+  $("rushRef").innerHTML = PRICES.rush.filter(r=>r.pct).map(r=>`
+    <div class="pi"><div><div class="t">${r.name}</div><div class="s">Minimum ${money(r.min)}</div></div>
+      <div class="p"><b style="color:var(--ember)">+${r.pct}%</b></div></div>`).join("");
+
+  $("addonRef").innerHTML = PRICES.addons.map(a=>`
+    <div class="pi"><div class="t">${a.name}</div>
+      <div class="p"><b>${a.price==null?"Custom":money(a.price)}</b>${a.unit?`<small>per ${a.unit}</small>`:""}</div></div>`).join("");
+}
+
+/* ---- section nav highlight ---- */
+const navLinks=[...document.querySelectorAll("#secnav a")];
+const io=new IntersectionObserver(ents=>{
+  ents.forEach(en=>{ if(en.isIntersecting){
+    navLinks.forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+en.target.id));
+    const on=navLinks.find(a=>a.classList.contains("on")); on&&on.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
+  }});
+},{rootMargin:"-45% 0px -50% 0px"});
+["calc","flat","hourly","turnover","rush","addons"].forEach(id=>io.observe($(id)));
+
+renderRef(); update();
+</script>
+</body>
+</html>
