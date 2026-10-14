@@ -23,7 +23,11 @@
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* Smooth applies only to user-initiated jumps (nav clicks, Start Over) — touch
+   scrolling is never animated by this. scroll-padding-top clears the sticky
+   topbar + section nav so a target heading is not left underneath them. */
 html{scroll-behavior:smooth;scroll-padding-top:120px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 html,body{margin:0}
 body{background:var(--surface);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;padding-bottom:calc(92px + var(--safe-b))}
 @media(min-width:900px){body{padding-bottom:0}}
@@ -576,15 +580,56 @@ function renderRef(){
       <div class="p"><b>${a.price==null?"Custom":money(a.price)}</b>${a.unit?`<small>per ${a.unit}</small>`:""}</div></div>`).join("");
 }
 
-/* ---- section nav highlight ---- */
-const navLinks=[...document.querySelectorAll("#secnav a")];
-const io=new IntersectionObserver(ents=>{
-  ents.forEach(en=>{ if(en.isIntersecting){
-    navLinks.forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+en.target.id));
-    const on=navLinks.find(a=>a.classList.contains("on")); on&&on.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
-  }});
-},{rootMargin:"-45% 0px -50% 0px"});
-["calc","flat","hourly","turnover","rush","addons"].forEach(id=>io.observe($(id)));
+/* ---- section nav highlight ----
+   This must never move the page. scrollIntoView() scrolls EVERY scrollable
+   ancestor, the document included — "block:nearest" only skips that when the
+   element is already fully in view, and with behavior:"smooth" it starts an
+   animation that fights a finger mid-swipe on iOS. So the active tab is chosen
+   from section positions, and the nav strip is nudged inside its OWN
+   horizontal scroller instead. */
+const secnav=$("secnav");
+const secnavBar=secnav.closest(".secnav");
+const navLinks=[...secnav.querySelectorAll("a")];
+const SECTIONS=["calc","flat","hourly","turnover","rush","addons"];
+let activeId=null;
+
+function setActive(id){
+  if(id===activeId) return;                      // no work while nothing changes
+  activeId=id;
+  navLinks.forEach(a=>a.classList.toggle("on", a.getAttribute("href")==="#"+id));
+  const on=navLinks.find(a=>a.classList.contains("on"));
+  if(!on) return;
+  /* Nearest visible position, horizontally, and only when the tab is actually
+     out of view — no constant re-centring, no vertical component. */
+  const pad=12;
+  const left=on.offsetLeft-pad, right=on.offsetLeft+on.offsetWidth+pad;
+  const view=secnav.scrollLeft, viewEnd=view+secnav.clientWidth;
+  let target=null;
+  if(left<view) target=left;
+  else if(right>viewEnd) target=right-secnav.clientWidth;
+  if(target!==null) secnav.scrollTo({left:Math.max(0,target),behavior:"auto"});
+}
+
+/* Exactly one section wins per update: the last one whose top has passed the
+   sticky header. Deterministic, so several observer entries arriving together
+   cannot flip the active tab back and forth. */
+function pickActive(){
+  const line=(secnavBar?secnavBar.getBoundingClientRect().bottom:116)+1;
+  let current=SECTIONS[0];
+  for(const id of SECTIONS){ const el=$(id); if(el&&el.getBoundingClientRect().top<=line) current=id; }
+  setActive(current);
+}
+const io=new IntersectionObserver(pickActive,{rootMargin:"-45% 0px -50% 0px"});
+SECTIONS.forEach(id=>io.observe($(id)));
+/* The observer only fires on threshold crossings, so near the very top and
+   bottom of the page the highlight would go stale. This listener is passive —
+   it can never block or cancel a scroll — and is coalesced to one run per
+   frame, so it only ever reads positions and sets a class. */
+let queued=false;
+addEventListener("scroll",()=>{ if(queued) return; queued=true;
+  requestAnimationFrame(()=>{ queued=false; pickActive(); }); },{passive:true});
+addEventListener("resize",pickActive,{passive:true});
+pickActive();
 
 renderRef(); update();
 </script>
