@@ -4,7 +4,7 @@
    ----------------------------------------------------------------------------
    Two things are checked here:
 
-     1. The middleware LOGIC, by importing proxy.mjs and calling it with real
+     1. The middleware LOGIC, by importing proxy.ts and calling it with real
         Request objects: no credentials -> 401, wrong credentials -> 401, right
         credentials -> pass through, public routes -> untouched, and the gate
         working with NO environment variables set at all.
@@ -13,10 +13,10 @@
         linked from any public page, must keep its noindex meta tag, must not be
         advertised in robots.txt, and no credential may ever be committed.
 
-   The credentials below are the real ones. That is not a leak: proxy.mjs ships
+   The credentials below are the real ones. That is not a leak: proxy.ts ships
    their SHA-256 digests, and a 4-digit password is recoverable from a digest
    instantly, so anyone who can read this repository can already get in. This is
-   a lightweight staff gate, not authentication — see the note in proxy.mjs.
+   a lightweight staff gate, not authentication — see the note in proxy.ts.
 
    Zero dependencies beyond the middleware itself. Exits 1 on any failure.
    ========================================================================== */
@@ -49,7 +49,7 @@ const req = (url, headers = {}) => new Request('https://www.urgentcleankamloops.
   // Deliberately NOT setting any environment variable: the gate must work on a
   // deployment where none can be configured.
   for (const k of Object.keys(process.env)) if (k.startsWith('TEAM_GUIDE_')) delete process.env[k];
-  const { default: proxy } = await import('../proxy.mjs');
+  const { default: proxy } = await import('../proxy.ts');
 
   // `next()` resolves to a Response carrying Vercel's continue marker.
   const isPassThrough = r => r.status < 400 && (r.headers.get('x-middleware-next') === '1' || r.headers.has('x-middleware-next'));
@@ -112,13 +112,13 @@ const req = (url, headers = {}) => new Request('https://www.urgentcleankamloops.
   });
 
   await check('credentials are stored as digests, never as literals, and read from no env var', () => {
-    const src = read('proxy.mjs');
-    assert.ok(!/process\.env/.test(src), 'proxy.mjs still reads process.env — the gate must be self-contained');
+    const src = read('proxy.ts');
+    assert.ok(!/process\.env/.test(src), 'proxy.ts still reads process.env — the gate must be self-contained');
     const digests = src.match(/^const (?:USER|PASS)_SHA256 = '([0-9a-f]{64})';$/gm) || [];
     assert.strictEqual(digests.length, 2, 'expected exactly two SHA-256 digest constants');
     // The plaintext must not appear in the middleware itself.
     for (const literal of [`'${USER}'`, `"${USER}"`, `'${PASS}'`, `"${PASS}"`])
-      assert.ok(!src.includes(literal), `proxy.mjs contains the literal ${literal}`);
+      assert.ok(!src.includes(literal), `proxy.ts contains the literal ${literal}`);
     // ...and the digests must actually be the digests of the documented pair.
     const sha = v => require('crypto').createHash('sha256').update(v, 'utf8').digest('hex');
     assert.ok(src.includes(sha(USER)), 'the username digest does not match the documented username');
@@ -127,11 +127,11 @@ const req = (url, headers = {}) => new Request('https://www.urgentcleankamloops.
 
   /* ── 2. ROUTE CONFIGURATION ────────────────────────────────────────────── */
   section('2. Vercel route configuration');
-  await check('vercel.json points at proxy.mjs and matches only the guide', () => {
+  await check('vercel.json points at proxy.ts and matches only the guide', () => {
     const cfg = JSON.parse(read('vercel.json'));
-    assert.strictEqual(cfg.proxy.entrypoint, 'proxy.mjs');
+    assert.strictEqual(cfg.proxy.entrypoint, 'proxy.ts');
     assert.deepStrictEqual(cfg.proxy.matcher, ['/team-price-guide', '/team-price-guide/:path*']);
-    assert.ok(fs.existsSync(path.join(ROOT, 'proxy.mjs')), 'proxy.mjs is missing');
+    assert.ok(fs.existsSync(path.join(ROOT, 'proxy.ts')), 'proxy.ts is missing');
     // Nothing else may be configured here by accident.
     assert.deepStrictEqual(Object.keys(cfg).sort(), ['$schema', 'proxy']);
   });

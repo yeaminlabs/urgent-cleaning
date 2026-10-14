@@ -159,7 +159,7 @@ const ESTIMATOR_PAGES = {
   'post-renovation-cleaning-kamloops/index.html':   'postreno',
 };
 /* The internal team price guide is deliberately NOT a public page: it is behind
-   HTTP Basic Auth (proxy.mjs), carries its own staff rate card, and is allowed
+   HTTP Basic Auth (proxy.ts), carries its own staff rate card, and is allowed
    to differ from the public engine. Scanning it here would force internal rates
    to be registered against pricing.js, which is exactly the coupling we do not
    want. Its own guard is qa/team-guide-auth.js, which proves it stays private
