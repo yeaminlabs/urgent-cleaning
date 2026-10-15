@@ -45,20 +45,61 @@ async function openGuide(page, context) {
 
 const scrollY = page => page.evaluate(() => Math.round(window.scrollY));
 
+/* The smallest change that counts as "the scroll has actually started". The
+   first observed step of a smooth scroll here was 3px and sub-pixel rounding
+   noise stays under 1px, so 2 separates a real start from noise. */
+const MOVE_EPS = 2;
+
+/* Where an anchor click should bring the page to, computed from layout BEFORE
+   the click. This is used for one decision only — whether movement is
+   EXPECTED — and never to judge whether the landing is correct, which the
+   tests still assert on their own. The result is clamped to the scrollable
+   range, which is why at a tall viewport the last sections are already at the
+   bottom and clicking them legitimately moves nothing. */
+const anchorLanding = (page, href) => page.evaluate(sel => {
+  const el = document.querySelector(sel);
+  const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const raw = el.getBoundingClientRect().top + window.scrollY - pad;
+  return { want: Math.round(Math.min(Math.max(raw, 0), max)), now: Math.round(window.scrollY) };
+}, href);
+
 /* Waits until the document scroll stops changing, then returns where it came to
    rest. Fails if it never settles — an animation that never ends is exactly the
-   bug this file guards against. */
-async function settleScroll(page, timeout = 4000) {
+   bug this file guards against.
+
+   Pass `from` (the pre-click position) when the page is expected to move. The
+   guide sets html{scroll-behavior:smooth}, so an anchor click animates, and
+   that animation can START LATE — measured at up to 295ms on an idle machine
+   and longer under parallel suite load. Stillness alone therefore cannot tell
+   "has not begun yet" from "has finished": this helper used to accept the
+   pre-click stillness and return the un-scrolled position, which is how
+   `#hourly @768px landed too far down the page` failed with the pre-scroll
+   value. With `from` set, movement away from it must be observed before
+   stability counting starts.
+
+   Omit `from` where the page may legitimately not move — a wheel step already
+   at the very top or bottom, or an anchor already at its landing position —
+   and this stays pure stability detection, exactly as before. */
+async function settleScroll(page, { from = null, timeout = 5000 } = {}) {
   const deadline = Date.now() + timeout;
+  let started = from === null;
   let last = await scrollY(page), stable = 0;
   while (Date.now() < deadline) {
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(60);
     const now = await scrollY(page);
+    if (!started) {
+      // Still waiting for the animation to begin; stillness here means nothing.
+      if (Math.abs(now - from) >= MOVE_EPS) { started = true; last = now; stable = 0; }
+      continue;
+    }
     stable = now === last ? stable + 1 : 0;
     last = now;
-    if (stable >= 3) return now;                           // ~360ms with no movement
+    if (stable >= 6) return now;              // ~360ms of stillness, as before
   }
-  throw new Error(`the page never stopped scrolling (last position ${last})`);
+  throw new Error(started
+    ? `the page never stopped scrolling (last position ${last})`
+    : `the scroll never started (still at ${from} after ${timeout}ms)`);
 }
 const activeTab = page => page.evaluate(() => { const a = document.querySelector('#secnav a.on'); return a ? a.getAttribute('href') : null; });
 
@@ -112,10 +153,17 @@ for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: 780 });
 
     for (const href of SECTIONS) {
+      /* Whether this particular click should move the page at all — the last
+         sections sit at the bottom of the scroll range on a tall viewport, so
+         clicking them is a legitimate no-op and must not be waited on for
+         movement that is never coming. */
+      const { want, now } = await anchorLanding(page, href);
+      const expectMove = Math.abs(want - now) >= MOVE_EPS;
       await page.click(`#secnav a[href="${href}"]`);
       // The anchor jump is a smooth animation (user-initiated, so it is fine);
-      // wait for it to come to rest rather than guessing a duration.
-      const settled = await settleScroll(page);
+      // wait for it to begin and then come to rest rather than guessing a
+      // duration — see settleScroll.
+      const settled = await settleScroll(page, expectMove ? { from: now } : {});
       const box = await page.evaluate(sel => {
         const el = document.querySelector(sel);
         const bar = document.querySelector('.secnav').getBoundingClientRect();
