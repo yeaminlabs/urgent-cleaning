@@ -618,7 +618,6 @@ footer {
 .qc-opt.active .qc-opt-hint { color: var(--ember); opacity: 0.80; }
 
 /* Toggle extras */
-.qc-extras { display: flex; flex-wrap: wrap; gap: 8px; }
 .qc-toggle {
   font-family: var(--font);
   font-size: 13px;
@@ -636,7 +635,6 @@ footer {
 }
 .qc-toggle:hover { border-color: var(--border-2); color: var(--ink); }
 .qc-toggle.active { border-color: var(--ember); background: var(--ember-tint); color: var(--ember); }
-.qc-toggle-price { opacity: 0.65; }
 
 /* Add-on rows: a label, its price, and either an Add toggle or a quantity
    stepper. Both controls are 44px tall so they stay easy to tap on a phone. */
