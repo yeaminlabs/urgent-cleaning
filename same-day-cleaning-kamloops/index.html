@@ -175,7 +175,7 @@
         </a>
         <a href="#contact" class="btn-ghost">Request a Quote</a>
       </div>
-      <p class="svc-hero-price">Same-day cleaning from <strong data-starting-from="standard">$120</strong> <a href="#pricing">Get your instant estimate&nbsp;&rarr;</a></p>
+      <p class="svc-hero-price">Same-day cleaning from <strong data-starting-from="standard">$125</strong> <a href="#pricing">Get your instant estimate&nbsp;&rarr;</a></p>
       <p class="svc-hero-note">Same-day availability depends on the schedule &middot; calling is the fastest way to check</p>
     </div>
     <figure class="svc-hero-figure">
@@ -439,90 +439,50 @@
   <div class="section-inner">
     <div class="reveal">
       <h2 class="section-title">Same-Day Cleaning Prices in Kamloops</h2>
-      <p class="section-sub">Pricing is based on the size of the property, the number of bathrooms, its condition, the scope of work and any optional detail work. Use the estimator for a ballpark range in a few taps, then call or send a request to confirm.</p>
-      <p class="section-sub">Starting from <strong data-starting-from="standard">$120</strong> for a standard clean of a studio or 1-bedroom, 1-bathroom home with no add-ons. Starting prices are based on the cleaning type and home size. Your final quote can vary based on the details of the property and any additional services.</p>
+      <p class="section-sub">Pricing is based on the size of the home, its condition, the scope of work, how soon it is needed and any optional detail work. Use the estimator for an estimated total in a few taps, then call or send a request to confirm.</p>
+      <p class="section-sub">Starting from <strong data-starting-from="standard">$125</strong> for a standard clean of a studio or small 1-bedroom home with no add-ons. Starting prices are based on the cleaning type and home size. Your final quote can vary based on the details of the property and any additional services.</p>
     </div>
 
     <div class="qc-layout">
-      <!-- LEFT: selectors -->
+      <!-- LEFT: the four choices. Every option is rendered from
+           assets/js/pricing.js by assets/js/estimator.js — no price is written
+           into this markup. -->
       <div class="qc-form">
+
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bedrooms</div>
-          <div class="qc-options" id="qc-beds">
-            <button class="qc-opt" data-val="1">Studio / 1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4</button>
-            <button class="qc-opt" data-val="5">5+</button>
-          </div>
+          <div class="qc-step-label">1. Service</div>
+          <div class="qc-options qc-options--cards" id="qc-service" role="group" aria-label="Service" data-preselect="standard"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bathrooms</div>
-          <div class="qc-options" id="qc-baths">
-            <button class="qc-opt" data-val="1">1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4+</button>
-          </div>
-        </div>
-
-        <!-- data-preselect opens this page on Standard. Bedrooms stay unset, so
-             no estimate is shown and no analytics event fires until the visitor
-             actually chooses. -->
-        <div class="qc-step reveal">
-          <div class="qc-step-label">Type of clean</div>
-          <div class="qc-options qc-options--cards" id="qc-condition" data-preselect="standard">
-            <button class="qc-opt qc-opt--card" data-val="standard">
-              <span class="qc-opt-title">Standard</span>
-              <span class="qc-opt-hint">Regularly maintained home</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="moveout">
-              <span class="qc-opt-title">Move-out</span>
-              <span class="qc-opt-hint">Post-tenant, vacant unit</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="deep">
-              <span class="qc-opt-title">Deep clean</span>
-              <span class="qc-opt-hint">Neglected or overdue</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="postreno">
-              <span class="qc-opt-title">Post-reno</span>
-              <span class="qc-opt-hint">Construction dust &amp; debris</span>
-            </button>
-          </div>
+          <div class="qc-step-label">2. Home size</div>
+          <div class="qc-options" id="qc-size" role="group" aria-label="Home size"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Extras <span class="qc-step-optional">(optional add-ons)</span></div>
-          <div class="qc-extras" id="qc-extras">
-            <button class="qc-toggle" data-val="fridge">Inside fridge <span class="qc-toggle-price">+$35</span></button>
-            <button class="qc-toggle" data-val="oven">Inside oven <span class="qc-toggle-price">+$30</span></button>
-            <button class="qc-toggle" data-val="cabinets">Inside cabinets <span class="qc-toggle-price">+$50</span></button>
-            <button class="qc-toggle" data-val="laundry">Laundry <span class="qc-toggle-price">+$40</span></button>
-          </div>
+          <div class="qc-step-label">3. Add-ons <span class="qc-step-optional">(optional)</span></div>
+          <div class="qc-addons" id="qc-addons"></div>
+          <button type="button" class="qc-more" id="qc-more">More add-ons</button>
         </div>
+
+        <div class="qc-step reveal">
+          <div class="qc-step-label">4. Timing</div>
+          <div class="qc-options" id="qc-timing" role="group" aria-label="Timing"></div>
+        </div>
+
       </div>
 
       <!-- RIGHT: live result -->
       <div class="qc-result" id="qc-result">
-        <div class="qc-result-eyebrow">Ballpark estimate</div>
-        <div class="qc-result-price" id="qc-price" aria-live="polite">—</div>
-        <div class="qc-result-note" id="qc-note">Select bedrooms and clean type to see your estimate.</div>
+        <div class="qc-result-eyebrow">Estimated total</div>
+        <div class="qc-result-price" id="qc-price" aria-live="polite">&mdash;</div>
+        <div class="qc-result-note" id="qc-note">Choose a service and home size to see an estimated total.</div>
 
-        <div class="qc-breakdown" id="qc-breakdown">
-          <div class="qc-bd-row" id="qcb-base"><span>Base rate</span><span id="qcb-base-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-baths" style="display:none"><span>Extra bathrooms</span><span id="qcb-baths-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-cond"><span id="qcb-cond-label">Clean type</span><span id="qcb-cond-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-extras" style="display:none"><span>Extras</span><span id="qcb-extras-val">—</span></div>
-          <div class="qc-bd-row total"><span>Estimate</span><span id="qcb-total">—</span></div>
-        </div>
+        <div class="qc-breakdown" id="qc-breakdown"></div>
 
-        <a href="tel:+12508792425" class="qc-cta" id="qc-cta" aria-disabled="true">
-          <span class="qc-cta-label">Call to confirm price</span>
-          <span class="qc-cta-num">(250) 879-2425</span>
-        </a>
-        <a href="#contact" id="qc-request-quote" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Request Quote &rarr;</a>
-        <p class="qc-disclaimer">This is an initial estimate, not a final price. We&rsquo;ll confirm the exact amount after reviewing the details — no site visit needed for most jobs.</p>
+        <a href="#contact" id="qc-request-quote" class="qc-cta">Request a quote &rarr;</a>
+        <a href="tel:+12508792425" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Or call (250) 879-2425 &rarr;</a>
+        <p class="qc-disclaimer">This estimate is based on the options selected. Final pricing may change if the property condition or requested scope differs from the selected service. For most standard jobs, photos are enough for us to confirm the quote.</p>
       </div>
     </div>
   </div>
@@ -642,7 +602,7 @@
       </details>
       <details class="faq-item">
         <summary>How much does same-day cleaning cost?</summary>
-        <p>Same-day work is priced the same way as a booked-ahead visit, with no separate short-notice rate. A standard clean starts from <strong data-starting-from="standard">$120</strong> for a studio or 1-bedroom, 1-bathroom home with no add-ons, and the price moves with the size of the property, the number of bathrooms and the scope you choose, since a deep or move-out scope takes longer than a standard clean. Timing affects availability rather than price: same-day and next-day slots depend on what is still open in the schedule that day, so calling is the fastest way to find out. We confirm the final quote before anything is booked.</p>
+        <p>A standard clean starts from <strong data-starting-from="standard">$125</strong> for a studio or small 1-bedroom home with no add-ons, and the price moves with the size of the property and the scope you choose, since a deep or move-out scope takes longer than a standard clean. Rush pricing may apply depending on how soon the service is needed, and the estimator above asks about timing for that reason. Availability is a separate question again: same-day and next-day slots depend on what is still open in the schedule that day, so calling is the fastest way to find out. We confirm the final quote before anything is booked.</p>
       </details>
       <details class="faq-item">
         <summary>Do you clean apartments and houses?</summary>
@@ -697,7 +657,7 @@
     {
       "@type": "Question",
       "name": "How much does same-day cleaning cost?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Same-day work is priced the same way as a booked-ahead visit, with no separate short-notice rate. A standard clean starts from $120 for a studio or 1-bedroom, 1-bathroom home with no add-ons, and the price moves with the size of the property, the number of bathrooms and the scope you choose, since a deep or move-out scope takes longer than a standard clean. Timing affects availability rather than price: same-day and next-day slots depend on what is still open in the schedule that day, so calling is the fastest way to find out. We confirm the final quote before anything is booked." }
+      "acceptedAnswer": { "@type": "Answer", "text": "A standard clean starts from $125 for a studio or small 1-bedroom home with no add-ons, and the price moves with the size of the property and the scope you choose, since a deep or move-out scope takes longer than a standard clean. Rush pricing may apply depending on how soon the service is needed, and the estimator above asks about timing for that reason. Availability is a separate question again: same-day and next-day slots depend on what is still open in the schedule that day, so calling is the fastest way to find out. We confirm the final quote before anything is booked." }
     },
     {
       "@type": "Question",
@@ -986,6 +946,7 @@
 </div>
 
 <script src="/assets/js/pricing.js" defer></script>
+<script src="/assets/js/estimator.js" defer></script>
 <script src="/assets/js/service-page.js" defer></script>
 
 </body>

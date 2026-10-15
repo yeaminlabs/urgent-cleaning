@@ -175,7 +175,7 @@
         </a>
         <a href="#contact" class="btn-ghost">Request a Turnover Quote</a>
       </div>
-      <p class="svc-hero-price">Rental turnover cleaning from <strong data-starting-from="moveout">$175</strong> <a href="#pricing">Get your instant estimate&nbsp;&rarr;</a></p>
+      <p class="svc-hero-price">Rental turnover cleaning from <strong data-starting-from="turnover">$110</strong> <a href="#pricing">Get your instant estimate&nbsp;&rarr;</a></p>
       <p class="svc-hero-note">Fast quotes &middot; Several units can be quoted at once &middot; Availability depends on the schedule</p>
     </div>
     <figure class="svc-hero-figure">
@@ -502,91 +502,50 @@
   <div class="section-inner">
     <div class="reveal">
       <h2 class="section-title">Rental Turnover Cleaning Prices in Kamloops</h2>
-      <p class="section-sub">Turnovers are priced on the size of the unit, the number of bathrooms, its condition, the agreed scope and any optional detail work. The estimator gives you a ballpark range in a few taps — pick <strong>Move-out</strong> for a vacant unit between occupants, which is how a turnover is priced.</p>
-      <p class="section-sub">Starting from <strong data-starting-from="moveout">$175</strong> for a studio or 1-bedroom, 1-bathroom unit with no add-ons, priced as a move-out clean. Starting prices are based on the cleaning type and home size. Your final quote can vary based on the details of the property and any additional services.</p>
+      <p class="section-sub">Turnovers are priced on the size of the unit, its condition, the agreed scope and any optional detail work. The estimator gives you an estimated total in a few taps — pick <strong>Airbnb / Rental Turnover</strong> for a unit in reasonable turnover condition, or <strong>Move-In / Move-Out</strong> if it has been left in a state closer to a full end-of-tenancy clean.</p>
+      <p class="section-sub">Starting from <strong data-starting-from="turnover">$110</strong> for a studio or small 1-bedroom unit with no add-ons. Turnovers have their own rate, separate from a full move-out clean. Your final quote can vary based on the details of the property and any additional services.</p>
     </div>
 
     <div class="qc-layout">
-      <!-- LEFT: selectors -->
+      <!-- LEFT: the four choices. Every option is rendered from
+           assets/js/pricing.js by assets/js/estimator.js — no price is written
+           into this markup. -->
       <div class="qc-form">
+
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bedrooms</div>
-          <div class="qc-options" id="qc-beds">
-            <button class="qc-opt" data-val="1">Studio / 1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4</button>
-            <button class="qc-opt" data-val="5">5+</button>
-          </div>
+          <div class="qc-step-label">1. Service</div>
+          <div class="qc-options qc-options--cards" id="qc-service" role="group" aria-label="Service" data-preselect="turnover"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bathrooms</div>
-          <div class="qc-options" id="qc-baths">
-            <button class="qc-opt" data-val="1">1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4+</button>
-          </div>
-        </div>
-
-        <!-- A turnover is a vacant unit between occupants, which is exactly what
-             the existing "Move-out" option prices. No new pricing tier is
-             invented. Bedrooms stay unset, so no estimate is shown and no
-             analytics event fires until the visitor actually chooses. -->
-        <div class="qc-step reveal">
-          <div class="qc-step-label">Type of clean</div>
-          <div class="qc-options qc-options--cards" id="qc-condition" data-preselect="moveout">
-            <button class="qc-opt qc-opt--card" data-val="standard">
-              <span class="qc-opt-title">Standard</span>
-              <span class="qc-opt-hint">Regularly maintained home</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="moveout">
-              <span class="qc-opt-title">Move-out</span>
-              <span class="qc-opt-hint">Post-tenant, vacant unit</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="deep">
-              <span class="qc-opt-title">Deep clean</span>
-              <span class="qc-opt-hint">Neglected or overdue</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="postreno">
-              <span class="qc-opt-title">Post-reno</span>
-              <span class="qc-opt-hint">Construction dust &amp; debris</span>
-            </button>
-          </div>
+          <div class="qc-step-label">2. Home size</div>
+          <div class="qc-options" id="qc-size" role="group" aria-label="Home size"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Extras <span class="qc-step-optional">(optional add-ons)</span></div>
-          <div class="qc-extras" id="qc-extras">
-            <button class="qc-toggle" data-val="fridge">Inside fridge <span class="qc-toggle-price">+$35</span></button>
-            <button class="qc-toggle" data-val="oven">Inside oven <span class="qc-toggle-price">+$30</span></button>
-            <button class="qc-toggle" data-val="cabinets">Inside cabinets <span class="qc-toggle-price">+$50</span></button>
-            <button class="qc-toggle" data-val="laundry">Laundry <span class="qc-toggle-price">+$40</span></button>
-          </div>
+          <div class="qc-step-label">3. Add-ons <span class="qc-step-optional">(optional)</span></div>
+          <div class="qc-addons" id="qc-addons"></div>
+          <button type="button" class="qc-more" id="qc-more">More add-ons</button>
         </div>
+
+        <div class="qc-step reveal">
+          <div class="qc-step-label">4. Timing</div>
+          <div class="qc-options" id="qc-timing" role="group" aria-label="Timing"></div>
+        </div>
+
       </div>
 
       <!-- RIGHT: live result -->
       <div class="qc-result" id="qc-result">
-        <div class="qc-result-eyebrow">Ballpark estimate</div>
-        <div class="qc-result-price" id="qc-price" aria-live="polite">—</div>
-        <div class="qc-result-note" id="qc-note">Select bedrooms and clean type to see your estimate.</div>
+        <div class="qc-result-eyebrow">Estimated total</div>
+        <div class="qc-result-price" id="qc-price" aria-live="polite">&mdash;</div>
+        <div class="qc-result-note" id="qc-note">Choose a service and home size to see an estimated total.</div>
 
-        <div class="qc-breakdown" id="qc-breakdown">
-          <div class="qc-bd-row" id="qcb-base"><span>Base rate</span><span id="qcb-base-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-baths" style="display:none"><span>Extra bathrooms</span><span id="qcb-baths-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-cond"><span id="qcb-cond-label">Clean type</span><span id="qcb-cond-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-extras" style="display:none"><span>Extras</span><span id="qcb-extras-val">—</span></div>
-          <div class="qc-bd-row total"><span>Estimate</span><span id="qcb-total">—</span></div>
-        </div>
+        <div class="qc-breakdown" id="qc-breakdown"></div>
 
-        <a href="tel:+12508792425" class="qc-cta" id="qc-cta" aria-disabled="true">
-          <span class="qc-cta-label">Call to confirm price</span>
-          <span class="qc-cta-num">(250) 879-2425</span>
-        </a>
-        <a href="#contact" id="qc-request-quote" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Request Quote &rarr;</a>
-        <p class="qc-disclaimer">This is an initial estimate, not a final price. We&rsquo;ll confirm the exact amount after reviewing the details — no site visit needed for most jobs.</p>
+        <a href="#contact" id="qc-request-quote" class="qc-cta">Request a quote &rarr;</a>
+        <a href="tel:+12508792425" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Or call (250) 879-2425 &rarr;</a>
+        <p class="qc-disclaimer">This estimate is based on the options selected. Final pricing may change if the property condition or requested scope differs from the selected service. For most standard jobs, photos are enough for us to confirm the quote.</p>
       </div>
     </div>
   </div>
@@ -714,7 +673,7 @@
       </details>
       <details class="faq-item">
         <summary>How much does rental turnover cleaning cost?</summary>
-        <p>Turnovers are priced as a move-out clean, so they start from <strong data-starting-from="moveout">$175</strong> for a studio or 1-bedroom, 1-bathroom unit with no add-ons. The cost depends on the size of the unit, the number of bathrooms, the state the previous occupant left it in, and any detail work such as inside the fridge, inside the oven or inside cabinets. Furnished and short-term rental units are quoted the same way, and a tight relist deadline affects scheduling rather than the rate. If you are turning over more than one unit, send them together and we will confirm a quote for each.</p>
+        <p>Turnovers have their own rate, separate from a full move-out clean, and start from <strong data-starting-from="turnover">$110</strong> for a studio or small 1-bedroom unit with no add-ons. A 2-bedroom unit is $145 and a 3-bedroom is $185. The cost depends on the size of the unit, the state the previous occupant left it in, and any detail work such as inside the fridge, inside the oven or inside cabinets. Furnished and short-term rental units are quoted the same way. If you are turning over more than one unit, send them together and we will confirm a quote for each.</p>
       </details>
       <details class="faq-item">
         <summary>How quickly can you prepare a rental property?</summary>
@@ -771,7 +730,7 @@
     {
       "@type": "Question",
       "name": "How much does rental turnover cleaning cost?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Turnovers are priced as a move-out clean, so they start from $175 for a studio or 1-bedroom, 1-bathroom unit with no add-ons. The cost depends on the size of the unit, the number of bathrooms, the state the previous occupant left it in, and any detail work such as inside the fridge, inside the oven or inside cabinets. Furnished and short-term rental units are quoted the same way, and a tight relist deadline affects scheduling rather than the rate. If you are turning over more than one unit, send them together and we will confirm a quote for each." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Turnovers have their own rate, separate from a full move-out clean, and start from $110 for a studio or small 1-bedroom unit with no add-ons. A 2-bedroom unit is $145 and a 3-bedroom is $185. The cost depends on the size of the unit, the state the previous occupant left it in, and any detail work such as inside the fridge, inside the oven or inside cabinets. Furnished and short-term rental units are quoted the same way. If you are turning over more than one unit, send them together and we will confirm a quote for each." }
     },
     {
       "@type": "Question",
@@ -1051,6 +1010,7 @@
 </div>
 
 <script src="/assets/js/pricing.js" defer></script>
+<script src="/assets/js/estimator.js" defer></script>
 <script src="/assets/js/service-page.js" defer></script>
 
 </body>

@@ -9,12 +9,15 @@
    so the next service page only needs its own markup:
 
      <body data-page="house_cleaning_page" data-call-prefix="house_cleaning">
-     <div id="qc-condition" data-preselect="standard">      auto-select clean type
      <form id="quote-form" data-preselect-service="House Cleaning">
 
-   PRICING NOTE: prices, extras and the estimate formula live only in
-   assets/js/pricing.js, which estimator pages load before this file. Change
-   prices there, never here, then run `npm run qa`.
+   The price estimator is NOT here: it is a shared component in
+   assets/js/estimator.js, which pages load before this file and which reads
+   its service to preselect from <div id="qc-service" data-preselect="standard">.
+   This file only exposes window.UrgentCleanTrack for it to send through.
+
+   PRICING NOTE: every price lives only in assets/js/pricing.js. Change prices
+   there, never here, then run `npm run qa`.
    ========================================================================== */
 (function () {
   'use strict';
@@ -38,6 +41,11 @@
       if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
     } catch (err) { /* analytics must never break the page */ }
   }
+
+  /* assets/js/estimator.js is a separate IIFE and needs this exact function:
+     one payload shape for every event on the site. Read-only entry point — it
+     exposes the sender, never the analytics state. */
+  window.UrgentCleanTrack = trackEvent;
 
   /* Where a tel: link lives, for call_click's click_location. Ordered
      most-specific first so nested matches resolve correctly. */
@@ -65,136 +73,12 @@
     trackEvent('call_click', { click_location: callLocation(tel) });
   });
 
-  /* Set by the estimator when a valid range is produced; read (non-PII) by
-     quote_form_success. */
-  let estimatorUsed = false;
-  let lastEstimate = { low: null, high: null };
-  /* Analytics-only label map for the estimator's clean-type values. Mirrors the
-     handoff mapping below; kept separate so no pricing code is touched. */
-  const COND_SERVICE = { standard: 'House Cleaning', moveout: 'Move-Out Cleaning', deep: 'Deep Cleaning', postreno: 'Post-Renovation Cleaning' };
 
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.10 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* ── QUOTE CALCULATOR ─────────────────────────────────────────
-     Prices and math live in assets/js/pricing.js (window.UrgentCleanPricing),
-     shared with the homepage — this block only renders them. Pages without an
-     estimator don't load pricing.js; nothing here touches it unless the
-     estimator's own elements exist, so those pages are unaffected. */
-  (function () {
-    const Pricing = window.UrgentCleanPricing;
-    const MULT_L = { standard: 'Standard clean', moveout: 'Move-out surcharge', deep: 'Deep clean surcharge', postreno: 'Post-reno surcharge' };
-    const state  = { beds: null, baths: null, cond: null, extras: new Set() };
-    let lastEstimateSig = null; // analytics dedup only
-
-    function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
-
-    function recalc() {
-      const priceEl = document.getElementById('qc-price');
-      const noteEl  = document.getElementById('qc-note');
-      const ctaEl   = document.getElementById('qc-cta');
-      const bdEl    = document.getElementById('qc-breakdown');
-      if (!priceEl) return;
-
-      if (!state.beds || !state.cond) {
-        priceEl.textContent = '—';
-        noteEl.textContent  = 'Select bedrooms and clean type to see your estimate.';
-        ctaEl.classList.remove('ready');
-        ctaEl.setAttribute('aria-disabled', 'true');
-        bdEl.classList.remove('visible');
-        return;
-      }
-
-      const baths    = state.baths || 1;
-      const est      = Pricing.estimate(state.beds, baths, state.cond, state.extras);
-      const base        = est.base;
-      const bathAdd     = est.bathAdd;
-      const extrasTotal = est.extrasTotal;
-      const subtotal    = est.subtotal;
-      const raw         = est.raw;
-      const lo          = est.low;
-      const hi          = est.high;
-
-      /* price display */
-      priceEl.classList.add('flash');
-      setTimeout(() => priceEl.classList.remove('flash'), 300);
-      priceEl.textContent = fmt(lo) + ' – ' + fmt(hi);
-      noteEl.textContent  = 'Call or request a quote to confirm your exact price.';
-      ctaEl.classList.add('ready');
-      ctaEl.setAttribute('aria-disabled', 'false');
-
-      /* breakdown */
-      document.getElementById('qcb-base-val').textContent   = fmt(base);
-      const bathRow = document.getElementById('qcb-baths');
-      bathRow.style.display = bathAdd > 0 ? '' : 'none';
-      document.getElementById('qcb-baths-val').textContent  = '+' + fmt(bathAdd);
-      document.getElementById('qcb-cond-label').textContent = MULT_L[state.cond];
-      /* The multiplier applies to the whole subtotal (base + baths + extras),
-         so its line-item markup is raw - subtotal — not a formula involving
-         only base/baths, which under- or over-counted extras. */
-      document.getElementById('qcb-cond-val').textContent   = est.mult === 1 ? 'included' : '+' + fmt(raw - subtotal);
-      const extRow = document.getElementById('qcb-extras');
-      extRow.style.display = extrasTotal > 0 ? '' : 'none';
-      document.getElementById('qcb-extras-val').textContent = '+' + fmt(extrasTotal);
-      document.getElementById('qcb-total').textContent      = fmt(lo) + ' – ' + fmt(hi);
-      bdEl.classList.add('visible');
-
-      /* Analytics only — reads the values already computed above, changes none
-         of them. Deduped by input+output signature so repeat recalcs of the
-         same combination don't re-fire, while a genuinely new selection does. */
-      estimatorUsed = true;
-      lastEstimate = { low: lo, high: hi };
-      const sig = [state.beds, baths, state.cond, [...state.extras].sort().join(','), lo, hi].join('|');
-      if (sig !== lastEstimateSig) {
-        lastEstimateSig = sig;
-        trackEvent('estimator_complete', {
-          service_name: COND_SERVICE[state.cond] || state.cond,
-          bedrooms_count: state.beds,
-          estimate_low: lo,
-          estimate_high: hi,
-          form_location: PAGE,
-        });
-      }
-    }
-
-    /* Extras labels come from the same numbers the calculation uses. */
-    if (document.getElementById('qc-extras') && Pricing) Pricing.syncExtraLabels(document);
-
-    /* single-select groups */
-    [['qc-beds', 'beds'], ['qc-baths', 'baths'], ['qc-condition', 'cond']].forEach(([id, key]) => {
-      document.getElementById(id)?.addEventListener('click', e => {
-        const btn = e.target.closest('.qc-opt');
-        if (!btn) return;
-        document.querySelectorAll('#' + id + ' .qc-opt').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state[key] = key === 'cond' ? btn.dataset.val : +btn.dataset.val;
-        recalc();
-      });
-    });
-
-    /* multi-select extras */
-    document.getElementById('qc-extras')?.addEventListener('click', e => {
-      const btn = e.target.closest('.qc-toggle');
-      if (!btn) return;
-      const v = btn.dataset.val;
-      state.extras[state.extras.has(v) ? 'delete' : 'add'](v);
-      btn.classList.toggle('active', state.extras.has(v));
-      recalc();
-    });
-
-    /* Page context: preselect the clean type this page is about (e.g. the
-       House Cleaning page opens on "Standard"). Bedrooms stay unselected, so
-       recalc() returns early — no estimate is shown and, importantly, no
-       estimator_complete fires until the visitor actually makes a choice. */
-    const condWrap = document.getElementById('qc-condition');
-    const preCond  = condWrap && condWrap.dataset.preselect;
-    if (preCond) {
-      const btn = condWrap.querySelector(`.qc-opt[data-val="${preCond}"]`);
-      if (btn) { btn.classList.add('active'); state.cond = preCond; }
-    }
-  })();
 
   /* ── SERVICE PRESELECTION ─────────────────────────────────────
      Sets the visible Service field, shows a subtle confirmation next to it,
@@ -240,44 +124,6 @@
       });
     });
   });
-
-  /* Estimator -> form handoff. */
-  (function () {
-    const link = document.getElementById('qc-request-quote');
-    const cta  = document.getElementById('qc-cta');
-    if (!link) return;
-
-    const SERVICE_MAP = { standard: 'House Cleaning', moveout: 'Move-Out Cleaning', deep: 'Deep Cleaning', postreno: 'Post-Renovation Cleaning' };
-    const BEDS_MAP = { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5+' };
-
-    link.addEventListener('click', () => {
-      if (!cta || !cta.classList.contains('ready')) return; // nothing selected yet — plain scroll only
-
-      const condBtn    = document.querySelector('#qc-condition .qc-opt.active');
-      const bedsBtn    = document.querySelector('#qc-beds .qc-opt.active');
-      const bathsBtn   = document.querySelector('#qc-baths .qc-opt.active');
-      const extrasBtns = [...document.querySelectorAll('#qc-extras .qc-toggle.active')];
-
-      const cond = condBtn && condBtn.dataset.val;
-      const serviceName = cond && SERVICE_MAP[cond];
-      if (!serviceName) return;
-
-      const bedsVal    = bedsBtn && bedsBtn.dataset.val;
-      const bedsLabel  = bedsBtn ? bedsBtn.textContent.trim() : '';
-      const bathsLabel = bathsBtn ? bathsBtn.textContent.trim() : '1';
-      const extrasLabels = extrasBtns.map(b => b.childNodes[0].textContent.trim());
-      const priceText = (document.getElementById('qc-price').textContent || '').trim();
-
-      let context = `Estimator selection: ${bedsLabel || '—'} bedroom(s), ${bathsLabel} bathroom(s), ${serviceName}`;
-      if (extrasLabels.length) context += `, ${extrasLabels.join(', ')}`;
-      context += priceText && priceText !== '—' ? `. Estimated range: ${priceText}.` : '.';
-
-      preselectService(serviceName, {
-        bedrooms: bedsVal ? BEDS_MAP[bedsVal] : null,
-        estimatorContext: context,
-      });
-    });
-  })();
 
   let selectedPhoto = null; // { name, type, dataUrl } — set below, read by the submit handler
 
@@ -427,12 +273,8 @@
         service_name: fd.get('service') || '',
         form_location: PAGE,
         has_photo: Boolean(selectedPhoto),
-        used_estimator: Boolean(fd.get('estimatorContext')) || estimatorUsed,
+        used_estimator: Boolean(fd.get('estimatorContext')),
       };
-      if (analytics.used_estimator && lastEstimate.low !== null) {
-        analytics.estimate_low = lastEstimate.low;
-        analytics.estimate_high = lastEstimate.high;
-      }
 
       let httpStatus = null;
       let succeeded = false;

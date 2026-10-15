@@ -3,7 +3,7 @@
    test if one escapes. /api/quote is always mocked — the QA server has no API. */
 'use strict';
 const { test, expect } = require('../helpers/fixtures');
-const { PAGES, EVENT_NAMES, Pricing, gaEvents, holdNextNavigation } = require('../helpers/site');
+const { PAGES, EVENT_NAMES, gaEvents, holdNextNavigation } = require('../helpers/site');
 
 const PII = { phone: '2505550000', email: 'qa-person@example.com', name: 'QA Person', location: 'Sahali', description: 'QA description text' };
 
@@ -41,19 +41,23 @@ for (const flow of [
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.route('**/api/quote', r => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }));
     await page.goto(flow.page.path, { waitUntil: 'networkidle' });
-    const e = Pricing.estimate(2, 1, 'moveout');
 
-    // estimator_complete — and not again for an identical selection
-    await page.click('#qc-beds .qc-opt[data-val="2"]');
-    await page.click('#qc-condition .qc-opt[data-val="moveout"]');
+    // estimator_complete — and not again for an identical selection.
+    // The estimator is one shared component now, so every page sends the same
+    // three parameters, and none of them is a dollar amount.
+    await page.click('#qc-service .qc-opt[data-val="moveout"]');
+    await page.click('#qc-size .qc-opt[data-val="2bed"]');
     let est = (await gaEvents(page)).filter(x => x.name === 'estimator_complete');
     const last = est[est.length - 1].params;
-    expect(last).toMatchObject({ service_name: 'Move-Out Cleaning', bedrooms_count: 2, estimate_low: e.low, estimate_high: e.high });
-    if (flow.page.path === '/') expect(last).not.toHaveProperty('form_location');     // homepage has never sent it
-    else expect(last.form_location).toBe(flow.page.formLocation);
+    expect(last).toEqual({ service_name: 'Move-Out Cleaning', bedrooms_count: '2', form_location: flow.page.formLocation });
     const count = est.length;
-    await page.click('#qc-condition .qc-opt[data-val="moveout"]');
+    await page.click('#qc-size .qc-opt[data-val="2bed"]');
     expect((await gaEvents(page)).filter(x => x.name === 'estimator_complete')).toHaveLength(count);
+    // A rush tier changes the total but must not add a price to the payload.
+    await page.click('#qc-timing .qc-opt[data-val="rush-3h"]');
+    for (const ev of (await gaEvents(page)).filter(x => x.name === 'estimator_complete'))
+      expect(Object.keys(ev.params).sort()).toEqual(['bedrooms_count', 'form_location', 'service_name']);
+    await page.click('#qc-timing .qc-opt[data-val="normal"]');
     await page.click('#qc-request-quote');
 
     // service_click
@@ -84,7 +88,7 @@ for (const flow of [
     expect(ev.filter(x => x.name === 'quote_form_start')).toHaveLength(1);
     expect(ev.find(x => x.name === 'quote_form_success').params).toEqual({
       service_name: svcName, form_location: flow.page.formLocation, has_photo: false,
-      used_estimator: true, estimate_low: e.low, estimate_high: e.high,
+      used_estimator: true,
     });
     // Only the known event names, and every expected one present.
     const names = [...new Set(ev.map(x => x.name))];

@@ -14,13 +14,14 @@ const WIDTHS = [360, 390, 430, 768, 1024, 1440];
 const NAV_BREAKPOINT = 1040;   // hamburger at <= 1040px, desktop nav above
 const DESKTOP_NAV = ['Services', 'About', 'Property Managers', 'Coverage', 'Contact'];
 const FOOTER_COMPANY = ['About Us', 'Services', 'Property Managers', 'Coverage', 'Price Estimator', 'Blog', 'Contact'];
-const TYPES = ['standard', 'moveout', 'deep', 'postreno'];
-const EXTRA_KEYS = ['fridge', 'oven', 'cabinets', 'laundry'];
 const EVENT_NAMES = ['call_click', 'service_click', 'blog_click', 'estimator_complete', 'quote_form_start', 'quote_form_success', 'quote_form_error'];
 const FORM_PAYLOAD_KEYS = ['name', 'phone', 'email', 'service', 'description', 'location', 'bedrooms', 'timing', 'estimatorContext', 'company', 'photo'];
 
 /* quoteCta = where "Request a Quote" (nav, drawer, sticky bar) points.
-   formLocation = the form_location analytics value on pages with a form. */
+   formLocation = the form_location analytics value on pages with a form.
+   estimator = the page hosts the calculator; preselect = the service it opens
+   on. A service with no flat price (post-renovation) has estimator:false and
+   shows a quote-request panel instead — see quotePanel. */
 const SERVICE = (path, name, preselect, formLocation) =>
   ({ path, name, form: true, estimator: true, preselect, faq: true, quoteCta: '#contact', formLocation });
 const PAGES = [
@@ -35,10 +36,11 @@ const PAGES = [
   { path: '/blog/post-renovation-cleaning-kamloops/', name: 'Article: post-renovation cleaning', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   SERVICE('/house-cleaning-kamloops/', 'House Cleaning', 'standard', 'house_cleaning_page'),
   SERVICE('/move-out-cleaning-kamloops/', 'Move-Out Cleaning', 'moveout', 'move_out_cleaning_page'),
-  SERVICE('/same-day-cleaning-kamloops/', 'Same-Day Cleaning', 'standard', 'same_day_cleaning_page'),   // no same-day surcharge
+  SERVICE('/same-day-cleaning-kamloops/', 'Same-Day Cleaning', 'standard', 'same_day_cleaning_page'),   // the clean type is priced; timing is a step
   SERVICE('/deep-cleaning-kamloops/', 'Deep Cleaning', 'deep', 'deep_cleaning_page'),
-  SERVICE('/rental-turnover-cleaning-kamloops/', 'Rental Turnover', 'moveout', 'rental_turnover_page'),  // priced as a move-out
-  SERVICE('/post-renovation-cleaning-kamloops/', 'Post-Renovation', 'postreno', 'post_renovation_page'),
+  SERVICE('/rental-turnover-cleaning-kamloops/', 'Rental Turnover', 'turnover', 'rental_turnover_page'),
+  { path: '/post-renovation-cleaning-kamloops/', name: 'Post-Renovation', form: true, estimator: false,
+    quotePanel: true, faq: true, quoteCta: '#contact', formLocation: 'post_renovation_page' },   // quoted per job
 ];
 
 /* GA events recorded locally by the site's inline gtag() stub. */
@@ -67,9 +69,13 @@ function watchPage(page) {
   return out;
 }
 
-const rangeText = e => `$${e.low} – $${e.high}`;   // as the estimator renders it
+/* What the result panel shows for a selection: an exact total, a "from" price
+   on the open-ended 5+ tier, or no number at all where the tier is quoted
+   individually. Derived from pricing.js, so a deliberate price change does not
+   break these specs — qa/pricing-consistency.js pins the approved figures. */
+const priceText = e => (e.quoteOnly ? 'Custom quote' : Pricing.money(e.total) + (e.open ? '+' : ''));
 
 module.exports = {
-  REPO, Pricing, PRODUCTION, WIDTHS, NAV_BREAKPOINT, DESKTOP_NAV, FOOTER_COMPANY, TYPES, EXTRA_KEYS,
-  EVENT_NAMES, FORM_PAYLOAD_KEYS, PAGES, gaEvents, holdNextNavigation, watchPage, rangeText,
+  REPO, Pricing, PRODUCTION, WIDTHS, NAV_BREAKPOINT, DESKTOP_NAV, FOOTER_COMPANY,
+  EVENT_NAMES, FORM_PAYLOAD_KEYS, PAGES, gaEvents, holdNextNavigation, watchPage, priceText,
 };

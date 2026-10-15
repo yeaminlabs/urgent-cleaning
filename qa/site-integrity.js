@@ -262,20 +262,39 @@ for (const p of PAGES) check(`${p.path}: GA4 tag for G-774RV984ST`, () => {
   assert.ok(h.includes('<script async src="https://www.googletagmanager.com/gtag/js?id=G-774RV984ST"></script>'), 'async gtag.js tag');
   assert.ok(/gtag\('config', 'G-774RV984ST'\);/.test(h), 'inline gtag config');
 });
-const home = html['/'], shared = read('assets/js/service-page.js');
-check('homepage fires all 7 events; service-page.js fires the 6 page events', () => {
+const home = html['/'], shared = read('assets/js/service-page.js'), estimator = read('assets/js/estimator.js');
+/* estimator_complete moved into assets/js/estimator.js when the calculator
+   became a shared component, so it is no longer in the two page scripts. */
+check('the 7 events are fired, between the page scripts and the estimator', () => {
   const has = (src, e) => src.includes(`'${e}'`);
-  for (const e of ['call_click', 'service_click', 'blog_click', 'estimator_complete', 'quote_form_start', 'quote_form_success', 'quote_form_error'])
+  for (const e of ['call_click', 'service_click', 'blog_click', 'quote_form_start', 'quote_form_success', 'quote_form_error'])
     assert.ok(has(home, e), `homepage lost ${e}`);
-  for (const e of ['call_click', 'service_click', 'estimator_complete', 'quote_form_start', 'quote_form_success', 'quote_form_error'])
+  for (const e of ['call_click', 'service_click', 'quote_form_start', 'quote_form_success', 'quote_form_error'])
     assert.ok(has(shared, e), `service-page.js lost ${e}`);
+  assert.ok(has(estimator, 'estimator_complete'), 'estimator.js lost estimator_complete');
+  /* It must stay there, and only there, so one review covers it. */
+  for (const [label, src] of [['index.html', home], ['service-page.js', shared]])
+    assert.ok(!has(src, 'estimator_complete'), `${label} fires estimator_complete again — it belongs to estimator.js`);
+});
+/* The estimator is a separate IIFE, so it reaches the page's vetted sender
+   through window.UrgentCleanTrack instead of calling gtag itself. If that
+   contract breaks on either side the event silently stops, so assert both. */
+check('the estimator sends through the page tracker, never gtag directly', () => {
+  for (const [label, src] of [['index.html', home], ['service-page.js', shared]])
+    assert.ok(src.includes('window.UrgentCleanTrack = trackEvent;'), `${label} no longer exposes UrgentCleanTrack`);
+  assert.ok(estimator.includes('window.UrgentCleanTrack'), 'estimator.js does not use the page tracker');
+  assert.ok(!/window\.gtag|\bgtag\(/.test(estimator), 'estimator.js calls gtag directly, bypassing the payload guard');
 });
 /* Every analytics payload — written inline in the trackEvent() call or built
    in a variable first (`const params = {…}; params.x = …; trackEvent(…, params)`)
    — may only use the approved parameter names, and may never read a
-   customer-input field. An allowlist, so a new key fails until reviewed. */
+   customer-input field. An allowlist, so a new key fails until reviewed.
+
+   estimate_low/estimate_high are deliberately absent: the rebuilt estimator
+   reports no dollar amount, and re-adding either name here would be the first
+   step in leaking one. */
 const APPROVED_PARAMS = ['click_location', 'form_location', 'service_name', 'article', 'bedrooms_count',
-  'estimate_low', 'estimate_high', 'has_photo', 'used_estimator', 'error_type'];
+  'has_photo', 'used_estimator', 'error_type'];
 const CUSTOMER_FIELD = /\b(fd\.get\(\s*['"]|elements\.|elements\[\s*['"]|getElementById\(\s*['"]|querySelector\(\s*['"][^'"]*)(name|phone|email|address|location|description|message)\b|\bselectedPhoto\s*\.|\bpayload\b/i;
 function objectLiteralAt(src, open) {             // src[open] === '{' → the balanced literal
   let depth = 0;
@@ -301,7 +320,7 @@ function payloadParts(src) {
   return parts;
 }
 check('analytics payloads use only approved, non-PII parameters (inline or built in a variable)', () => {
-  for (const [label, src, calls] of [['index.html', home, 7], ['service-page.js', shared, 6]]) {
+  for (const [label, src, calls] of [['index.html', home, 6], ['service-page.js', shared, 5], ['estimator.js', estimator, 1]]) {
     const parts = payloadParts(src);
     assert.strictEqual(parts.length, calls, `${label}: expected ${calls} trackEvent calls, parsed ${parts.length}`);
     for (const p of parts) {

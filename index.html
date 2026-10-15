@@ -1098,6 +1098,9 @@ footer {
   border: 1.5px solid var(--border);
   border-radius: var(--r);
   padding: 9px 18px;
+  /* 44px is the minimum comfortable tap target on a phone; the pills used to
+     come out at 37px from padding alone. The card variant is taller anyway. */
+  min-height: 44px;
   cursor: pointer;
   transition: border-color 0.12s, color 0.12s, background 0.12s;
   white-space: nowrap;
@@ -1113,9 +1116,21 @@ footer {
   align-items: flex-start;
   padding: 14px 16px;
   text-align: left;
+  /* .qc-opt sets white-space:nowrap for the single-line pills. These cards are
+     two lines, so both lines must be allowed to wrap — without this the card's
+     min-content width is the full un-wrappable string ("Airbnb / Rental
+     Turnover"), which forces the 1fr grid tracks wider than the viewport and
+     overflows the page below ~400px. min-width:0 lets the track shrink too. */
+  white-space: normal;
+  min-width: 0;
 }
-.qc-opt-title { font-size: 14px; font-weight: 700; line-height: 1.2; display: block; }
-.qc-opt-hint  { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-top: 3px; display: block; line-height: 1.3; }
+/* width:100% is load-bearing. The card is a column flex container with
+   align-items:flex-start, which sizes an auto-width child to its max-content
+   rather than stretching it — so a long label ("Airbnb / Rental Turnover")
+   would render on one line and overflow the 1fr grid track at 360px instead of
+   wrapping inside it. */
+.qc-opt-title { font-size: 14px; font-weight: 700; line-height: 1.2; display: block; width: 100%; }
+.qc-opt-hint  { font-size: 12px; font-weight: 400; color: var(--ink-3); margin-top: 3px; display: block; width: 100%; line-height: 1.3; }
 .qc-opt.active .qc-opt-hint { color: var(--ember); opacity: 0.80; }
 
 /* Toggle extras */
@@ -1138,6 +1153,34 @@ footer {
 .qc-toggle:hover { border-color: var(--border-2); color: var(--ink); }
 .qc-toggle.active { border-color: var(--ember); background: var(--ember-tint); color: var(--ember); }
 .qc-toggle-price { opacity: 0.65; }
+
+/* Add-on rows: a label, its price, and either an Add toggle or a quantity
+   stepper. Both controls are 44px tall so they stay easy to tap on a phone. */
+.qc-addons { display: grid; gap: 8px; }
+.qc-addon {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 8px 10px 8px 12px;
+  border: 1.5px solid var(--border); border-radius: var(--r); background: var(--ground);
+}
+.qc-addon-label { min-width: 0; font-size: 13.5px; color: var(--ink); line-height: 1.35; }
+.qc-addon-price { display: block; font-size: 12px; color: var(--ink-3); }
+.qc-qty { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.qc-qty-btn {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border: 1.5px solid var(--border); border-radius: var(--r); background: var(--ground);
+  font-size: 17px; font-weight: 700; color: var(--ink); cursor: pointer; line-height: 1;
+}
+.qc-qty-btn:hover:not(:disabled) { border-color: var(--border-2); }
+.qc-qty-btn:disabled { opacity: 0.35; cursor: default; }
+.qc-qty-val { min-width: 26px; text-align: center; font-size: 15px; font-weight: 700; color: var(--ink); }
+.qc-addon .qc-toggle { min-height: 44px; flex-shrink: 0; }
+.qc-more {
+  margin-top: 10px; padding: 10px 2px; min-height: 44px; background: none; border: 0;
+  font-family: inherit; font-size: 13px; font-weight: 700; color: var(--ember); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.qc-more:hover { color: var(--ember-lt); }
+
 
 /* Sticky result card */
 .qc-result {
@@ -1495,46 +1538,46 @@ footer {
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 17V8l7-5 7 5v9M8 17v-5h4v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">House Cleaning</h3>
         <p class="svc-desc">Top-to-bottom cleaning for occupied homes — kitchens, bathrooms, floors, and every surface in between.</p>
-        <p class="svc-price">From <strong data-starting-from="standard">$120</strong></p>
+        <p class="svc-price">From <strong data-starting-from="standard">$125</strong></p>
         <span class="svc-cta">House cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/move-out-cleaning-kamloops/" class="svc reveal" data-service="Move-Out Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="7" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M7 7V5a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Move-Out Cleaning</h3>
         <p class="svc-desc">Inspection-ready cleaning for vacant units between tenants — for landlords, property managers, and anyone moving out. Move-in cleaning is available too.</p>
-        <p class="svc-price">From <strong data-starting-from="moveout">$175</strong></p>
+        <p class="svc-price">From <strong data-starting-from="moveout">$195</strong></p>
         <span class="svc-cta">Move-out cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/same-day-cleaning-kamloops/" class="svc reveal" data-service="Same-Day / Short-Notice Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Same-Day / Short-Notice Cleaning</h3>
         <p class="svc-desc">Need someone today or tomorrow? We take on short-notice bookings when scheduling allows.</p>
-        <p class="svc-price">From <strong data-starting-from="standard">$120</strong></p>
+        <p class="svc-price">From <strong data-starting-from="standard">$125</strong></p>
         <span class="svc-cta">Same-day cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/deep-cleaning-kamloops/" class="svc reveal" data-service="Deep Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Deep Cleaning</h3>
         <p class="svc-desc">Detailed cleaning for overdue homes — surfaces, grout, vents and commonly missed areas. Appliance and cabinet interiors can be added as needed.</p>
-        <p class="svc-price">From <strong data-starting-from="deep">$155</strong></p>
+        <p class="svc-price">From <strong data-starting-from="deep">$175</strong></p>
         <span class="svc-cta">Deep cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/rental-turnover-cleaning-kamloops/" class="svc reveal" data-service="Rental Turnover Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M4 6h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
         <h3 class="svc-name">Rental Turnover Cleaning</h3>
         <p class="svc-desc">Preparing a unit between tenants on a short timeline — built for landlords and property managers juggling tight turnover windows.</p>
-        <p class="svc-price">From <strong data-starting-from="moveout">$175</strong></p>
+        <p class="svc-price">From <strong data-starting-from="turnover">$110</strong></p>
         <span class="svc-cta">Rental turnover cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
       <a href="/post-renovation-cleaning-kamloops/" class="svc reveal" data-service="Post-Renovation Cleaning">
         <div class="svc-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 5h12M6 5v11M14 5v11M4 16h12M8 9h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h3 class="svc-name">Post-Renovation Cleaning</h3>
         <p class="svc-desc">Construction dust, debris, and residue cleared from every surface and floor so the space is ready to use again.</p>
-        <p class="svc-price">From <strong data-starting-from="postreno">$200</strong></p>
+        <p class="svc-price">Quoted per job</p>
         <span class="svc-cta">Post-renovation cleaning in Kamloops <span class="svc-cta-arrow" aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
-    <p class="svc-price-note reveal">Starting prices are for a studio or 1-bedroom, 1-bathroom home with no add-ons. Your final quote can vary based on the details of the property and any additional services.</p>
+    <p class="svc-price-note reveal">Starting prices are for a studio or small 1-bedroom home with no add-ons. Your final quote can vary based on the size and condition of the property and any additional services.</p>
     <p class="svc-all reveal"><a href="#quote">Get your instant estimate &rarr;</a><a href="/services/">View All Cleaning Services in Kamloops &rarr;</a></p>
   </div>
 </section>
@@ -1597,88 +1640,49 @@ footer {
   <div class="section-inner">
     <div class="reveal">
       <h2 class="section-title">Affordable cleaning services in Kamloops</h2>
-      <p class="section-sub">Clear starting prices help you know what to expect. Pick your situation below to see a ballpark price range based on the details you provide. We&rsquo;ll review your cleaning needs and confirm the final quote.</p>
+      <p class="section-sub">Clear starting prices help you know what to expect. Pick your situation below to see an estimated total based on the details you provide. We&rsquo;ll review your cleaning needs and confirm the final quote.</p>
     </div>
 
     <div class="qc-layout">
-      <!-- LEFT: selectors -->
+      <!-- LEFT: the four choices. Every option is rendered from
+           assets/js/pricing.js by assets/js/estimator.js — no price is written
+           into this markup. -->
       <div class="qc-form">
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bedrooms</div>
-          <div class="qc-options" id="qc-beds">
-            <button class="qc-opt" data-val="1">Studio / 1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4</button>
-            <button class="qc-opt" data-val="5">5+</button>
-          </div>
+          <div class="qc-step-label">1. Service</div>
+          <div class="qc-options qc-options--cards" id="qc-service" role="group" aria-label="Service"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Bathrooms</div>
-          <div class="qc-options" id="qc-baths">
-            <button class="qc-opt" data-val="1">1</button>
-            <button class="qc-opt" data-val="2">2</button>
-            <button class="qc-opt" data-val="3">3</button>
-            <button class="qc-opt" data-val="4">4+</button>
-          </div>
+          <div class="qc-step-label">2. Home size</div>
+          <div class="qc-options" id="qc-size" role="group" aria-label="Home size"></div>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Type of clean</div>
-          <div class="qc-options qc-options--cards" id="qc-condition">
-            <button class="qc-opt qc-opt--card" data-val="standard">
-              <span class="qc-opt-title">Standard</span>
-              <span class="qc-opt-hint">Regularly maintained home</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="moveout">
-              <span class="qc-opt-title">Move-out</span>
-              <span class="qc-opt-hint">Post-tenant, vacant unit</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="deep">
-              <span class="qc-opt-title">Deep clean</span>
-              <span class="qc-opt-hint">Neglected or overdue</span>
-            </button>
-            <button class="qc-opt qc-opt--card" data-val="postreno">
-              <span class="qc-opt-title">Post-reno</span>
-              <span class="qc-opt-hint">Construction dust &amp; debris</span>
-            </button>
-          </div>
+          <div class="qc-step-label">3. Add-ons <span class="qc-step-optional">(optional)</span></div>
+          <div class="qc-addons" id="qc-addons"></div>
+          <button type="button" class="qc-more" id="qc-more">More add-ons</button>
         </div>
 
         <div class="qc-step reveal">
-          <div class="qc-step-label">Extras <span class="qc-step-optional">(optional add-ons)</span></div>
-          <div class="qc-extras" id="qc-extras">
-            <button class="qc-toggle" data-val="fridge">Inside fridge <span class="qc-toggle-price">+$35</span></button>
-            <button class="qc-toggle" data-val="oven">Inside oven <span class="qc-toggle-price">+$30</span></button>
-            <button class="qc-toggle" data-val="cabinets">Inside cabinets <span class="qc-toggle-price">+$50</span></button>
-            <button class="qc-toggle" data-val="laundry">Laundry <span class="qc-toggle-price">+$40</span></button>
-          </div>
+          <div class="qc-step-label">4. Timing</div>
+          <div class="qc-options" id="qc-timing" role="group" aria-label="Timing"></div>
         </div>
 
       </div>
 
       <!-- RIGHT: live result -->
       <div class="qc-result" id="qc-result">
-        <div class="qc-result-eyebrow">Ballpark estimate</div>
-        <div class="qc-result-price" id="qc-price" aria-live="polite">—</div>
-        <div class="qc-result-note" id="qc-note">Select bedrooms and clean type to see your estimate.</div>
+        <div class="qc-result-eyebrow">Estimated total</div>
+        <div class="qc-result-price" id="qc-price" aria-live="polite">&mdash;</div>
+        <div class="qc-result-note" id="qc-note">Choose a service and home size to see an estimated total.</div>
 
-        <div class="qc-breakdown" id="qc-breakdown">
-          <div class="qc-bd-row" id="qcb-base"><span>Base rate</span><span id="qcb-base-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-baths" style="display:none"><span>Extra bathrooms</span><span id="qcb-baths-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-cond"><span id="qcb-cond-label">Clean type</span><span id="qcb-cond-val">—</span></div>
-          <div class="qc-bd-row" id="qcb-extras" style="display:none"><span>Extras</span><span id="qcb-extras-val">—</span></div>
-          <div class="qc-bd-row total"><span>Estimate</span><span id="qcb-total">—</span></div>
-        </div>
+        <div class="qc-breakdown" id="qc-breakdown"></div>
 
-        <a href="tel:+12508792425" class="qc-cta" id="qc-cta" aria-disabled="true">
-          <span class="qc-cta-label">Call to confirm price</span>
-          <span class="qc-cta-num">(250) 879-2425</span>
-        </a>
-        <a href="#contact" id="qc-request-quote" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Request Quote &rarr;</a>
-        <p class="qc-disclaimer">This is an initial estimate, not a final price. We'll confirm the exact amount after reviewing the details — no site visit needed for most jobs.</p>
+        <a href="#contact" id="qc-request-quote" class="qc-cta">Request a quote &rarr;</a>
+        <a href="tel:+12508792425" class="pq-cta-secondary" style="display:inline-block;text-align:center;margin-top:10px;">Or call (250) 879-2425 &rarr;</a>
+        <p class="qc-disclaimer">This estimate is based on the options selected. Final pricing may change if the property condition or requested scope differs from the selected service. For most standard jobs, photos are enough for us to confirm the quote.</p>
       </div>
     </div>
   </div>
@@ -1830,7 +1834,7 @@ footer {
 
       <details class="faq-item">
         <summary class="faq-q">How much does house cleaning in Kamloops cost?</summary>
-        <p class="faq-a">Prices depend on bedrooms, bathrooms, and the condition of the property. A standard 2-bedroom clean typically runs $155–$185. A move-out clean of the same unit runs $225–$270. Use the price estimator on this page for a live range, then call or send a quick request to confirm — most standard jobs don't need an in-person site visit.</p>
+        <p class="faq-a">Prices depend on the service, the size of the home and the add-ons you choose. A standard 2-bedroom clean is $175. A move-out clean of the same unit is $295. Use the price estimator on this page for your own total, then call or send a quick request to confirm — most standard jobs don't need an in-person site visit.</p>
       </details>
 
       <details class="faq-item">
@@ -1871,7 +1875,7 @@ footer {
     {
       "@type": "Question",
       "name": "How much does house cleaning in Kamloops cost?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Prices depend on bedrooms, bathrooms, and the condition of the property. A standard 2-bedroom clean typically runs $155–$185. A move-out clean of the same unit runs $225–$270. Use the price estimator on this page for a live range, then call or send a quick request to confirm — most standard jobs don't need an in-person site visit." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Prices depend on the service, the size of the home and the add-ons you choose. A standard 2-bedroom clean is $175. A move-out clean of the same unit is $295. Use the price estimator on this page for your own total, then call or send a quick request to confirm — most standard jobs don't need an in-person site visit." }
     },
     {
       "@type": "Question",
@@ -2139,6 +2143,7 @@ footer {
 <!-- Pricing source of truth. Not deferred: the inline script below runs as soon
      as it is parsed, so pricing.js must already have executed. -->
 <script src="/assets/js/pricing.js"></script>
+<script src="/assets/js/estimator.js" defer></script>
 <script>
 (function () {
   'use strict';
@@ -2158,6 +2163,11 @@ footer {
       if (typeof window.gtag === 'function') window.gtag('event', name, params || {});
     } catch (err) { /* analytics must never break the page */ }
   }
+
+  /* assets/js/estimator.js is a separate IIFE and needs this exact function:
+     one payload shape for every event on the site. Read-only entry point — it
+     exposes the sender, never the analytics state. */
+  window.UrgentCleanTrack = trackEvent;
 
   /* Where a tel: link lives, for call_click's click_location. Ordered
      most-specific first so nested matches resolve correctly. */
@@ -2185,123 +2195,12 @@ footer {
     trackEvent('call_click', { click_location: callLocation(tel) });
   });
 
-  /* Set by the estimator when a valid range is produced; read (non-PII)
-     by quote_form_success. */
-  let estimatorUsed = false;
-  let lastEstimate = { low: null, high: null };
-  /* Analytics-only label map for the estimator's clean-type values. Mirrors
-     the handoff mapping below; kept here so no pricing code is touched. */
-  const COND_SERVICE = { standard: 'House Cleaning', moveout: 'Move-Out Cleaning', deep: 'Deep Cleaning', postreno: 'Post-Renovation Cleaning' };
 
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.10 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  /* ── QUOTE CALCULATOR ───────────────────────────────────────
-     Prices and math live in assets/js/pricing.js (window.UrgentCleanPricing),
-     loaded just before this script and shared with the service pages. This
-     block only renders them. */
-  (function() {
-    const Pricing = window.UrgentCleanPricing;
-    const MULT_L = { standard: 'Standard clean', moveout: 'Move-out surcharge', deep: 'Deep clean surcharge', postreno: 'Post-reno surcharge' };
-    const state  = { beds: null, baths: null, cond: null, extras: new Set() };
-    let lastEstimateSig = null; // analytics dedup only
-
-    function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
-
-    function recalc() {
-      const priceEl = document.getElementById('qc-price');
-      const noteEl  = document.getElementById('qc-note');
-      const ctaEl   = document.getElementById('qc-cta');
-      const bdEl    = document.getElementById('qc-breakdown');
-
-      if (!state.beds || !state.cond) {
-        priceEl.textContent = '—';
-        noteEl.textContent  = 'Select bedrooms and clean type to see your estimate.';
-        ctaEl.classList.remove('ready');
-        ctaEl.setAttribute('aria-disabled', 'true');
-        bdEl.classList.remove('visible');
-        return;
-      }
-
-      const baths    = state.baths || 1;
-      const est      = Pricing.estimate(state.beds, baths, state.cond, state.extras);
-      const base        = est.base;
-      const bathAdd     = est.bathAdd;
-      const extrasTotal = est.extrasTotal;
-      const subtotal    = est.subtotal;
-      const raw         = est.raw;
-      const lo          = est.low;
-      const hi          = est.high;
-
-      /* price display */
-      priceEl.classList.add('flash');
-      setTimeout(() => priceEl.classList.remove('flash'), 300);
-      priceEl.textContent = fmt(lo) + ' – ' + fmt(hi);
-      noteEl.textContent  = 'Call or request a quote to confirm your exact price.';
-      ctaEl.classList.add('ready');
-      ctaEl.setAttribute('aria-disabled', 'false');
-
-      /* breakdown */
-      document.getElementById('qcb-base-val').textContent   = fmt(base);
-      const bathRow = document.getElementById('qcb-baths');
-      bathRow.style.display = bathAdd > 0 ? '' : 'none';
-      document.getElementById('qcb-baths-val').textContent  = '+' + fmt(bathAdd);
-      document.getElementById('qcb-cond-label').textContent = MULT_L[state.cond];
-      /* The multiplier applies to the whole subtotal (base + baths + extras),
-         so its line-item markup is raw - subtotal — not a formula involving
-         only base/baths, which under- or over-counted extras depending on
-         combination and made the visible rows not sum to the total. */
-      document.getElementById('qcb-cond-val').textContent   = est.mult === 1 ? 'included' : '+' + fmt(raw - subtotal);
-      const extRow = document.getElementById('qcb-extras');
-      extRow.style.display = extrasTotal > 0 ? '' : 'none';
-      document.getElementById('qcb-extras-val').textContent = '+' + fmt(extrasTotal);
-      document.getElementById('qcb-total').textContent      = fmt(lo) + ' – ' + fmt(hi);
-      bdEl.classList.add('visible');
-
-      /* Analytics only — reads the values already computed above, changes none
-         of them. Deduped by input+output signature so repeat recalcs of the
-         same combination don't re-fire, while a genuinely new selection does. */
-      estimatorUsed = true;
-      lastEstimate = { low: lo, high: hi };
-      const sig = [state.beds, baths, state.cond, [...state.extras].sort().join(','), lo, hi].join('|');
-      if (sig !== lastEstimateSig) {
-        lastEstimateSig = sig;
-        trackEvent('estimator_complete', {
-          service_name: COND_SERVICE[state.cond] || state.cond,
-          bedrooms_count: state.beds,
-          estimate_low: lo,
-          estimate_high: hi,
-        });
-      }
-    }
-
-    /* Extras labels come from the same numbers the calculation uses. */
-    if (document.getElementById('qc-extras') && Pricing) Pricing.syncExtraLabels(document);
-
-    /* single-select groups */
-    [['qc-beds','beds'],['qc-baths','baths'],['qc-condition','cond']].forEach(([id, key]) => {
-      document.getElementById(id)?.addEventListener('click', e => {
-        const btn = e.target.closest('.qc-opt');
-        if (!btn) return;
-        document.querySelectorAll('#' + id + ' .qc-opt').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state[key] = key === 'cond' ? btn.dataset.val : +btn.dataset.val;
-        recalc();
-      });
-    });
-
-    /* multi-select extras */
-    document.getElementById('qc-extras')?.addEventListener('click', e => {
-      const btn = e.target.closest('.qc-toggle');
-      if (!btn) return;
-      const v = btn.dataset.val;
-      state.extras[state.extras.has(v) ? 'delete' : 'add'](v);
-      btn.classList.toggle('active', state.extras.has(v));
-      recalc();
-    });
-  })();
 
   /* ── SERVICE PRESELECTION (service cards + estimator handoff) ─────── */
   /* One reusable function instead of inline handlers on every card. Sets the
@@ -2363,42 +2262,6 @@ footer {
     });
   });
 
-  (function () {
-    const link = document.getElementById('qc-request-quote');
-    const cta  = document.getElementById('qc-cta');
-    if (!link) return;
-
-    const SERVICE_MAP = { standard: 'House Cleaning', moveout: 'Move-Out Cleaning', deep: 'Deep Cleaning', postreno: 'Post-Renovation Cleaning' };
-    const BEDS_MAP = { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5+' };
-
-    link.addEventListener('click', () => {
-      if (!cta || !cta.classList.contains('ready')) return; // nothing selected yet — plain scroll only
-
-      const condBtn   = document.querySelector('#qc-condition .qc-opt.active');
-      const bedsBtn   = document.querySelector('#qc-beds .qc-opt.active');
-      const bathsBtn  = document.querySelector('#qc-baths .qc-opt.active');
-      const extrasBtns = [...document.querySelectorAll('#qc-extras .qc-toggle.active')];
-
-      const cond = condBtn && condBtn.dataset.val;
-      const serviceName = cond && SERVICE_MAP[cond];
-      if (!serviceName) return;
-
-      const bedsVal    = bedsBtn && bedsBtn.dataset.val;
-      const bedsLabel  = bedsBtn ? bedsBtn.textContent.trim() : '';
-      const bathsLabel = bathsBtn ? bathsBtn.textContent.trim() : '1';
-      const extrasLabels = extrasBtns.map(b => b.childNodes[0].textContent.trim());
-      const priceText = (document.getElementById('qc-price').textContent || '').trim();
-
-      let context = `Estimator selection: ${bedsLabel || '—'} bedroom(s), ${bathsLabel} bathroom(s), ${serviceName}`;
-      if (extrasLabels.length) context += `, ${extrasLabels.join(', ')}`;
-      context += priceText && priceText !== '—' ? `. Estimated range: ${priceText}.` : '.';
-
-      preselectService(serviceName, {
-        bedrooms: bedsVal ? BEDS_MAP[bedsVal] : null,
-        estimatorContext: context,
-      });
-    });
-  })();
 
   let selectedPhoto = null; // { name, type, dataUrl } — set by the image-upload block, read by the quote-form submit handler
 
@@ -2541,12 +2404,8 @@ footer {
         service_name: fd.get('service') || '',
         form_location: 'homepage',
         has_photo: Boolean(selectedPhoto),
-        used_estimator: Boolean(fd.get('estimatorContext')) || estimatorUsed,
+        used_estimator: Boolean(fd.get('estimatorContext')),
       };
-      if (analytics.used_estimator && lastEstimate.low !== null) {
-        analytics.estimate_low = lastEstimate.low;
-        analytics.estimate_high = lastEstimate.high;
-      }
 
       let httpStatus = null;
       let succeeded = false;
