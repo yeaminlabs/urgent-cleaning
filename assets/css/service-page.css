@@ -1145,9 +1145,14 @@ footer {
   .sameday-actions { flex-direction: column; align-items: stretch; }
   .sameday-actions .btn-on-ember { width: 100%; min-height: 50px; }
 
-  /* Estimator: result card first, options never scroll sideways. */
+  /* Estimator: on a phone the result follows the options, so a visitor
+     finishes choosing before meeting the total. The DOM is already in that
+     order (.qc-form, then .qc-result), so nothing needs reordering here — an
+     earlier design hoisted the card with `order: -1`, which is what put the
+     total above the Service / Home size / Add-ons / Timing steps. Do not
+     reintroduce it: it would also contradict the DOM for screen readers. */
   .qc-layout { gap: 20px; }
-  .qc-result { order: -1; position: static; }
+  .qc-result { position: static; }
   .qc-options--cards { grid-template-columns: 1fr 1fr; }
   .qc-toggle { font-size: 12px; }
 
