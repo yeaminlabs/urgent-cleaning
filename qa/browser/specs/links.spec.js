@@ -36,7 +36,7 @@ test('every internal link on every page returns 200 and every anchor has a targe
   expect([...hrefs].sort(), 'distinct internal link targets').toEqual(PAGES.map(p => p.path).sort());
 });
 
-test('sitemap.xml lists exactly the 13 pages, and each returns 200', async ({ request }) => {
+test(`sitemap.xml lists exactly the ${PAGES.length} pages, and each returns 200`, async ({ request }) => {
   const xml = await (await request.get('/sitemap.xml')).text();
   const paths = [...xml.matchAll(/<loc>https:\/\/www\.urgentcleankamloops\.ca([^<]*)<\/loc>/g)].map(m => m[1]).sort();
   expect(paths).toEqual(PAGES.map(p => p.path).sort());

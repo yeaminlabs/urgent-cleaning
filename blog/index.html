@@ -46,8 +46,9 @@
 <!-- Blog + Breadcrumb structured data. publisher is a pure @id reference to the
      LocalBusiness declared on the homepage — no second business entity is
      created here and none of its properties are restated.
-     No blogPost / hasPart entries: the articles are planned but not published,
-     and schema must describe what actually exists on the site. -->
+     No blogPost / hasPart entries: the Blog node describes the collection, and
+     each article carries its own BlogPosting with isPartOf pointing back here,
+     so the relationship is declared once from the article side. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -166,17 +167,16 @@
   </div>
 </section>
 
-<!-- PLANNED GUIDES
-     Cards are intentionally NOT links. Each article below is planned but not
-     yet written, so linking to its URL would publish five 404s and waste crawl
-     budget. The planned path lives in data-planned-url; to activate an article,
-     swap <article class="duo-card"> for <a class="duo-card" href="{that URL}">
-     and drop the "Coming soon" eyebrow. Layout and grid stay identical. -->
+<!-- CLEANING GUIDES
+     All six guides are published and every card is a real link. There are no
+     placeholder cards: a card here means the article exists and returns 200.
+     qa/browser/specs/blog.spec.js pins the six paths and their H1s, so adding
+     a guide means adding it there too. -->
 <section class="section section--alt" id="guides">
   <div class="section-inner">
     <div class="reveal">
       <h2 class="section-title">Cleaning Guides &amp; Tips</h2>
-      <p class="section-sub">The first guide is live and the rest are being written. Every service page also covers what that clean includes and how it is priced.</p>
+      <p class="section-sub">Practical Kamloops cleaning guides on pricing, deep cleaning, move-outs, short-notice work, rental turnovers and post-renovation cleanup. Every service page also covers what that clean includes and how it is priced.</p>
     </div>
     <div class="rel-grid">
 
@@ -204,19 +204,21 @@
         <p class="rel-go">Read the guide &rarr;</p>
       </a>
 
-      <!-- Target keyword: deep cleaning Kamloops -->
-      <article class="duo-card reveal" data-planned-url="/blog/deep-cleaning-vs-regular-cleaning/">
-        <p class="duo-eyebrow">Coming soon</p>
+      <!-- Target keyword: deep cleaning Kamloops — PUBLISHED -->
+      <a class="duo-card reveal" href="/blog/deep-cleaning-vs-regular-cleaning/">
+        <p class="duo-eyebrow">Cleaning guide</p>
         <h3 class="duo-title">Deep Cleaning vs Regular Cleaning: What&rsquo;s the Difference?</h3>
         <p class="duo-lead">Where a deep clean goes further than a regular visit, and when each one is the right thing to book.</p>
-      </article>
+        <p class="rel-go">Read the guide &rarr;</p>
+      </a>
 
-      <!-- Target keyword: Airbnb cleaning Kamloops -->
-      <article class="duo-card reveal" data-planned-url="/blog/airbnb-turnover-cleaning-kamloops/">
-        <p class="duo-eyebrow">Coming soon</p>
+      <!-- Target keyword: Airbnb cleaning Kamloops — PUBLISHED -->
+      <a class="duo-card reveal" href="/blog/airbnb-turnover-cleaning-kamloops/">
+        <p class="duo-eyebrow">Cleaning guide</p>
         <h3 class="duo-title">Airbnb Turnover Cleaning Checklist for Kamloops Hosts</h3>
         <p class="duo-lead">What a short-term rental changeover covers between guests, and how to keep it consistent when the gap is tight.</p>
-      </article>
+        <p class="rel-go">Read the guide &rarr;</p>
+      </a>
 
       <!-- Target keyword: post renovation cleaning Kamloops — PUBLISHED -->
       <a class="duo-card reveal" href="/blog/post-renovation-cleaning-kamloops/">
@@ -237,7 +239,7 @@
     <div class="reveal">
       <h2 class="section-title">Cleaning Services in Kamloops</h2>
       <div class="sv-prose">
-        <p>Urgent Clean is a residential and rental property cleaner working across Kamloops. If you would rather skip the reading and get a price, the <a href="/services/">full list of cleaning services</a> sets out what each visit covers.</p>
+        <p>Urgent Clean cleans homes, rentals, offices and local business spaces across Kamloops. If you would rather skip the reading and get a price, the <a href="/services/">full list of cleaning services</a> sets out what each visit covers, including <a href="/office-cleaning-kamloops/">office and commercial cleaning</a>.</p>
         <p>Most requests fall into one of four: <a href="/house-cleaning-kamloops/">house cleaning</a> to keep a home on top of things, <a href="/deep-cleaning-kamloops/">deep cleaning</a> when a place needs a full reset, <a href="/move-out-cleaning-kamloops/">move-out cleaning</a> at the end of a tenancy, and <a href="/rental-turnover-cleaning-kamloops/">rental turnover cleaning</a> between tenants or guests.</p>
         <p>You can also <a href="/about/">read more about how Urgent Clean works</a> — how quoting, scheduling and scope are handled before a visit.</p>
       </div>
@@ -314,6 +316,7 @@
         <a href="/move-out-cleaning-kamloops/">Move-Out Cleaning</a>
         <a href="/rental-turnover-cleaning-kamloops/">Rental Turnover Cleaning</a>
         <a href="/post-renovation-cleaning-kamloops/">Post-Renovation Cleaning</a>
+        <a href="/office-cleaning-kamloops/">Office Cleaning</a>
       </nav>
     <nav class="footer-col" aria-label="Company">
       <p class="footer-col-h">Company</p>

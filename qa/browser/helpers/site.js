@@ -34,6 +34,8 @@ const PAGES = [
   { path: '/blog/move-out-cleaning-checklist-kamloops/', name: 'Article: move-out checklist', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   { path: '/blog/same-day-cleaning-kamloops/', name: 'Article: same-day cleaning', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   { path: '/blog/post-renovation-cleaning-kamloops/', name: 'Article: post-renovation cleaning', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
+  { path: '/blog/deep-cleaning-vs-regular-cleaning/', name: 'Article: deep vs regular', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
+  { path: '/blog/airbnb-turnover-cleaning-kamloops/', name: 'Article: Airbnb turnover', form: false, estimator: false, faq: true, quoteCta: '/contact/#quote' },
   SERVICE('/house-cleaning-kamloops/', 'House Cleaning', 'standard', 'house_cleaning_page'),
   SERVICE('/move-out-cleaning-kamloops/', 'Move-Out Cleaning', 'moveout', 'move_out_cleaning_page'),
   SERVICE('/same-day-cleaning-kamloops/', 'Same-Day Cleaning', 'standard', 'same_day_cleaning_page'),   // the clean type is priced; timing is a step
@@ -41,6 +43,13 @@ const PAGES = [
   SERVICE('/rental-turnover-cleaning-kamloops/', 'Rental Turnover', 'turnover', 'rental_turnover_page'),
   { path: '/post-renovation-cleaning-kamloops/', name: 'Post-Renovation', form: true, estimator: false,
     quotePanel: true, faq: true, quoteCta: '#contact', formLocation: 'post_renovation_page' },   // quoted per job
+  /* Office cleaning has a pricing panel rather than the residential estimator,
+     but unlike post-renovation it publishes a figure — the recurring contract
+     band — so it is NOT a `quotePanel` page (that flag means "no amount at
+     all"). Its pricing is covered by qa/pricing-consistency.js and the office
+     checks in qa/site-integrity.js. */
+  { path: '/office-cleaning-kamloops/', name: 'Office Cleaning', form: true, estimator: false,
+    officePanel: true, faq: true, quoteCta: '#contact', formLocation: 'office_cleaning_page' },
 ];
 
 /* GA events recorded locally by the site's inline gtag() stub. */

@@ -23,9 +23,13 @@ const ALLOWED_SERVICES = new Set([
   'Deep Cleaning',
   'Rental Turnover Cleaning',
   'Post-Renovation Cleaning',
+  'Office / Commercial Cleaning',
   'Recurring Cleaning',
   'Other',
 ]);
+/* This list must match the Service <select> on every public quote form. A
+   value the forms offer but this set omits is rejected as a validation error,
+   so the two are checked against each other by qa/site-integrity.js. */
 
 const ALLOWED_PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']);
 const MAX_PHOTO_BYTES = 3 * 1024 * 1024; // 3MB — keeps the base64 payload safely under Vercel's request-body limit

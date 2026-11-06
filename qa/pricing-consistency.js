@@ -42,6 +42,22 @@ function section(title) { console.log(`\n${title}`); }
 const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 const money = n => '$' + Number(n).toLocaleString('en-US');
 
+/* ── Office / commercial cleaning ─────────────────────────────────────────
+   Office work is NOT part of the residential estimator and deliberately not in
+   pricing.js: it is a contract hourly band taken from the internal Team Price
+   Guide, not a size tier. It is pinned here instead, together with guards
+   against the ways it could be misrepresented publicly. */
+const OFFICE_RATE = { low: 45, high: 50, unit: 'per cleaner/hour' };
+const OFFICE_PAGE = 'office-cleaning-kamloops/index.html';
+/* The one money range the site is allowed to publish, and only with its unit
+   attached — "$45–$50" on its own could be read as a per-visit price. */
+const OFFICE_RANGE = `${money(OFFICE_RATE.low)}–${money(OFFICE_RATE.high)}`;
+/* "$45" starts with a regex anchor, so every literal has to be escaped before
+   it goes into a RegExp. */
+const rx = s => s.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
+const officeRangeWithUnit = new RegExp(
+  `${rx(money(OFFICE_RATE.low))}\\s*[–—-]\\s*${rx(money(OFFICE_RATE.high))}\\s+${rx(OFFICE_RATE.unit)}`, 'g');
+
 /* ── 1. THE CANONICAL TABLES ──────────────────────────────────────────────
    Transcribed from the approved Team Price Guide. Do not edit either side to
    make the other pass: change pricing.js and this together, deliberately. */
@@ -308,7 +324,12 @@ for (const f of [...SCRIPTS, ...allHtml]) check(`${f.replace('/index.html', '/')
 });
 check('the retired extras prices appear nowhere public', () => {
   for (const f of [...SCRIPTS, ...allHtml]) {
-    const src = read(f);
+    /* $50 is also the upper bound of the office contract band, so that band is
+       removed before looking for the retired extras prices. Both the entity and
+       the literal dash form are stripped; decode() is declared further down. */
+    const src = read(f)
+      .split(`${money(OFFICE_RATE.low)}&ndash;${money(OFFICE_RATE.high)}`).join(' ')
+      .split(OFFICE_RANGE).join(' ');
     for (const v of [35, 38, 40, 50]) {
       const hit = src.match(new RegExp(`\\+?\\$${v}\\b`));
       assert.ok(!hit, `${f}: "${hit && hit[0]}" is a price from the retired model`);
@@ -430,6 +451,8 @@ const PUBLISHED = [
     where: 'Rental Turnover cost FAQ' },
   { file: 'rental-turnover-cleaning-kamloops/index.html', service: 'turnover', size: 't-3bed', count: 1,
     where: 'Rental Turnover cost FAQ' },
+  { file: 'blog/house-cleaning-cost-kamloops/index.html', service: 'standard', size: 'studio', count: 4,
+    where: 'cost-article SERP snippet — meta description, og, twitter and the BlogPosting description' },
 ];
 const STARTING_EL = /<strong data-starting-from="([a-z]*)">([^<]*)<\/strong>/g;
 const decode = s => s.replace(/&ndash;|&#8211;|&#x2013;/gi, '–').replace(/&mdash;|&#8212;/gi, '—').replace(/&#36;|&dollar;/gi, '$');
@@ -480,20 +503,87 @@ for (const e of PUBLISHED) {
     assert.strictEqual(n, e.count, `found ${n} time(s); the page is stale or the registry needs updating`);
   });
 }
+
+/* Articles repeat the same canonical figure several times, so their prices are
+   pinned as a SET of amounts derived from pricing.js rather than per
+   occurrence. A drift in any value, or any non-canonical amount appearing,
+   changes the set and fails. */
+const addon = id => Pricing.ADDONS.find(a => a.id === id).price;
+const base = (s, z) => Pricing.basePrice(s, z).amount;
+const ARTICLE_PRICE_SETS = {
+  'blog/deep-cleaning-vs-regular-cleaning/index.html': () => [
+    base('standard', 'studio'), base('standard', '2bed'), base('standard', '3bed'),
+    base('deep', 'studio'), base('deep', '2bed'), base('deep', '3bed'),
+    addon('oven'),                                  // oven/fridge/cabinets share a price
+  ],
+  'blog/airbnb-turnover-cleaning-kamloops/index.html': () => [
+    base('turnover', 't-studio'), base('turnover', 't-2bed'),
+    base('turnover', 't-3bed'), base('turnover', 't-4bed'),
+    base('moveout', 'studio'),                      // the move-out contrast figure
+    addon('laundry'), addon('laundry-extra'), addon('linen'), addon('oven'), addon('pet-hair'),
+  ],
+  [OFFICE_PAGE]: () => [OFFICE_RATE.low, OFFICE_RATE.high],
+};
+const amountsIn = h => [...new Set(
+  [...h.matchAll(/\$\s?(\d[\d,]*)/g)].map(m => Number(m[1].replace(/,/g, ''))))].sort((a, b) => a - b);
+
+section('8b. Article and office prices pinned to the canonical tables');
+for (const [f, expected] of Object.entries(ARTICLE_PRICE_SETS)) {
+  check(`${f.replace('/index.html', '/')}: publishes only canonical amounts`, () => {
+    const want = [...new Set(expected())].sort((a, b) => a - b);
+    const got = amountsIn(decode(read(f)));
+    assert.deepStrictEqual(got, want,
+      `published amounts drifted from pricing.js\n  page: ${got.map(money).join(' ')}\n  canonical: ${want.map(money).join(' ')}`);
+  });
+}
+check('the office recurring rate is published with its unit, never as a flat price', () => {
+  const h = decode(read(OFFICE_PAGE));
+  const text = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  // every occurrence of the band carries "per cleaner/hour"
+  const bands = (text.match(new RegExp(OFFICE_RANGE.replace(/\$/g, '\\$').replace('–', '[–—-]'), 'g')) || []).length;
+  const withUnit = (text.match(officeRangeWithUnit) || []).length;
+  assert.ok(bands > 0, 'the office page no longer publishes the recurring rate');
+  assert.strictEqual(withUnit, bands, `${bands - withUnit} occurrence(s) of ${OFFICE_RANGE} are missing "${OFFICE_RATE.unit}"`);
+  // and it is never dressed up as something it is not
+  for (const re of [
+    /office cleaning (?:from|starts? (?:at|from))\s*\$\d/i,
+    /\$\d+\s*(?:flat|per visit|a visit|per clean\b|per job)/i,
+    /all (?:commercial|office) cleaning\s*\$\d/i,
+    /(?:commercial|office)[^.]{0,40}\bflat[- ]rate\b/i,
+  ]) {
+    const hit = text.match(re);
+    assert.ok(!hit, `office pricing misrepresented: "${hit && hit[0]}"`);
+  }
+  // one-time work must stay a quote, not inherit the hourly band
+  assert.match(text, /One-?[Tt]ime[^.]{0,80}(?:custom quote|quoted per job|quoted based on|quoted individually)/,
+    'the office page must say one-time commercial work is quoted per job');
+});
+
 check('no unregistered or stale price anywhere in the site HTML', () => {
   const problems = [];
   for (const f of allHtml) {
     let h = scannable(f);
     for (const e of PUBLISHED.filter(e => e.file === f)) h = h.split(money(Pricing.basePrice(e.service, e.size).amount)).join('');
+    /* Pages pinned by set above, plus the office band wherever a card quotes
+       it, are already accounted for — strip them so only genuinely
+       unregistered amounts are reported. */
+    if (ARTICLE_PRICE_SETS[f]) {
+      for (const v of new Set(ARTICLE_PRICE_SETS[f]())) h = h.split(money(v)).join('');
+    }
+    h = h.split(OFFICE_RANGE).join('');
     for (const m of h.matchAll(/\$\s?\d[\d,]*(?:\s*[–—-]\s*\$?\s?\d[\d,]*)?/g)) problems.push(`${f}: "${m[0]}"`);
   }
   assert.strictEqual(problems.length, 0, 'unregistered or stale price(s):\n' + problems.join('\n'));
 });
 check('no page publishes a price range the estimator cannot produce', () => {
   /* The retired engine printed "$155–$185" everywhere. A size tier is now one
-     price, so a two-ended money range in the copy is stale by construction. */
+     price, so a two-ended money range in the copy is stale by construction —
+     with one deliberate exception: the office contract band, which is an hourly
+     rate rather than an estimator output and must carry its unit. */
   for (const f of allHtml) {
-    const hit = decode(read(f)).replace(/<[^>]+>/g, ' ').match(/\$\s?\d[\d,]*\s*[–—]\s*\$?\s?\d[\d,]*/);
+    const text = decode(read(f)).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+    const cleaned = text.replace(officeRangeWithUnit, ' ');
+    const hit = cleaned.match(/\$\s?\d[\d,]*\s*[–—]\s*\$?\s?\d[\d,]*/);
     assert.ok(!hit, `${f}: "${hit && hit[0]}" — tiers are single prices now`);
   }
 });
@@ -514,6 +604,14 @@ const STARTING_SLOTS = {
   'services/index.html': ['standard', 'deep', 'standard', 'moveout', 'turnover'], // hub cards, in grid order
   'blog/same-day-cleaning-kamloops/index.html': ['standard', 'standard'],         // pricing section + cost FAQ
   'house-cleaning-kamloops/index.html':           ['standard', 'standard'],       // hero, pricing section
+  // Deep vs Regular article: the two comparison cards, the pricing section,
+  // the side-by-side cards, and the cost FAQ.
+  'blog/deep-cleaning-vs-regular-cleaning/index.html':
+    ['standard', 'deep', 'standard', 'deep', 'standard', 'deep', 'deep'],
+  // Airbnb article: the pricing section, both comparison cards, and two FAQs.
+  // The move-out slots are the deliberate contrast against turnover pricing.
+  'blog/airbnb-turnover-cleaning-kamloops/index.html':
+    ['turnover', 'turnover', 'moveout', 'turnover', 'moveout'],
   // The third slot on these four is the cost FAQ answer, which cites the
   // page's own starting price (Sprint 37).
   'deep-cleaning-kamloops/index.html':            ['deep', 'deep', 'deep'],

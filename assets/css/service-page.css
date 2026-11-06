@@ -694,6 +694,17 @@ footer {
   align-items: center;
 }
 .qc-result-price.flash { color: var(--ember); }
+/* The office page publishes an hourly rate rather than a total, so the unit
+   has to ride with the number — "$45–$50" on its own could be misread as a
+   per-visit price. Sized off the price so it scales with it. */
+.oc-rate-unit {
+  display: block;
+  font-size: 0.30em;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink-3);
+  margin-top: 6px;
+}
 .qc-result-note {
   font-size: 13px;
   color: var(--ink-3);

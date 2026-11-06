@@ -371,8 +371,139 @@ check('no unverified "fully insured" claim anywhere', () => {
   for (const p of PAGES) assert.ok(!/fully insured/i.test(html[p.path]), p.path);
 });
 
-/* ── 6. SECRETS ──────────────────────────────────────────────────────────── */
-section('6. Secrets');
+/* ── 6. OFFICE / COMMERCIAL CLEANING ─────────────────────────────────────
+   Office cleaning became a real service, so the page has to exist and be
+   discoverable, and nothing on the site may still say it is unavailable. The
+   recurring rate itself is pinned in qa/pricing-consistency.js; here the
+   concern is the page, its links and the claims around it. */
+section('6. Office / commercial cleaning');
+const OFFICE_PATH = '/office-cleaning-kamloops/';
+const OFFICE_FILE = 'office-cleaning-kamloops/index.html';
+const OFFICE_LABEL = 'Office / Commercial Cleaning';
+
+check('the office page exists and is in the page inventory', () => {
+  assert.ok(fs.existsSync(path.join(ROOT, OFFICE_FILE)), `${OFFICE_FILE} is missing`);
+  assert.ok(PAGES.some(p => p.path === OFFICE_PATH), 'the office page is not in the shared PAGES inventory');
+});
+check('office page: H1, title and meta description', () => {
+  const h = read(OFFICE_FILE);
+  const h1 = (h.match(/<h1>([\s\S]*?)<\/h1>/) || [, ''])[1].replace(/<[^>]+>/g, '').trim();
+  assert.strictEqual(h1, 'Office Cleaning in Kamloops', 'H1');
+  const title = (h.match(/<title>([^<]*)<\/title>/) || [, ''])[1];
+  assert.match(title, /Office Cleaning/, 'title must name the service');
+  assert.match(title, /Kamloops/, 'title must name the city');
+  const desc = (h.match(/name="description" content="([^"]*)"/) || [, ''])[1];
+  assert.ok(desc.length > 50, 'meta description is missing or too short');
+  assert.match(desc, /Kamloops/, 'meta description should name the city');
+});
+check('office page: Service schema points at its own canonical URL', () => {
+  const h = read(OFFICE_FILE);
+  const graph = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+    .map(m => JSON.parse(m[1]));
+  const svc = graph.flatMap(g => g['@graph'] || [g]).find(n => n['@type'] === 'Service');
+  assert.ok(svc, 'no Service node');
+  assert.strictEqual(svc.url, PRODUCTION + OFFICE_PATH, 'Service url');
+  assert.strictEqual(svc['@id'], PRODUCTION + OFFICE_PATH + '#service', 'Service @id');
+  /* One business entity for the whole site: the provider is a reference, not a
+     second LocalBusiness with its own details. */
+  assert.strictEqual(svc.provider['@id'], PRODUCTION + '/#business', 'provider @id');
+});
+check('the office page is linked from the homepage, the services hub and every footer', () => {
+  /* Scoped to the service-card grid on each page. Checking the whole file would
+     be satisfied by the footer link alone, which would let the service card be
+     removed or repointed without anything failing. */
+  for (const [label, f, grid] of [
+    ['homepage', 'index.html', /<div class="services-grid">([\s\S]*?)<\/div>\s*<p class="svc-price-note/],
+    ['services hub', 'services/index.html', /<div class="rel-grid">([\s\S]*?)<\/div>\s*<p class="svc-price-note/],
+  ]) {
+    const cards = (read(f).match(grid) || ['', ''])[1];
+    assert.ok(cards, `${label}: could not find the service-card grid`);
+    assert.ok(cards.includes(`href="${OFFICE_PATH}"`), `${label}: the service-card grid does not link to the office page`);
+    /* Seven dedicated service pages, so seven cards. */
+    const hrefs = [...cards.matchAll(/<a href="\/([a-z-]+)\/"/g)].map(m => `/${m[1]}/`);
+    assert.strictEqual(hrefs.length, 7, `${label}: expected 7 service cards, found ${hrefs.length}`);
+    assert.strictEqual(new Set(hrefs).size, 7, `${label}: duplicate service card`);
+  }
+  for (const p of PAGES) {
+    const h = read(fileOf(p.path));
+    const footer = (h.match(/<nav class="footer-col" aria-label="Services">([\s\S]*?)<\/nav>/) || ['', ''])[1];
+    assert.ok(footer.includes(`href="${OFFICE_PATH}"`), `${p.path}: footer Services list is missing Office Cleaning`);
+  }
+});
+check('no public page claims office or commercial cleaning is unavailable', () => {
+  /* Specialist exclusions — hazardous material, asbestos, demolition,
+     restoration, biohazard — remain true and are deliberately NOT matched. */
+  const DENIALS = [
+    /do(?:es)? not offer (?:commercial|office)/i,
+    /don[’']t offer (?:commercial|office)/i,
+    /no (?:commercial|office) cleaning/i,
+    /(?:commercial|office) cleaning is not (?:offered|available|something)/i,
+    /is a residential and rental property clean/i,
+    /all of it is residential/i,
+    /residential and rental focused/i,
+  ];
+  for (const p of PAGES) {
+    const text = read(fileOf(p.path));
+    for (const re of DENIALS) {
+      const hit = text.match(re);
+      assert.ok(!hit, `${p.path}: "${hit && hit[0]}" — office/commercial cleaning is a current service`);
+    }
+  }
+});
+check(`every public quote form offers "${OFFICE_LABEL}" exactly once`, () => {
+  const withForms = PAGES.filter(p => read(fileOf(p.path)).includes('id="fservice"'));
+  assert.ok(withForms.length >= 9, `expected at least 9 pages with a quote form, found ${withForms.length}`);
+  const inventories = new Set();
+  for (const p of withForms) {
+    const h = read(fileOf(p.path));
+    const sel = (h.match(/id="fservice"[\s\S]*?<\/select>/) || [''])[0];
+    const opts = [...sel.matchAll(/<option[^>]*>([^<]*)<\/option>/g)].map(m => m[1].trim()).filter(Boolean);
+    const n = opts.filter(o => o === OFFICE_LABEL).length;
+    assert.strictEqual(n, 1, `${p.path}: "${OFFICE_LABEL}" appears ${n} time(s) in the service dropdown`);
+    /* The previously approved options must all survive. */
+    for (const keep of ['House Cleaning', 'Same-Day / Short-Notice Cleaning', 'Move-Out Cleaning',
+      'Move-In Cleaning', 'Deep Cleaning', 'Rental Turnover Cleaning', 'Post-Renovation Cleaning',
+      'Recurring Cleaning', 'Other']) {
+      assert.ok(opts.includes(keep), `${p.path}: dropdown lost "${keep}"`);
+    }
+    inventories.add(opts.join('|'));
+  }
+  /* One canonical option list everywhere — no page-specific drift. */
+  assert.strictEqual(inventories.size, 1, `quote forms disagree on their option list:\n  ${[...inventories].join('\n  ')}`);
+});
+check('the quote forms and the API service allowlist agree exactly', () => {
+  /* api/quote.js rejects any service value outside ALLOWED_SERVICES with a 400,
+     so a value the forms offer but the API omits would silently break every
+     submission for that service. Adding the office option without this guard is
+     exactly how that happens. */
+  const api = read('api/quote.js');
+  const block = (api.match(/const ALLOWED_SERVICES = new Set\(\[([\s\S]*?)\]\)/) || ['', ''])[1];
+  assert.ok(block, 'could not find ALLOWED_SERVICES in api/quote.js');
+  const allowed = [...block.matchAll(/'([^']+)'/g)].map(m => m[1]).sort();
+
+  const formPage = PAGES.find(p => read(fileOf(p.path)).includes('id="fservice"'));
+  const sel = (read(fileOf(formPage.path)).match(/id="fservice"[\s\S]*?<\/select>/) || [''])[0];
+  const offered = [...sel.matchAll(/<option[^>]*>([^<]*)<\/option>/g)]
+    .map(m => m[1].trim())
+    .filter(v => v && v !== 'Select a service')      // the placeholder is not a value
+    .sort();
+
+  assert.deepStrictEqual(offered, allowed,
+    `the Service dropdown and api/quote.js ALLOWED_SERVICES disagree\n  forms only: ${offered.filter(v => !allowed.includes(v)).join(', ') || '—'}\n  API only:   ${allowed.filter(v => !offered.includes(v)).join(', ') || '—'}`);
+  assert.ok(allowed.includes(OFFICE_LABEL), `the API must accept "${OFFICE_LABEL}"`);
+});
+check('the office page preselects its own service and loads no residential estimator', () => {
+  const h = read(OFFICE_FILE);
+  assert.match(h, new RegExp(`data-preselect-service="${OFFICE_LABEL.replace(/\//g, '\\/')}"`),
+    'the office quote form does not preselect the office service');
+  for (const id of ['qc-service', 'qc-size', 'qc-addons', 'qc-timing', 'qc-price']) {
+    assert.ok(!h.includes(`id="${id}"`), `#${id} is present — office work is not part of the residential estimator`);
+  }
+  assert.ok(!h.includes('assets/js/estimator.js'), 'the office page must not load the estimator component');
+});
+
+/* ── 7. SECRETS ──────────────────────────────────────────────────────────── */
+section('7. Secrets');
 check('no SMTP credentials or API keys in any page or browser script', () => {
   const scripts = fs.readdirSync(path.join(ROOT, 'assets', 'js')).map(f => 'assets/js/' + f);
   const leaks = [...PAGES.map(p => fileOf(p.path)), ...scripts]
