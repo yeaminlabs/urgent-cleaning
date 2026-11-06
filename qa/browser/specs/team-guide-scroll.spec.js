@@ -81,7 +81,16 @@ const anchorLanding = (page, href) => page.evaluate(sel => {
    Omit `from` where the page may legitimately not move — a wheel step already
    at the very top or bottom, or an anchor already at its landing position —
    and this stays pure stability detection, exactly as before. */
-async function settleScroll(page, { from = null, timeout = 5000 } = {}) {
+/* `until` handles the mirror-image failure to a late start: a smooth scroll can
+   also PLATEAU part-way under parallel suite load, holding one position for
+   longer than the stillness window and then resuming. Stillness cannot tell a
+   plateau from the end of the animation, so when the finishing position is
+   known in advance — anchorLanding() predicts it from layout, verified against
+   every section at every width — only arriving there counts as finished. If it
+   is never reached, the last observed position is RETURNED rather than thrown,
+   so the caller's landing assertions report where the page actually went
+   instead of this helper masking a real defect as a timeout. */
+async function settleScroll(page, { from = null, until = null, timeout = 5000 } = {}) {
   const deadline = Date.now() + timeout;
   let started = from === null;
   let last = await scrollY(page), stable = 0;
@@ -95,11 +104,15 @@ async function settleScroll(page, { from = null, timeout = 5000 } = {}) {
     }
     stable = now === last ? stable + 1 : 0;
     last = now;
+    if (until !== null) {
+      if (Math.abs(now - until) <= 1 && stable >= 2) return now;   // arrived
+      continue;                                                    // ignore plateaus
+    }
     if (stable >= 6) return now;              // ~360ms of stillness, as before
   }
-  throw new Error(started
-    ? `the page never stopped scrolling (last position ${last})`
-    : `the scroll never started (still at ${from} after ${timeout}ms)`);
+  if (!started) throw new Error(`the scroll never started (still at ${from} after ${timeout}ms)`);
+  if (until !== null) return last;            // let the caller judge the landing
+  throw new Error(`the page never stopped scrolling (last position ${last})`);
 }
 const activeTab = page => page.evaluate(() => { const a = document.querySelector('#secnav a.on'); return a ? a.getAttribute('href') : null; });
 
@@ -163,7 +176,7 @@ for (const width of WIDTHS) {
       // The anchor jump is a smooth animation (user-initiated, so it is fine);
       // wait for it to begin and then come to rest rather than guessing a
       // duration — see settleScroll.
-      const settled = await settleScroll(page, expectMove ? { from: now } : {});
+      const settled = await settleScroll(page, expectMove ? { from: now, until: want } : {});
       const box = await page.evaluate(sel => {
         const el = document.querySelector(sel);
         const bar = document.querySelector('.secnav').getBoundingClientRect();
